@@ -6,8 +6,7 @@ Dữ liệu hành vi sàn TMĐT (Kaggle [eCommerce behavior data from multi cate
 được simulator phát lại như luồng sự kiện thời gian thực → Kafka 3 broker → Spark Structured Streaming → Delta Lake trên MinIO.
 Toàn bộ chạy bằng Docker Compose trên một máy.
 
-Phạm vi dữ liệu hiện tại: **`2019-Nov.csv`** (khai báo ở `configs/pipeline.yaml → simulator.files`). Ngày mặc định cho dev/demo là `2019-11-01`.
-CSV tải tay từ Kaggle rồi đẩy lên `lake/raw/csv/` trên MinIO; mọi thành phần đọc nguồn từ đó, không đọc file local.
+Dữ liệu nguồn tải tay từ Kaggle rồi đẩy lên `lake/raw/csv/` trên MinIO; mọi thành phần đọc từ đó, không đọc file local. Chi tiết ở mục [Dữ liệu nguồn](#dữ-liệu-nguồn).
 
 ```
 CSV (lake/raw/csv/) ──► Simulator ──┬──► Kafka (ecom.events.raw, 6 partition, RF 3) ──┬──► Spark Streaming ──► lake/bronze/events (Delta)
@@ -16,13 +15,37 @@ CSV (lake/raw/csv/) ──► Simulator ──┬──► Kafka (ecom.events.ra
 Prometheus + Grafana thu metric từ mọi thành phần.
 ```
 
+## Dữ liệu nguồn
+
+Dataset Kaggle [eCommerce behavior data from multi category store](https://www.kaggle.com/datasets/mkechinov/ecommerce-behavior-data-from-multi-category-store)
+(REES46 / Open CDP), mỗi dòng là một sự kiện `view` / `cart` / `purchase` của một người dùng trên một sản phẩm, 9 cột theo contract C1.
+
+| Ưu tiên | File | Kích thước | Số dòng (ước tính) | Dùng cho |
+|---|---|---|---|---|
+| **1 — làm trước** | `2019-Nov.csv` | ~9 GB | ~67 triệu | Dev (1 ngày `2019-11-01`), Demo (01–07/11), Full (cả tháng) |
+| 2 — nếu còn thời gian | `2019-Oct.csv` | ~5,7 GB | ~42 triệu | Mở rộng Full lên 2 tháng |
+| 3 — tuỳ chọn | 12/2019–4/2020 (REES46) | lớn | ~175 triệu | Chỉ khi còn đĩa và thời gian |
+
+Số dòng chính xác lấy từ notebook EDA (BIG-15).
+
+**Cách lấy dữ liệu** (làm một lần, mỗi máy cần dữ liệu):
+
+1. Đăng nhập Kaggle, tải `2019-Nov.csv` từ trang dataset bằng trình duyệt (file zip ~2 GB, giải nén ra ~9 GB).
+2. Đặt file vào `data/raw/` (thư mục này gitignore, không commit).
+3. `make up` để MinIO chạy, rồi `make upload` để đẩy vào `s3a://lake/raw/csv/2019-Nov.csv`. Thay thế: kéo thả file trên MinIO Console `localhost:9003` vào `lake/raw/csv/`.
+4. Kiểm tra: `docker compose exec minio mc ls local/lake/raw/csv/` thấy file đúng kích thước.
+
+Khi thêm file sau này chỉ cần lặp lại bước 1–3 và thêm tên file vào `configs/pipeline.yaml → simulator.files`; không sửa mã.
+
+**Vì sao không dùng Kaggle CLI:** mỗi máy chỉ tải 1–2 lần, tải tay bằng trình duyệt nhanh hơn và không cần lưu API token trong `.env`.
+
 ## Luồng chạy
 
 Một sự kiện đi qua pipeline theo thứ tự sau. Cột "Mã" chỉ chỗ xử lý trong `src/`.
 
 | # | Chặng | Việc xảy ra | Giao thức / định dạng | Mã |
 |---|---|---|---|---|
-| 0 | Kaggle → raw/csv | Tải tay `2019-Nov.csv` về `data/raw/`, đẩy lên `lake/raw/csv/` bằng `make upload` (hoặc kéo thả trên MinIO Console). Làm một lần. | S3 API | `Makefile → upload` |
+| 0 | Kaggle → raw/csv | Tải tay `2019-Nov.csv` (ưu tiên 1), đẩy lên `lake/raw/csv/` bằng `make upload`. Làm một lần, xem mục Dữ liệu nguồn. | S3 API | `Makefile → upload` |
 | 1 | raw/csv → Simulator | Đọc `2019-Nov.csv` từ MinIO qua s3fs theo chunk, lọc theo ngày, giữ thứ tự `event_time`, phát với hệ số tăng tốc `SPEED` (×100 demo, ×1000 benchmark). Gắn `event_id` (hash dòng gốc), `source_file`, `produced_at`. Tuỳ chọn chèn bản ghi hỏng/trùng để kiểm chứng. | S3 API, pyarrow, chunk 100k dòng | `sources/read_csv.py`, `sources/simulator.py`, `sources/fault_injector.py` |
 | 2a | Simulator → Kafka | Đường nạp khối lớn: producer gửi thẳng vào topic. `enable.idempotence=true`, `acks=all`, nén lz4, key = `user_id` để mọi sự kiện của một người dùng vào cùng partition. | Kafka protocol, JSON UTF-8 | `ingestion/producer.py` |
 | 2b | Simulator → Collector API → Kafka | Đường nạp mô phỏng web/app thật: `POST /events` lô ≤ 500 sự kiện, Pydantic kiểm tra schema C3, 202 nếu hợp lệ / 400 kèm lỗi, rồi đẩy vào cùng topic. | HTTP/JSON | `ingestion/collector_api/` |
