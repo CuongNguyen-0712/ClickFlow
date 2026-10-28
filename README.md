@@ -171,7 +171,16 @@ Năm hợp đồng trong `contracts/` là giao diện giữa các tầng; đổi
 ## Quản lý công việc
 
 - Backlog và sprint: [Jira BIG](https://nguyenquoccuong07122004.atlassian.net/jira/software/projects/BIG/boards/3/backlog), 6 sprint theo tuần từ 29/10 đến 09/12/2026.
-- Epic theo tầng: Sources, Ingestion, Storage, Infra, Report. Label `week-N` là tuần, `tvN` là người phụ trách.
+- Epic theo tầng: Sources, Ingestion, Storage, Infra, Report. Label `week-N` là tuần, `tvN` là người phụ trách:
+
+  | Label | Thành viên | Phụ trách |
+  |---|---|---|
+  | `tv1` | Thơ Trần | Sources: dữ liệu, EDA, simulator, fault injector, chương 3, video |
+  | `tv2` | Tiến An | Ingestion: Kafka, producer, Collector API, Kafka Connect, chương 2/4 (Kafka) |
+  | `tv3` | Thanh Trúc | Storage: Spark Streaming, Delta, quality rules, chương 2/4 (Data Lake) |
+  | `tv4` | Nguyễn Quốc Cường (nhóm trưởng) | Hạ tầng, giám sát, benchmark, nạp Full, chương 1/5/6/7, ghép báo cáo |
+
+- Dàn ý báo cáo và người viết từng chương: `report/outline.md`.
 - Tên nhánh và commit mang key issue để Jira liên kết, ví dụ `feat/sources-simulator-BIG-18`.
 
 ## Quy ước
