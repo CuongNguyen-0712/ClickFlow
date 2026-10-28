@@ -13,8 +13,8 @@ producer:            # confluent-kafka, thay đổi trong E1
   batch.size: 262144
 
 simulator:
-  source_dir: data/raw
-  files: [2019-Nov.csv]   # tạm thời chỉ tháng 11/2019; thêm 2019-Oct.csv khi chạy Full
+  source: s3://lake/raw/csv/   # CSV tải tay từ Kaggle, đẩy lên bằng `make upload`; đọc qua s3fs với lake.endpoint_host
+  files: [2019-Nov.csv]        # tạm thời chỉ tháng 11/2019; thêm 2019-Oct.csv khi chạy Full
   chunk_size: 100000
   speed: 100           # hệ số tăng tốc theo event_time; 0 = tối đa (có rate limit)
   max_rate: 50000      # sự kiện/s khi speed = 0
@@ -31,8 +31,10 @@ collector:
 
 lake:
   bucket: lake
-  endpoint: http://minio:9000
-  raw: s3a://lake/raw/ecom.events.raw/
+  endpoint: http://minio:9000            # từ trong Docker (Spark, Connect)
+  endpoint_host: http://localhost:9002   # từ máy host (simulator, make_sample)
+  raw_csv: s3a://lake/raw/csv/           # CSV gốc tải tay
+  raw: s3a://lake/raw/ecom.events.raw/   # JSON gzip từ Kafka Connect
   bronze: s3a://lake/bronze/events/
   quarantine: s3a://lake/quarantine/events/
   checkpoints: s3a://lake/_checkpoints/

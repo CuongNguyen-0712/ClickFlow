@@ -126,7 +126,10 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_PROMETHEUS_AUTH_TYPE: public
-    volumes: [minio-data:/data]
+      LAKE_BUCKET: ${LAKE_BUCKET}
+    volumes:
+      - minio-data:/data
+      - ./data/raw:/upload:ro      # cho `make upload`: CSV tải tay -> lake/raw/csv/
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s

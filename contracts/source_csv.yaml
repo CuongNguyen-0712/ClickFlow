@@ -1,5 +1,6 @@
-# C1 — File nguồn: Kaggle -> Simulator. Trạng thái: DRAFT (chốt hết tuần 1).
+# C1 — File nguồn: Kaggle -> (tải tay) -> lake/raw/csv/ -> Simulator. Trạng thái: DRAFT (chốt hết tuần 1).
 # Kiểm tra: tests/test_schemas.py trên data/sample/events_sample_100k.csv
+location: s3a://lake/raw/csv/   # đẩy lên bằng `make upload` hoặc MinIO Console
 format: csv
 header: true
 files: [2019-Nov.csv]                # tạm thời; 2019-Oct.csv cùng schema, thêm khi chạy Full
