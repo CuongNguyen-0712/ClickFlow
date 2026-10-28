@@ -1,0 +1,22 @@
+# C4 — Bảng bronze/events: Spark -> nhóm Processing. Trạng thái: DRAFT.
+# Kiểm tra: đối soát số dòng với nguồn theo ngày (make verify), không trùng event_id.
+format: delta
+path: s3a://lake/bronze/events/
+partition_by: [event_date]          # = to_date(event_time), ~61 partition cho 2 tháng
+unique_key: event_id
+columns:                            # 14 cột + cột phân vùng event_date
+  - {name: event_time,      type: timestamp, nullable: false}
+  - {name: event_type,      type: string,    nullable: false}
+  - {name: product_id,      type: bigint,    nullable: false}
+  - {name: category_id,     type: bigint,    nullable: false}
+  - {name: category_code,   type: string,    nullable: true}
+  - {name: brand,           type: string,    nullable: true}
+  - {name: price,           type: double,    nullable: false}
+  - {name: user_id,         type: bigint,    nullable: false}
+  - {name: user_session,    type: string,    nullable: true}
+  - {name: event_id,        type: string,    nullable: false}
+  - {name: kafka_partition, type: int,       nullable: false}
+  - {name: kafka_offset,    type: bigint,    nullable: false}
+  - {name: produced_at,     type: timestamp, nullable: true}
+  - {name: ingested_at,     type: timestamp, nullable: false}
+maintenance: "OPTIMIZE ... ZORDER BY (user_id, product_id) hằng ngày cho partition đã đóng; VACUUM sau OPTIMIZE"

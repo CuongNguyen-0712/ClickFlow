@@ -1,0 +1,1 @@
+-- Đối soát số dòng theo ngày, tỷ lệ null từng cột (TV3, tuần 3)

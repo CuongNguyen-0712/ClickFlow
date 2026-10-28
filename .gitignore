@@ -1,0 +1,16 @@
+.env
+data/raw/*
+!data/raw/.gitkeep
+*.zip
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.ipynb_checkpoints/
+spark-warehouse/
+metastore_db/
+derby.log
+
+.idea/
+.vscode/

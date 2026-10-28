@@ -1,0 +1,1 @@
+-- Truy vấn mẫu Spark SQL cho nhóm Processing trên delta.`s3a://lake/bronze/events/`

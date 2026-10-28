@@ -1,0 +1,47 @@
+# C2 — Collector API: Simulator -> API. Trạng thái: DRAFT. Kiểm tra: tests/test_collector_api.py (pytest + httpx)
+openapi: 3.0.3
+info:
+  title: Collector API
+  version: 0.1.0
+paths:
+  /events:
+    post:
+      summary: Nhận lô sự kiện, kiểm tra schema (Pydantic), đẩy vào Kafka ecom.events.raw
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              maxItems: 500
+              items: {$ref: "./event.schema.json"}
+      responses:
+        "202":
+          description: Toàn bộ lô hợp lệ, đã gửi vào Kafka
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {accepted: {type: integer}}
+        "400":
+          description: Lô sai schema hoặc > 500 phần tử; không phần tử nào được gửi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties: {index: {type: integer}, field: {type: string}, message: {type: string}}
+  /health:
+    get:
+      responses:
+        "200": {description: OK}
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      responses:
+        "200": {description: OK}

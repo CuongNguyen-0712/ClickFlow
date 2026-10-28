@@ -1,0 +1,24 @@
+{
+  "name": "raw-s3-sink",
+  "config": {
+    "connector.class": "io.confluent.connect.s3.S3SinkConnector",
+    "topics": "ecom.events.raw",
+    "tasks.max": "2",
+    "store.url": "http://minio:9000",
+    "s3.bucket.name": "lake",
+    "s3.region": "us-east-1",
+    "s3.path.style.access.enabled": "true",
+    "topics.dir": "raw",
+    "storage.class": "io.confluent.connect.s3.storage.S3Storage",
+    "format.class": "io.confluent.connect.s3.format.json.JsonFormat",
+    "s3.compression.type": "gzip",
+    "partitioner.class": "io.confluent.connect.storage.partitioner.TimeBasedPartitioner",
+    "timestamp.extractor": "Wallclock",
+    "path.format": "'dt'=YYYY-MM-dd/'hour'=HH",
+    "partition.duration.ms": "3600000",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "flush.size": "50000",
+    "rotate.schedule.interval.ms": "60000"
+  }
+}

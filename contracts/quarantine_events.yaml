@@ -1,0 +1,12 @@
+# C5 — Bảng quarantine/events: Spark -> nhóm dữ liệu. Trạng thái: DRAFT.
+# Kiểm tra: mỗi bản ghi hỏng cố ý chèn (fault_injector) đều xuất hiện ở đây.
+format: delta
+path: s3a://lake/quarantine/events/
+partition_by: [ingest_date]
+columns:
+  - {name: payload,         type: string,    nullable: true,  note: "message gốc từ Kafka"}
+  - {name: error_reason,    type: string,    nullable: false, allowed: [parse_error, bad_event_time, bad_event_type, missing_id, negative_price]}
+  - {name: kafka_partition, type: int,       nullable: false}
+  - {name: kafka_offset,    type: bigint,    nullable: false}
+  - {name: ingested_at,     type: timestamp, nullable: false}
+# Luật 5 (trùng event_id trong watermark 1h) chỉ đếm, không ghi vào quarantine.

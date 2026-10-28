@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ecom.events.raw",
+  "title": "C3 — message trên topic ecom.events.raw (JSON UTF-8, key = user_id). Trạng thái: DRAFT",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "event_time", "event_type", "product_id", "category_id", "price", "user_id", "source_file", "produced_at"],
+  "properties": {
+    "event_id":      {"type": "string", "description": "hash xác định của dòng CSV gốc, dùng khử trùng"},
+    "event_time":    {"type": "string", "format": "date-time", "description": "ISO-8601 UTC"},
+    "event_type":    {"enum": ["view", "cart", "purchase"]},
+    "product_id":    {"type": "integer"},
+    "category_id":   {"type": "integer", "description": "int64 19 chữ số — client JS sẽ mất chính xác"},
+    "category_code": {"type": ["string", "null"]},
+    "brand":         {"type": ["string", "null"]},
+    "price":         {"type": "number", "minimum": 0},
+    "user_id":       {"type": "integer"},
+    "user_session":  {"type": ["string", "null"], "format": "uuid"},
+    "source_file":   {"type": "string", "description": "vd 2019-Oct.csv"},
+    "produced_at":   {"type": "string", "format": "date-time", "description": "thời điểm simulator/API gửi, đo độ trễ"}
+  }
+}

@@ -1,0 +1,45 @@
+# Cấu hình dùng chung cho simulator, producer, Collector API, Spark. Đọc qua src/common/config.py.
+
+kafka:
+  bootstrap_servers: localhost:29092,localhost:29093,localhost:29094   # từ máy host
+  bootstrap_servers_internal: kafka-1:9092,kafka-2:9092,kafka-3:9092   # từ trong Docker
+  topic: ecom.events.raw
+
+producer:            # confluent-kafka, thay đổi trong E1
+  enable.idempotence: true
+  acks: all
+  compression.type: lz4
+  linger.ms: 20
+  batch.size: 262144
+
+simulator:
+  source_dir: data/raw
+  chunk_size: 100000
+  speed: 100           # hệ số tăng tốc theo event_time; 0 = tối đa (có rate limit)
+  max_rate: 50000      # sự kiện/s khi speed = 0
+  mode: producer       # producer | http
+  fault_injection:
+    enabled: false
+    corrupt_ratio: 0.001
+    duplicate_ratio: 0.001
+    seed: 42
+
+collector:
+  url: http://localhost:8000/events
+  max_batch: 500
+
+lake:
+  bucket: lake
+  endpoint: http://minio:9000
+  raw: s3a://lake/raw/ecom.events.raw/
+  bronze: s3a://lake/bronze/events/
+  quarantine: s3a://lake/quarantine/events/
+  checkpoints: s3a://lake/_checkpoints/
+
+stream:
+  source: kafka        # kafka | sample — tuần 1–2 TV3 đọc data/sample/ trước khi có Kafka
+  sample_path: /opt/app/data/sample/events_sample_100k.csv
+  trigger_seconds: 10
+  watermark: 1 hour
+  max_offsets_per_trigger: 500000
+  metrics_port: 8002

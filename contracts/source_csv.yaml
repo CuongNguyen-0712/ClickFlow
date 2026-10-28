@@ -1,0 +1,16 @@
+# C1 — File nguồn: Kaggle -> Simulator. Trạng thái: DRAFT (chốt hết tuần 1).
+# Kiểm tra: tests/test_schemas.py trên data/sample/events_sample_100k.csv
+format: csv
+header: true
+files: [2019-Oct.csv, 2019-Nov.csv]
+event_time_format: "yyyy-MM-dd HH:mm:ss 'UTC'"
+columns:
+  - {name: event_time,    type: timestamp, nullable: false, note: "UTC, vd 2019-10-01 00:00:00 UTC"}
+  - {name: event_type,    type: string,    nullable: false, allowed: [view, cart, purchase]}
+  - {name: product_id,    type: bigint,    nullable: false}
+  - {name: category_id,   type: bigint,    nullable: false, note: "19 chữ số — đọc kiểu long, KHÔNG đọc float"}
+  - {name: category_code, type: string,    nullable: true,  note: "vd electronics.smartphone; hay thiếu với phụ kiện"}
+  - {name: brand,         type: string,    nullable: true}
+  - {name: price,         type: double,    nullable: false}
+  - {name: user_id,       type: bigint,    nullable: false}
+  - {name: user_session,  type: string,    nullable: true,  note: "UUID"}
