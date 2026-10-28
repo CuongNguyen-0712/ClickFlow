@@ -1,5 +1,5 @@
 COMPOSE      := docker compose
-DAY          ?= 2019-10-01
+DAY          ?= 2019-11-01
 SPEED        ?= 100
 SPARK_SUBMIT := $(COMPOSE) exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
@@ -23,7 +23,7 @@ download:  ## tải CSV gốc từ Kaggle vào data/raw/
 sample:    ## cắt data/sample/events_sample_100k.csv
 	python -m src.sources.make_sample
 
-replay:    ## make replay DAY=2019-10-01 SPEED=100
+replay:    ## make replay DAY=2019-11-01 SPEED=100
 	python -m src.sources.simulator --day $(DAY) --speed $(SPEED)
 
 stream:    ## Spark Structured Streaming Kafka -> bronze + quarantine

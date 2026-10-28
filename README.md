@@ -2,7 +2,8 @@
 
 Đồ án Big Data – E-Commerce Behavior, phạm vi **Sources → Ingestion → Storage**.
 
-Dữ liệu hành vi sàn TMĐT (Kaggle *eCommerce behavior data from multi category store*, ~110 triệu sự kiện 10–11/2019)
+Dữ liệu hành vi sàn TMĐT (Kaggle *eCommerce behavior data from multi category store*). Tạm thời chỉ dùng
+`2019-Nov.csv` (danh sách file nguồn ở `configs/pipeline.yaml → simulator.files`; thêm `2019-Oct.csv` khi chạy Full)
 được simulator phát lại như luồng sự kiện thời gian thực → Kafka 3 broker → Spark Structured Streaming → Delta Lake trên MinIO.
 
 ```
@@ -34,7 +35,7 @@ make up                       # kafka x3, kafka-ui, connect, minio, spark x3, co
 make topics                   # tạo topic theo configs/kafka_topics.yaml
 make download && make sample  # tải CSV gốc, cắt mẫu 100k dòng
 make stream                   # Spark Streaming Kafka → bronze/quarantine
-make replay DAY=2019-10-01 SPEED=100
+make replay DAY=2019-11-01 SPEED=100
 make sink                     # đăng ký Kafka Connect S3 Sink → raw/
 make verify                   # đối soát số dòng theo ngày
 make down
@@ -61,7 +62,7 @@ make down
 
 ## Quy ước
 
-- `main` luôn chạy được `make up && make replay DAY=2019-10-01 && make verify`.
+- `main` luôn chạy được `make up && make replay DAY=2019-11-01 && make verify`.
 - Nhánh `feat/<tầng>-<việc>`, merge qua Pull Request có 1 người review.
 - Không commit dữ liệu lớn, mật khẩu hay file `.env`.
 - Mọi thành phần in log có cấu trúc và xuất metric cho Prometheus.

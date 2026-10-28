@@ -16,7 +16,7 @@
     "price":         {"type": "number", "minimum": 0},
     "user_id":       {"type": "integer"},
     "user_session":  {"type": ["string", "null"], "format": "uuid"},
-    "source_file":   {"type": "string", "description": "vd 2019-Oct.csv"},
+    "source_file":   {"type": "string", "description": "vd 2019-Nov.csv"},
     "produced_at":   {"type": "string", "format": "date-time", "description": "thời điểm simulator/API gửi, đo độ trễ"}
   }
 }

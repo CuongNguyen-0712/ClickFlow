@@ -14,6 +14,7 @@ producer:            # confluent-kafka, thay đổi trong E1
 
 simulator:
   source_dir: data/raw
+  files: [2019-Nov.csv]   # tạm thời chỉ tháng 11/2019; thêm 2019-Oct.csv khi chạy Full
   chunk_size: 100000
   speed: 100           # hệ số tăng tốc theo event_time; 0 = tối đa (có rate limit)
   max_rate: 50000      # sự kiện/s khi speed = 0
