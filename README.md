@@ -9,9 +9,13 @@ Toàn bộ chạy bằng Docker Compose trên một máy.
 Dữ liệu nguồn tải tay từ Kaggle rồi đẩy lên `lake/raw/csv/` trên MinIO; mọi thành phần đọc từ đó, không đọc file local. Chi tiết ở mục [Dữ liệu nguồn](#dữ-liệu-nguồn).
 
 ```
-CSV (lake/raw/csv/) ──► Simulator ──┬──► Kafka (ecom.events.raw, 6 partition, RF 3) ──┬──► Spark Streaming ──► lake/bronze/events (Delta)
-                                    │                                  │                    └─► lake/quarantine/events (Delta)
-                                    └──► Collector API (HTTP) ──►┘     └──► Kafka Connect S3 Sink ──► lake/raw/ecom.events.raw/ (JSON gzip)
+Kaggle ──(tải tay, make upload)──► lake/raw/csv/2019-Nov.csv
+                                          │
+                                          ▼
+                                     Simulator ──┬──────────────────────────► Kafka ecom.events.raw ──┬──► Spark Streaming ──► lake/bronze/events (Delta)
+                                                 │                            (6 partition, RF 3)     │                     └─► lake/quarantine/events (Delta)
+                                                 └──► Collector API (HTTP) ──►┘                       └──► Kafka Connect S3 Sink ──► lake/raw/ecom.events.raw/ (JSON gzip)
+
 Prometheus + Grafana thu metric từ mọi thành phần.
 ```
 
@@ -33,7 +37,7 @@ Số dòng chính xác lấy từ notebook EDA (BIG-15).
 1. Đăng nhập Kaggle, tải `2019-Nov.csv` từ trang dataset bằng trình duyệt (file zip ~2 GB, giải nén ra ~9 GB).
 2. Đặt file vào `data/raw/` (thư mục này gitignore, không commit).
 3. `make up` để MinIO chạy, rồi `make upload` để đẩy vào `s3a://lake/raw/csv/2019-Nov.csv`. Thay thế: kéo thả file trên MinIO Console `localhost:9003` vào `lake/raw/csv/`.
-4. Kiểm tra: `docker compose exec minio mc ls local/lake/raw/csv/` thấy file đúng kích thước.
+4. Kiểm tra: `docker compose exec minio mc ls local/lake/raw/csv/` thấy file đúng kích thước (alias `local` do `make upload` tạo; nếu đã recreate container thì chạy lại `make upload`).
 
 Khi thêm file sau này chỉ cần lặp lại bước 1–3 và thêm tên file vào `configs/pipeline.yaml → simulator.files`; không sửa mã.
 
@@ -93,8 +97,9 @@ Vùng lưu trữ trong bucket `lake`:
 
 ## Yêu cầu máy
 
-- RAM ≥ 16 GB, đĩa trống ≥ 30 GB (CSV gốc ~9 GB, Kafka log, raw và bronze)
+- RAM ≥ 16 GB, đĩa trống ≥ 40 GB (CSV gốc ~9 GB trên host + bản sao ~9 GB trong MinIO, Kafka log tối đa ~18 GB, bronze)
 - Docker + Docker Compose v2, GNU Make, Python 3.11
+- Windows: dùng Git Bash hoặc WSL; cài `make` qua `winget install GnuWin32.Make` hoặc `scoop install make`. Không có `make` thì chạy thẳng lệnh trong `Makefile`.
 - File `2019-Nov.csv` tải tay từ Kaggle, đặt vào `data/raw/` (gitignore)
 
 ## Chạy nhanh
@@ -113,7 +118,9 @@ make verify                   # đối soát số dòng theo ngày
 make down
 ```
 
-`make up-core` bỏ qua Prometheus/Grafana cho máy yếu. `make test` chạy pytest.
+`make up-core` bỏ qua Prometheus/Grafana/kafka-exporter cho máy yếu. `make test` chạy pytest. `make bench` chạy E1–E5, kết quả vào `benchmarks/results/`.
+
+Trạng thái hiện tại: hạ tầng (compose, configs, contracts, CI) đã chạy được với MinIO; các file trong `src/` ngoài `common/` và `collector_api/health` mới là khung có docstring mô tả việc cần làm, theo task trên Jira.
 
 | UI | URL |
 |---|---|
@@ -127,9 +134,12 @@ make down
 ## Cấu trúc repo
 
 ```
-docker-compose.yml       kafka x3 (KRaft), kafka-ui, kafka-connect, minio, spark-master, spark-worker x2,
-                         collector-api, prometheus, grafana (profile monitoring)
+docker-compose.yml       kafka x3 (KRaft), kafka-ui, kafka-connect, minio + minio-init, spark-master, spark-worker x2,
+                         collector-api; profile monitoring: prometheus, kafka-exporter, grafana
 Makefile                 up | up-core | down | topics | upload | sample | replay | stream | sink | verify | bench | test
+.github/workflows/ci.yml pytest + docker compose config trên mỗi PR
+.env.example             KAFKA_CLUSTER_ID, MINIO_ROOT_*, LAKE_BUCKET, GRAFANA_ADMIN_PASSWORD — copy thành .env
+.gitattributes           ép LF cho script mount vào container Linux
 docker/                  Dockerfile cho spark (Delta + S3A + Kafka), connect (S3 Sink), collector (FastAPI)
 configs/                 pipeline.yaml, kafka_topics.yaml, connect/s3-sink.json, spark-defaults.conf, prometheus.yml, grafana/
 contracts/               data contract C1–C5: source_csv.yaml, collector_openapi.yaml, event.schema.json,
