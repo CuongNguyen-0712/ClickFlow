@@ -49,7 +49,7 @@ make down
 |---|---|
 | Kafka UI | http://localhost:8080 |
 | Spark Master | http://localhost:8090 |
-| MinIO Console | http://localhost:9001 |
+| MinIO Console | http://localhost:9003 (S3 API: localhost:9002) |
 | Prometheus | http://localhost:9090 |
 | Grafana | http://localhost:3000 |
 | Collector API | http://localhost:8000/docs |
@@ -100,4 +100,4 @@ Năm hợp đồng trong `contracts/` là giao diện giữa các tầng; đổi
 - Làm trên nhánh `feat/<tầng>-<việc>-<BIG-key>`, merge qua Pull Request có 1 người review, CI xanh.
 - Không commit dữ liệu lớn, mật khẩu hay file `.env`.
 - Mọi thành phần in log có cấu trúc và xuất metric cho Prometheus.
-- Ghim phiên bản trong `docker/`: Spark 3.5.3, Delta 3.2.1, Kafka 3.8.1, Connect 7.7.1, Python 3.11. Không đổi giữa chừng.
+- Ghim phiên bản trong `docker/`: Spark 3.5.3, Delta 3.2.1, Kafka 3.8.1, Connect 7.7.1, MinIO (Chainguard, ghim digest), Python 3.11. Không đổi giữa chừng.
