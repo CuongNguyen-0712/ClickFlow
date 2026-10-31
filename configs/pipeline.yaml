@@ -13,7 +13,8 @@ producer:            # confluent-kafka, thay đổi trong E1
   batch.size: 262144
 
 simulator:
-  source: s3://lake/raw/csv/   # CSV tải tay từ Kaggle, đẩy lên bằng `make upload`; đọc qua s3fs với lake.endpoint_host
+  kaggle_dataset: mkechinov/ecommerce-behavior-data-from-multi-category-store   # `make download` tải về data/raw/
+  source: s3://lake/raw/csv/   # `make upload` đẩy CSV lên đây; mọi thành phần đọc qua s3fs với lake.endpoint_host
   files: [2019-Nov.csv]        # ưu tiên 1; thêm 2019-Oct.csv (ưu tiên 2) khi mở rộng Full — xem README "Dữ liệu nguồn"
   chunk_size: 100000
   speed: 100           # hệ số tăng tốc theo event_time; 0 = tối đa (có rate limit)

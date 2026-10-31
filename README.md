@@ -6,10 +6,10 @@ Dữ liệu hành vi sàn TMĐT (Kaggle [eCommerce behavior data from multi cate
 được simulator phát lại như luồng sự kiện thời gian thực → Kafka 3 broker → Spark Structured Streaming → Delta Lake trên MinIO.
 Toàn bộ chạy bằng Docker Compose trên một máy.
 
-Dữ liệu nguồn tải tay từ Kaggle rồi đẩy lên `lake/raw/csv/` trên MinIO; mọi thành phần đọc từ đó, không đọc file local. Chi tiết ở mục [Dữ liệu nguồn](#dữ-liệu-nguồn).
+Dữ liệu nguồn tải từ Kaggle bằng `make download` rồi `make upload` lên `lake/raw/csv/` trên MinIO; mọi thành phần đọc từ đó, không đọc file local. Chi tiết ở mục [Dữ liệu nguồn](#dữ-liệu-nguồn).
 
 ```
-Kaggle ──(tải tay, make upload)──► lake/raw/csv/2019-Nov.csv
+Kaggle ──(make download, make upload)──► lake/raw/csv/2019-Nov.csv
                                           │
                                           ▼
                                      Simulator ──┬──────────────────────────► Kafka ecom.events.raw ──┬──► Spark Streaming ──► lake/bronze/events (Delta)
@@ -34,14 +34,12 @@ Số dòng chính xác lấy từ notebook EDA (BIG-15).
 
 **Cách lấy dữ liệu** (làm một lần, mỗi máy cần dữ liệu):
 
-1. Đăng nhập Kaggle, tải `2019-Nov.csv` từ trang dataset bằng trình duyệt (file zip ~2 GB, giải nén ra ~9 GB).
-2. Đặt file vào `data/raw/` (thư mục này gitignore, không commit).
+1. Tạo API token trên Kaggle (Settings → API → Create New Token), lưu thành `~/.kaggle/kaggle.json` hoặc điền `KAGGLE_USERNAME` / `KAGGLE_KEY` vào `.env`. Chấp nhận điều khoản dataset trên web một lần.
+2. `make download`: tải các file trong `configs/pipeline.yaml → simulator.files` về `data/raw/` (gitignore) bằng Kaggle CLI, tự giải nén (zip ~2 GB → ~9 GB). Chạy lại thì bỏ qua file đã có.
 3. `make up` để MinIO chạy, rồi `make upload` để đẩy vào `s3a://lake/raw/csv/2019-Nov.csv`. Thay thế: kéo thả file trên MinIO Console `localhost:9003` vào `lake/raw/csv/`.
 4. Kiểm tra: `docker compose exec minio mc ls local/lake/raw/csv/` thấy file đúng kích thước (alias `local` do `make upload` tạo; nếu đã recreate container thì chạy lại `make upload`).
 
-Khi thêm file sau này chỉ cần lặp lại bước 1–3 và thêm tên file vào `configs/pipeline.yaml → simulator.files`; không sửa mã.
-
-**Vì sao không dùng Kaggle CLI:** mỗi máy chỉ tải 1–2 lần, tải tay bằng trình duyệt nhanh hơn và không cần lưu API token trong `.env`.
+Khi thêm file sau này chỉ cần thêm tên vào `simulator.files` rồi chạy lại bước 2–3; không sửa mã. Dataset khai báo ở `simulator.kaggle_dataset`.
 
 ## Luồng chạy
 
@@ -49,7 +47,7 @@ Một sự kiện đi qua pipeline theo thứ tự sau. Cột "Mã" chỉ chỗ 
 
 | # | Chặng | Việc xảy ra | Giao thức / định dạng | Mã |
 |---|---|---|---|---|
-| 0 | Kaggle → raw/csv | Tải tay `2019-Nov.csv` (ưu tiên 1), đẩy lên `lake/raw/csv/` bằng `make upload`. Làm một lần, xem mục Dữ liệu nguồn. | S3 API | `Makefile → upload` |
+| 0 | Kaggle → raw/csv | `make download` tải `2019-Nov.csv` (ưu tiên 1) về `data/raw/` qua Kaggle CLI, `make upload` đẩy lên `lake/raw/csv/`. Làm một lần, xem mục Dữ liệu nguồn. | Kaggle API, S3 API | `sources/download.py`, `Makefile → upload` |
 | 1 | raw/csv → Simulator | Đọc `2019-Nov.csv` từ MinIO qua s3fs theo chunk, lọc theo ngày, giữ thứ tự `event_time`, phát với hệ số tăng tốc `SPEED` (×100 demo, ×1000 benchmark). Gắn `event_id` (hash dòng gốc), `source_file`, `produced_at`. Tuỳ chọn chèn bản ghi hỏng/trùng để kiểm chứng. | S3 API, pyarrow, chunk 100k dòng | `sources/read_csv.py`, `sources/simulator.py`, `sources/fault_injector.py` |
 | 2a | Simulator → Kafka | Đường nạp khối lớn: producer gửi thẳng vào topic. `enable.idempotence=true`, `acks=all`, nén lz4, key = `user_id` để mọi sự kiện của một người dùng vào cùng partition. | Kafka protocol, JSON UTF-8 | `ingestion/producer.py` |
 | 2b | Simulator → Collector API → Kafka | Đường nạp mô phỏng web/app thật: `POST /events` lô ≤ 500 sự kiện, Pydantic kiểm tra schema C3, 202 nếu hợp lệ / 400 kèm lỗi, rồi đẩy vào cùng topic. | HTTP/JSON | `ingestion/collector_api/` |
@@ -91,7 +89,7 @@ Sáu thí nghiệm tạo số liệu cho chương 6–7; script trong `benchmark
 | `kafka-ui` | Xem topic, message, consumer lag, connector | — | 8080 |
 | `kafka-connect` | Worker Connect + plugin S3 Sink, ghi `raw/` | `configs/connect/s3-sink.json`, `tasks.max=2` | 8083 |
 | `collector-api` | FastAPI + aiokafka, đường nạp HTTP | `docker/collector/Dockerfile` | 8000 |
-| `minio` | Object storage S3 API, bucket `lake`; nhận CSV tải tay vào `raw/csv/` | Chainguard image ghim digest; `minio-init` tạo bucket; mount `./data/raw` → `/upload` cho `make upload` | 9002 (S3), 9003 (console) |
+| `minio` | Object storage S3 API, bucket `lake`; nhận CSV từ `make upload` vào `raw/csv/` | Chainguard image ghim digest; `minio-init` tạo bucket; mount `./data/raw` → `/upload` cho `make upload` | 9002 (S3), 9003 (console) |
 | `spark-master`, `spark-worker-1..2` | Spark 3.5.3 Standalone; mỗi worker 2 core, 2 GB | `docker/spark/Dockerfile` (Delta 3.2.1, hadoop-aws, spark-sql-kafka), `configs/spark-defaults.conf` | 8090 (UI), 7077, 4040 |
 | `prometheus` | Thu metric từ kafka-exporter, collector-api, simulator (host:8001), Spark driver (8002), MinIO | `configs/prometheus.yml`, profile `monitoring` | 9090 |
 | `kafka-exporter` | Xuất consumer lag, offset theo partition cho Prometheus | profile `monitoring` | — |
@@ -102,7 +100,7 @@ Vùng lưu trữ trong bucket `lake`:
 
 | Vùng | Đường dẫn | Nội dung | Partition | Ghi bởi |
 |---|---|---|---|---|
-| raw/csv | `s3a://lake/raw/csv/` | CSV gốc Kaggle, tải tay | — (1 file/tháng) | Người dùng (`make upload`) |
+| raw/csv | `s3a://lake/raw/csv/` | CSV gốc Kaggle | — (1 file/tháng) | `make download` + `make upload` |
 | raw/ecom.events.raw | `s3a://lake/raw/ecom.events.raw/` | JSON gzip nguyên bản từ Kafka | `dt`, `hour` (giờ nạp) | Kafka Connect |
 | bronze | `s3a://lake/bronze/events/` | Delta, 14 cột đúng kiểu, không trùng `event_id` | `event_date` | Spark Streaming |
 | quarantine | `s3a://lake/quarantine/events/` | Delta, payload gốc + `error_reason` | `ingest_date` | Spark Streaming |
@@ -113,7 +111,7 @@ Vùng lưu trữ trong bucket `lake`:
 - RAM ≥ 16 GB, đĩa trống ≥ 40 GB (CSV gốc ~9 GB trên host + bản sao ~9 GB trong MinIO, Kafka log tối đa ~18 GB, bronze)
 - Docker + Docker Compose v2, GNU Make, Python 3.11
 - Windows: dùng Git Bash hoặc WSL; cài `make` qua `winget install GnuWin32.Make` hoặc `scoop install make`. Không có `make` thì chạy thẳng lệnh trong `Makefile`.
-- File `2019-Nov.csv` tải tay từ Kaggle, đặt vào `data/raw/` (gitignore)
+- Tài khoản Kaggle + API token (`~/.kaggle/kaggle.json` hoặc `KAGGLE_USERNAME`/`KAGGLE_KEY` trong `.env`) cho `make download`
 
 ## Chạy nhanh
 
@@ -122,7 +120,8 @@ cp .env.example .env          # sửa mật khẩu
 pip install -r requirements.txt
 make up                       # kafka x3, kafka-ui, connect, minio, spark x3, collector, prometheus, grafana
 make topics                   # tạo topic theo configs/kafka_topics.yaml
-make upload                   # data/raw/2019-Nov.csv -> lake/raw/csv/ (hoặc kéo thả trên MinIO Console)
+make download                 # Kaggle -> data/raw/2019-Nov.csv (cần token Kaggle)
+make upload                   # data/raw/*.csv -> lake/raw/csv/ (hoặc kéo thả trên MinIO Console)
 make sample                   # cắt mẫu 100k dòng từ raw/csv vào data/sample/
 make stream                   # Spark Streaming Kafka → bronze/quarantine
 make replay DAY=2019-11-01 SPEED=100
@@ -149,24 +148,24 @@ Trạng thái 31/10/2026 (Sprint 1): compose, configs, contracts C1–C5 bản n
 ```
 docker-compose.yml       kafka x3 (KRaft), kafka-ui, kafka-connect, minio + minio-init, spark-master, spark-worker x2,
                          collector-api; profile monitoring: prometheus, kafka-exporter, grafana
-Makefile                 up | up-core | down | topics | upload | sample | replay | stream | sink | verify | bench | test
+Makefile                 up | up-core | down | topics | download | upload | sample | replay | stream | sink | verify | bench | test
 pytest.ini               pythonpath=. , testpaths=tests
 .github/workflows/ci.yml pytest + docker compose config trên mỗi PR
-.env.example             KAFKA_CLUSTER_ID, MINIO_ROOT_*, LAKE_BUCKET, GRAFANA_ADMIN_PASSWORD — copy thành .env
+.env.example             KAFKA_CLUSTER_ID, MINIO_ROOT_*, LAKE_BUCKET, GRAFANA_ADMIN_PASSWORD, KAGGLE_* — copy thành .env
 .gitattributes           ép LF cho script mount vào container Linux
 docker/                  Dockerfile cho spark (Delta + S3A + Kafka), connect (S3 Sink), collector (FastAPI)
 configs/                 pipeline.yaml, kafka_topics.yaml, connect/s3-sink.json, spark-defaults.conf, prometheus.yml, grafana/
 contracts/               data contract C1–C5: source_csv.yaml, collector_openapi.yaml, event.schema.json,
                          bronze_events.yaml, quarantine_events.yaml
 src/common/              config.py, schemas.py, spark_session.py, metrics.py
-src/sources/             read_csv.py, make_sample.py, simulator.py, fault_injector.py
+src/sources/             download.py, read_csv.py, make_sample.py, simulator.py, fault_injector.py
 src/ingestion/           create_topics.py, producer.py, collector_api/
 src/storage/             init_lake.py, stream_to_bronze.py, quality_rules.py, maintenance.py
 src/monitoring/          reconcile.py, latency.py, grafana/ingestion_health.json
 queries/                 verify.sql, sample_queries.sql
 benchmarks/              e1_producer.sh … e5_storage.sh, results/
 tests/                   test_schemas.py, test_quality_rules.py, test_collector_api.py
-data/raw/ (gitignore)    2019-Nov.csv tải tay, nguồn cho make upload      data/sample/   events_sample_100k.csv (commit kèm)
+data/raw/ (gitignore)    CSV do make download tải về, nguồn cho make upload      data/sample/   events_sample_100k.csv (commit kèm)
 notebooks/               01_eda.ipynb      docs/          runbook.md, contribution.md, ai_usage.md
 report/                  outline.md (dàn ý + người viết), chNN_*.md (mỗi chương một file), figures/
 ```
@@ -177,7 +176,7 @@ Năm hợp đồng trong `contracts/` là giao diện giữa các tầng; đổi
 
 | # | Giao diện | Bên ghi → bên đọc | Kiểm tra |
 |---|---|---|---|
-| C1 | File CSV nguồn trên `lake/raw/csv/` | Kaggle (tải tay) → Simulator | Test schema trên mẫu 100k dòng |
+| C1 | File CSV nguồn trên `lake/raw/csv/` | Kaggle → Simulator | Test schema trên mẫu 100k dòng |
 | C2 | Collector API `POST /events` | Simulator → API | pytest + httpx |
 | C3 | Topic `ecom.events.raw` (12 trường, key = `user_id`) | Simulator, API → Spark, Connect | JSON Schema |
 | C4 | Bảng `bronze/events` | Spark → nhóm Processing | Đối soát số dòng theo ngày |

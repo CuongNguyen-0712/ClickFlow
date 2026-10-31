@@ -10,4 +10,5 @@ pyyaml==6.0.2
 prometheus-client==0.21.0
 jsonschema==4.23.0
 s3fs==2024.10.0
+kaggle==1.6.17
 pytest==8.3.3

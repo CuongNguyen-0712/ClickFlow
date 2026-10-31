@@ -3,7 +3,7 @@ DAY          ?= 2019-11-01
 SPEED        ?= 100
 SPARK_SUBMIT := $(COMPOSE) exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
-.PHONY: up up-core down topics upload sample replay stream sink verify bench test
+.PHONY: up up-core down topics download upload sample replay stream sink verify bench test
 
 up:        ## toàn bộ stack (core + monitoring)
 	$(COMPOSE) --profile monitoring up -d --build
@@ -17,7 +17,10 @@ down:
 topics:    ## tạo topic theo configs/kafka_topics.yaml
 	python -m src.ingestion.create_topics
 
-upload:    ## đẩy data/raw/*.csv (tải tay từ Kaggle) lên lake/raw/csv/; hoặc kéo thả trên MinIO Console :9003
+download:  ## tải CSV trong pipeline.yaml -> simulator.files từ Kaggle về data/raw/ (cần token Kaggle)
+	python -m src.sources.download
+
+upload:    ## đẩy data/raw/*.csv lên lake/raw/csv/; hoặc kéo thả trên MinIO Console :9003
 	$(COMPOSE) exec minio sh -c 'mc alias set -q local http://127.0.0.1:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD && mc cp /upload/*.csv local/$$LAKE_BUCKET/raw/csv/'
 
 sample:    ## cắt data/sample/events_sample_100k.csv

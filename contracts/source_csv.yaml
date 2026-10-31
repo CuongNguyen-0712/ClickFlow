@@ -1,6 +1,7 @@
-# C1 — File nguồn: Kaggle -> (tải tay) -> lake/raw/csv/ -> Simulator. Trạng thái: DRAFT (chốt hết tuần 1).
+# C1 — File nguồn: Kaggle -> (make download) -> data/raw/ -> (make upload) -> lake/raw/csv/ -> Simulator. Trạng thái: DRAFT (chốt hết tuần 1).
 # Kiểm tra: tests/test_schemas.py trên data/sample/events_sample_100k.csv
-location: s3a://lake/raw/csv/   # đẩy lên bằng `make upload` hoặc MinIO Console
+location: s3a://lake/raw/csv/
+kaggle_dataset: mkechinov/ecommerce-behavior-data-from-multi-category-store
 format: csv
 header: true
 files: [2019-Nov.csv]                # tạm thời; 2019-Oct.csv cùng schema, thêm khi chạy Full
