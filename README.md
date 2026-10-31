@@ -34,8 +34,8 @@ Số dòng chính xác lấy từ notebook EDA (BIG-15).
 
 **Cách lấy dữ liệu** (làm một lần, mỗi máy cần dữ liệu):
 
-1. Tạo API token trên Kaggle (Settings → API → Create New Token), lưu thành `~/.kaggle/kaggle.json` hoặc điền `KAGGLE_USERNAME` / `KAGGLE_KEY` vào `.env`. Chấp nhận điều khoản dataset trên web một lần.
-2. `make download`: tải các file trong `configs/pipeline.yaml → simulator.files` về `data/raw/` (gitignore) bằng Kaggle CLI, tự giải nén (zip ~2 GB → ~9 GB). Chạy lại thì bỏ qua file đã có.
+1. `pip install -r requirements.txt` (có Kaggle CLI 2.2.5; API Kaggle mới chỉ nhận CLI ≥ 1.8). Dataset public nên **không cần token**; chỉ khi Kaggle báo đòi đăng nhập mới tạo token (Settings → API → Create New Token) lưu `~/.kaggle/kaggle.json` hoặc điền `KAGGLE_USERNAME` / `KAGGLE_KEY` vào `.env`.
+2. `make download`: tải các file trong `configs/pipeline.yaml → simulator.files` về `data/raw/` (gitignore), tự giải nén (zip 2,9 GB → ~9 GB). Chạy lại thì bỏ qua file đã có.
 3. `make up` để MinIO chạy, rồi `make upload` để đẩy vào `s3a://lake/raw/csv/2019-Nov.csv`. Thay thế: kéo thả file trên MinIO Console `localhost:9003` vào `lake/raw/csv/`.
 4. Kiểm tra: `docker compose exec minio mc ls local/lake/raw/csv/` thấy file đúng kích thước (alias `local` do `make upload` tạo; nếu đã recreate container thì chạy lại `make upload`).
 
@@ -111,7 +111,7 @@ Vùng lưu trữ trong bucket `lake`:
 - RAM ≥ 16 GB, đĩa trống ≥ 40 GB (CSV gốc ~9 GB trên host + bản sao ~9 GB trong MinIO, Kafka log tối đa ~18 GB, bronze)
 - Docker + Docker Compose v2, GNU Make, Python 3.11
 - Windows: dùng Git Bash hoặc WSL; cài `make` qua `winget install GnuWin32.Make` hoặc `scoop install make`. Không có `make` thì chạy thẳng lệnh trong `Makefile`.
-- Tài khoản Kaggle + API token (`~/.kaggle/kaggle.json` hoặc `KAGGLE_USERNAME`/`KAGGLE_KEY` trong `.env`) cho `make download`
+- Kaggle CLI 2.2.5 (trong `requirements.txt`) cho `make download`; dataset public, token Kaggle không bắt buộc
 
 ## Chạy nhanh
 
@@ -120,7 +120,7 @@ cp .env.example .env          # sửa mật khẩu
 pip install -r requirements.txt
 make up                       # kafka x3, kafka-ui, connect, minio, spark x3, collector, prometheus, grafana
 make topics                   # tạo topic theo configs/kafka_topics.yaml
-make download                 # Kaggle -> data/raw/2019-Nov.csv (cần token Kaggle)
+make download                 # Kaggle -> data/raw/2019-Nov.csv (dataset public, không cần token)
 make upload                   # data/raw/*.csv -> lake/raw/csv/ (hoặc kéo thả trên MinIO Console)
 make sample                   # cắt mẫu 100k dòng từ raw/csv vào data/sample/
 make stream                   # Spark Streaming Kafka → bronze/quarantine
