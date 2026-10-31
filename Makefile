@@ -1,45 +1,25 @@
-COMPOSE      := docker compose
-DAY          ?= 2019-11-01
-SPEED        ?= 100
-SPARK_SUBMIT := $(COMPOSE) exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
+# Mọi target gọi run.py để Windows không có GNU Make vẫn chạy được: `python run.py <target>`.
+# Ví dụ: make replay DAY=2019-11-02 SPEED=1000   (DAY/SPEED export sang run.py)
+DAY   ?= 2019-11-01
+SPEED ?= 100
+export DAY SPEED
 
-.PHONY: up up-core down topics download upload sample replay stream sink verify bench test
+TARGETS := up up-core down topics download upload sample replay stream sink verify bench test
+.PHONY: $(TARGETS)
 
 up:        ## toàn bộ stack (core + monitoring)
-	$(COMPOSE) --profile monitoring up -d --build
-
 up-core:   ## chỉ Kafka, Connect, MinIO, Spark, Collector (máy yếu)
-	$(COMPOSE) up -d --build
-
 down:
-	$(COMPOSE) --profile monitoring down
-
 topics:    ## tạo topic theo configs/kafka_topics.yaml
-	python -m src.ingestion.create_topics
-
-download:  ## tải CSV trong pipeline.yaml -> simulator.files từ Kaggle về data/raw/ (cần token Kaggle)
-	python -m src.sources.download
-
+download:  ## tải CSV trong pipeline.yaml -> simulator.files từ Kaggle về data/raw/ (giải nén zip có sẵn nếu có)
 upload:    ## đẩy data/raw/*.csv lên lake/raw/csv/; hoặc kéo thả trên MinIO Console :9003
-	$(COMPOSE) exec minio sh -c 'mc alias set -q local http://127.0.0.1:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD && mc cp /upload/*.csv local/$$LAKE_BUCKET/raw/csv/'
-
 sample:    ## cắt data/sample/events_sample_100k.csv
-	python -m src.sources.make_sample
-
 replay:    ## make replay DAY=2019-11-01 SPEED=100
-	python -m src.sources.simulator --day $(DAY) --speed $(SPEED)
-
 stream:    ## Spark Structured Streaming Kafka -> bronze + quarantine
-	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py
-
 sink:      ## đăng ký Kafka Connect S3 Sink -> lake/raw/
-	curl -s -X POST -H "Content-Type: application/json" --data @configs/connect/s3-sink.json http://localhost:8083/connectors
-
 verify:    ## đối soát số dòng nguồn vs bronze theo ngày
-	$(SPARK_SUBMIT) /opt/app/src/monitoring/reconcile.py
-
 bench:     ## chạy E1..E5, kết quả vào benchmarks/results/
-	for f in benchmarks/e*.sh; do bash $$f || exit 1; done
-
 test:
-	python -m pytest -q
+
+$(TARGETS):
+	python run.py $@

@@ -26,7 +26,7 @@ Dataset Kaggle [eCommerce behavior data from multi category store](https://www.k
 
 | Ưu tiên | File | Kích thước | Số dòng (ước tính) | Dùng cho |
 |---|---|---|---|---|
-| **1 — làm trước** | `2019-Nov.csv` | ~9 GB | ~67 triệu | Dev (1 ngày `2019-11-01`), Demo (01–07/11), Full (cả tháng) |
+| **1 — làm trước** | `2019-Nov.csv` | 9,0 GB (zip 2,87 GB) | ~67 triệu | Dev (1 ngày `2019-11-01`), Demo (01–07/11), Full (cả tháng) |
 | 2 — nếu còn thời gian | `2019-Oct.csv` | ~5,7 GB | ~42 triệu | Mở rộng Full lên 2 tháng |
 | 3 — tuỳ chọn | 12/2019–4/2020 (REES46) | lớn | ~175 triệu | Chỉ khi còn đĩa và thời gian |
 
@@ -35,7 +35,7 @@ Số dòng chính xác lấy từ notebook EDA (BIG-15).
 **Cách lấy dữ liệu** (làm một lần, mỗi máy cần dữ liệu):
 
 1. `pip install -r requirements.txt` (có Kaggle CLI 2.2.5; API Kaggle mới chỉ nhận CLI ≥ 1.8). Dataset public nên **không cần token**; chỉ khi Kaggle báo đòi đăng nhập mới tạo token (Settings → API → Create New Token) lưu `~/.kaggle/kaggle.json` hoặc điền `KAGGLE_USERNAME` / `KAGGLE_KEY` vào `.env`.
-2. `make download`: tải các file trong `configs/pipeline.yaml → simulator.files` về `data/raw/` (gitignore), tự giải nén (zip 2,9 GB → ~9 GB). Chạy lại thì bỏ qua file đã có.
+2. `make download`: tải các file trong `configs/pipeline.yaml → simulator.files` về `data/raw/` (gitignore), tự giải nén (zip 2,9 GB → ~9 GB). Chạy lại thì bỏ qua file đã có; nếu đã có sẵn `<file>.zip` (tải tay) thì chỉ giải nén, không tải lại.
 3. `make up` để MinIO chạy, rồi `make upload` để đẩy vào `s3a://lake/raw/csv/2019-Nov.csv`. Thay thế: kéo thả file trên MinIO Console `localhost:9003` vào `lake/raw/csv/`.
 4. Kiểm tra: `docker compose exec minio mc ls local/lake/raw/csv/` thấy file đúng kích thước (alias `local` do `make upload` tạo; nếu đã recreate container thì chạy lại `make upload`).
 
@@ -109,11 +109,13 @@ Vùng lưu trữ trong bucket `lake`:
 ## Yêu cầu máy
 
 - RAM ≥ 16 GB, đĩa trống ≥ 40 GB (CSV gốc ~9 GB trên host + bản sao ~9 GB trong MinIO, Kafka log tối đa ~18 GB, bronze)
-- Docker + Docker Compose v2, GNU Make, Python 3.11
-- Windows: dùng Git Bash hoặc WSL; cài `make` qua `winget install GnuWin32.Make` hoặc `scoop install make`. Không có `make` thì chạy thẳng lệnh trong `Makefile`.
+- Docker + Docker Compose v2, Python 3.11+ (host dùng để chạy simulator, `run.py`)
+- GNU Make là tuỳ chọn: mọi `make <lệnh>` trong tài liệu này tương đương `python run.py <lệnh>` (Windows PowerShell/cmd chạy được, không cần cài make). Makefile chỉ là wrapper gọi `run.py`.
 - Kaggle CLI 2.2.5 (trong `requirements.txt`) cho `make download`; dataset public, token Kaggle không bắt buộc
 
 ## Chạy nhanh
+
+Không có `make` (Windows): thay `make X` bằng `python run.py X`; tham số `DAY`, `SPEED` đặt qua biến môi trường (`$env:DAY="2019-11-02"; python run.py replay`).
 
 ```bash
 cp .env.example .env          # sửa mật khẩu
@@ -148,7 +150,8 @@ Trạng thái 31/10/2026 (Sprint 1): compose, configs, contracts C1–C5 bản n
 ```
 docker-compose.yml       kafka x3 (KRaft), kafka-ui, kafka-connect, minio + minio-init, spark-master, spark-worker x2,
                          collector-api; profile monitoring: prometheus, kafka-exporter, grafana
-Makefile                 up | up-core | down | topics | download | upload | sample | replay | stream | sink | verify | bench | test
+run.py                   up | up-core | down | topics | download | upload | sample | replay | stream | sink | verify | bench | test
+Makefile                 wrapper: make <target> = python run.py <target>; DAY, SPEED export sang run.py
 pytest.ini               pythonpath=. , testpaths=tests
 .github/workflows/ci.yml pytest + docker compose config trên mỗi PR
 .env.example             KAFKA_CLUSTER_ID, MINIO_ROOT_*, LAKE_BUCKET, GRAFANA_ADMIN_PASSWORD, KAGGLE_* — copy thành .env
