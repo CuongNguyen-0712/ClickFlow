@@ -70,6 +70,19 @@ Luật kiểm tra khi ghi bronze (vi phạm → `quarantine/`, mỗi luật có 
 
 `category_code`, `brand`, `user_session` null là hợp lệ và vẫn vào bronze.
 
+## Thí nghiệm
+
+Sáu thí nghiệm tạo số liệu cho chương 6–7; script trong `benchmarks/`, mỗi cấu hình chạy ≥ 3 lần, kết quả ghi `benchmarks/results/`.
+
+| # | Thí nghiệm | Biến thay đổi | Đo gì | Phụ trách | Jira |
+|---|---|---|---|---|---|
+| E1 | Thông lượng producer | nén none/lz4/zstd; acks 1/all; `linger.ms`, `batch.size`; producer trực tiếp vs Collector API | sự kiện/s, MB/s, tỷ lệ nén | TV1 (TV2 đo sơ bộ) | BIG-21, BIG-27 |
+| E2 | Mở rộng partition / worker | 1/3/6/12 partition; 1 vs 2 worker Spark | dòng/s ghi bronze, consumer lag | TV2 | BIG-31 |
+| E3 | Độ trễ end-to-end | trigger 5/10/30 s; tốc độ ×100/×1000 | p50/p95 `produced_at`→`ingested_at`, số file | TV3 | BIG-40 |
+| E4 | Chịu lỗi | (a) tắt 1 broker; (b) kill job Spark rồi chạy lại từ checkpoint | số dòng bronze vs đã gửi: không mất, không trùng | TV2 (a), TV3 (b) | BIG-30, BIG-41 |
+| E5 | Định dạng và phân vùng | CSV vs JSON gzip vs Delta; có/không partition; trước/sau OPTIMIZE+ZORDER | dung lượng, số file, thời gian 3 truy vấn, partition pruning | TV3 | BIG-42 |
+| E6 | Chất lượng + nạp Full | chèn 0,1% hỏng + 0,1% trùng; nạp cả tháng 11/2019 | quarantine theo luật, trùng bị loại, tổng thời gian nạp | TV4 | BIG-49, BIG-50 |
+
 ## Thành phần
 
 | Service (compose) | Vai trò | Cấu hình chính | Cổng host |
@@ -120,7 +133,7 @@ make down
 
 `make up-core` bỏ qua Prometheus/Grafana/kafka-exporter cho máy yếu. `make test` chạy pytest. `make bench` chạy E1–E5, kết quả vào `benchmarks/results/`.
 
-Trạng thái hiện tại: hạ tầng (compose, configs, contracts, CI) đã chạy được với MinIO; các file trong `src/` ngoài `common/` và `collector_api/health` mới là khung có docstring mô tả việc cần làm, theo task trên Jira.
+Trạng thái 31/10/2026 (Sprint 1): compose, configs, contracts C1–C5 bản nháp, CI, `report/outline.md` đã có; MinIO chạy healthy và `make upload` đã thử. Các file trong `src/` ngoài `common/` và `collector_api/health` còn là khung có docstring mô tả việc cần làm; Kafka, Spark, Connect chưa `up` thử; chưa có CSV thật trên MinIO.
 
 | UI | URL |
 |---|---|
@@ -137,6 +150,7 @@ Trạng thái hiện tại: hạ tầng (compose, configs, contracts, CI) đã c
 docker-compose.yml       kafka x3 (KRaft), kafka-ui, kafka-connect, minio + minio-init, spark-master, spark-worker x2,
                          collector-api; profile monitoring: prometheus, kafka-exporter, grafana
 Makefile                 up | up-core | down | topics | upload | sample | replay | stream | sink | verify | bench | test
+pytest.ini               pythonpath=. , testpaths=tests
 .github/workflows/ci.yml pytest + docker compose config trên mỗi PR
 .env.example             KAFKA_CLUSTER_ID, MINIO_ROOT_*, LAKE_BUCKET, GRAFANA_ADMIN_PASSWORD — copy thành .env
 .gitattributes           ép LF cho script mount vào container Linux
@@ -154,6 +168,7 @@ benchmarks/              e1_producer.sh … e5_storage.sh, results/
 tests/                   test_schemas.py, test_quality_rules.py, test_collector_api.py
 data/raw/ (gitignore)    2019-Nov.csv tải tay, nguồn cho make upload      data/sample/   events_sample_100k.csv (commit kèm)
 notebooks/               01_eda.ipynb      docs/          runbook.md, contribution.md, ai_usage.md
+report/                  outline.md (dàn ý + người viết), chNN_*.md (mỗi chương một file), figures/
 ```
 
 ## Data contract
@@ -170,8 +185,20 @@ Năm hợp đồng trong `contracts/` là giao diện giữa các tầng; đổi
 
 ## Quản lý công việc
 
-- Backlog và sprint: [Jira BIG](https://nguyenquoccuong07122004.atlassian.net/jira/software/projects/BIG/boards/3/backlog), 6 sprint theo tuần từ 29/10 đến 09/12/2026.
-- Epic theo tầng: Sources, Ingestion, Storage, Infra, Report. Label `week-N` là tuần, `tvN` là người phụ trách:
+- Backlog và sprint: [Jira BIG](https://nguyenquoccuong07122004.atlassian.net/jira/software/projects/BIG/boards/3/backlog), 6 sprint theo tuần (thứ Năm → thứ Tư), nộp bài **09/12/2026**.
+
+  | Sprint | Tuần | Mục tiêu |
+  |---|---|---|
+  | 1 | 29/10–04/11 | Hạ tầng dựng được trên 4 máy, CSV lên MinIO, EDA, chốt contract C1–C5 |
+  | 2 | 05/11–11/11 | Simulator v1, producer idempotent, Spark Streaming → bronze/quarantine, Prometheus, `reconcile.py` |
+  | 3 | 12/11–18/11 | 1 ngày dữ liệu chạy trọn CSV → Kafka → bronze, `make verify` khớp, demo nội bộ |
+  | 4 | 19/11–25/11 | Mức Demo (1 tuần), Collector API, Kafka Connect, Grafana, E1/E2/E4, khung báo cáo; **đóng băng tính năng** |
+  | 5 | 26/11–02/12 | Nạp Full tháng 11, E3/E5/E6, viết chương 1–7 |
+  | 6 | 03/12–09/12 | Chương 8–9, video demo, ghép báo cáo PDF, nộp |
+
+  Nếu trễ, cắt theo thứ tự: mở rộng sang 2019-Oct → Collector API → Kafka Connect (thay bằng Spark ghi raw). Hai phần sau có label `cuttable`.
+
+- Epic theo tầng: Sources, Ingestion, Storage, Infra, Report. Label `week-N` là tuần, `experiment` là thí nghiệm E1–E6, `contract` là chốt C1–C5, `tvN` là người phụ trách:
 
   | Label | Thành viên | Phụ trách |
   |---|---|---|
