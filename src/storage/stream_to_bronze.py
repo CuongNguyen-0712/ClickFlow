@@ -1,6 +1,10 @@
-"""Configured sample -> C4 Delta trial table; Kafka streaming is a later task."""
+"""Kafka Structured Streaming -> C4/C5 Delta, or the finite sample mode."""
 import argparse
 import json
+import os
+from pathlib import Path
+import signal
+from threading import Event
 from functools import reduce
 from operator import or_
 from urllib.parse import urlsplit, urlunsplit
@@ -13,6 +17,60 @@ from src.common.schemas import SOURCE_COLUMNS
 from src.common.spark_csv import same_rows, select_sample
 from src.common.spark_session import get_spark
 from src.storage.init_lake import contract_schema, lake_paths, table_contract
+
+
+def start_kafka_stream(spark, config, *, available_now=False):
+    from functools import partial
+    from src.common.metrics import StreamMetrics
+    from src.monitoring.stream_listener import attach_listener
+    from src.storage.quality_rules import classify_records
+    from src.storage.stream_config import resolve_kafka_config
+    from src.storage.stream_sink import prepare_stream_storage, process_batch
+
+    settings = resolve_kafka_config(config)
+    if spark.conf.get('spark.sql.session.timeZone') != 'UTC':
+        raise ValueError('C4/C5 require Spark session timezone UTC')
+    prepare_stream_storage(spark, settings)
+    raw = (spark.readStream.format('kafka')
+           .option('kafka.bootstrap.servers', settings['bootstrap_servers'])
+           .option('subscribe', settings['topic'])
+           .option('startingOffsets', settings['starting_offsets'])
+           .option('failOnDataLoss', 'true')
+           .option('maxOffsetsPerTrigger', settings['max_offsets_per_trigger']).load()
+           .select(F.col('value').cast('string').alias('payload'),
+                   F.col('partition').alias('kafka_partition'),
+                   F.col('offset').alias('kafka_offset'))
+           .withColumn('ingested_at', F.current_timestamp()))
+    # The marker is observable in progress. Durable MERGE keys, rather than
+    # event-time eviction, enforce dedup and preserve late unique events.
+    classified = classify_records(raw).withWatermark('event_time', settings['watermark'])
+    metrics = StreamMetrics(settings['query_name'], port=settings['metrics_port'])
+    listener = attach_listener(spark, metrics)
+    try:
+        writer = (classified.writeStream.queryName(settings['query_name'])
+                  .option('checkpointLocation', settings['checkpoint'])
+                  .foreachBatch(partial(process_batch, settings=settings, metrics=metrics)))
+        writer = writer.trigger(availableNow=True) if available_now else writer.trigger(
+            processingTime=f"{settings['trigger_seconds']} seconds")
+        query = writer.start()
+        print(json.dumps({'event': 'kafka_stream_started', 'topic': settings['topic'],
+                          'checkpoint': settings['checkpoint'], 'query_id': str(query.id),
+                          'run_id': str(query.runId), 'driver_pid': os.getpid(),
+                          'metrics_port': metrics.server.server_port}), flush=True)
+        return query, metrics, listener
+    except BaseException:
+        spark.streams.removeListener(listener)
+        metrics.close()
+        raise
+
+
+def close_kafka_stream(spark, query, metrics, listener):
+    try:
+        if query.isActive:
+            query.stop()
+    finally:
+        spark.streams.removeListener(listener)
+        metrics.close()
 
 
 def write_sample_bronze(spark, sample, target, *, expected_rows=100000):
@@ -69,11 +127,19 @@ def write_sample_bronze(spark, sample, target, *, expected_rows=100000):
         bronze.unpersist()
 
 
-def run_pipeline(spark, config):
+def run_pipeline(spark, config, *, available_now=False, stop_requested=None):
     stream = config['stream']
     source = stream['source']
     if source == 'kafka':
-        raise NotImplementedError('Kafka streaming/quality routing is not implemented yet; use stream.source=sample')
+        query, metrics, listener = start_kafka_stream(spark, config, available_now=available_now)
+        try:
+            stop_requested = stop_requested or Event()
+            while not stop_requested.is_set():
+                if query.awaitTermination(1):
+                    break
+        finally:
+            close_kafka_stream(spark, query, metrics, listener)
+        return
     if source != 'sample':
         raise ValueError(f'Unsupported stream.source: {source}')
     rows = stream.get('sample_rows', 100000)
@@ -92,16 +158,31 @@ def run_pipeline(spark, config):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', choices=['sample', 'kafka'], help='Override stream.source for this run')
+    parser.add_argument('--config', type=Path, help='Optional pipeline YAML path')
+    parser.add_argument('--available-now', action='store_true', help='Drain currently available Kafka offsets and exit')
     args = parser.parse_args()
-    config = load()
+    if args.config:
+        import yaml
+        config = yaml.safe_load(args.config.read_text(encoding='utf-8'))
+    else:
+        config = load()
     if args.source:
         config = {**config, 'stream': {**config['stream'], 'source': args.source}}
     spark = get_spark('stream-to-bronze-' + config['stream']['source'])
     spark.sparkContext.setLogLevel('WARN')
+    stop_requested = Event()
+    previous_handlers = {}
+    if config['stream']['source'] == 'kafka':
+        for number in (signal.SIGINT, signal.SIGTERM):
+            previous_handlers[number] = signal.signal(number, lambda *_: stop_requested.set())
     try:
-        run_pipeline(spark, config)
+        run_pipeline(spark, config, available_now=args.available_now, stop_requested=stop_requested)
     finally:
-        spark.stop()
+        try:
+            spark.stop()
+        finally:
+            for number, handler in previous_handlers.items():
+                signal.signal(number, handler)
 
 
 if __name__ == '__main__':

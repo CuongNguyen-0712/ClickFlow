@@ -40,7 +40,7 @@ lake:
   checkpoints: s3a://lake/_checkpoints/
 
 stream:
-  source: sample       # finite sample batch; Kafka streaming sẽ triển khai ở task tiếp theo
+  source: kafka        # kafka continuous streaming | sample finite batch
   sample_path: /opt/app/data/sample/events_sample_100k.csv
   sample_rows: 100000
   sample_day: '2019-11-01'
@@ -48,4 +48,7 @@ stream:
   trigger_seconds: 10
   watermark: 1 hour
   max_offsets_per_trigger: 500000
+  starting_offsets: earliest   # chỉ áp dụng lần đầu; sau đó resume từ checkpoint
+  checkpoint_path: s3a://lake/_checkpoints/kafka_to_delta/
+  query_name: clickflow-kafka-to-delta
   metrics_port: 8002

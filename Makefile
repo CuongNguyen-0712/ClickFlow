@@ -3,19 +3,22 @@ DAY          ?= 2019-11-01
 SPEED        ?= 100
 SPARK_SUBMIT = $(COMPOSE) exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
-.PHONY: up up-core up-storage init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze down topics upload sample replay stream stream-sample sink verify bench test
+.PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding down topics upload sample replay stream stream-sample stream-drain sink verify bench test
 
 up-storage: ## MinIO + master + 2 workers; no dataset or Kafka required
 	$(COMPOSE) up -d --build --wait minio minio-init spark-master spark-worker-1 spark-worker-2
+
+up-stream: ## Kafka x3 + MinIO + Spark, không cần Connect/Collector
+	$(COMPOSE) up -d --build --wait kafka-1 kafka-2 kafka-3 minio minio-init spark-master spark-worker-1 spark-worker-2
 
 init-lake: ## prefixes + empty Delta C4/C5; safe to repeat
 	$(SPARK_SUBMIT) /opt/app/src/storage/init_lake.py
 
 smoke-storage: ## synthetic C1 CSV -> MinIO -> Spark -> Delta -> Spark
-	$(SPARK_SUBMIT) /opt/app/src/storage/smoke_lake.py --sample
+	$(SPARK_SUBMIT) /opt/app/src/storage/smoke_lake.py --sample --keep-artifacts
 
 smoke-storage-real: ## read up to 100 rows from raw/csv/2019-Nov.csv
-	$(SPARK_SUBMIT) /opt/app/src/storage/smoke_lake.py
+	$(SPARK_SUBMIT) /opt/app/src/storage/smoke_lake.py --keep-artifacts
 
 test-storage: ## integration checks, including reinitialization without data loss
 	$(SPARK_SUBMIT) /opt/app/tests/integration/storage_checks.py
@@ -49,6 +52,12 @@ replay:    ## make replay DAY=2019-11-01 SPEED=100
 
 stream:    ## chạy nguồn được cấu hình trong stream.source
 	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py
+
+stream-drain: ## xử lý offsets hiện có rồi thoát; giữ checkpoint để resume
+	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py --source kafka --available-now
+
+test-checkpoint-binding: ## từ chối checkpoint cũ không có nhận diện nguồn; giữ artifact
+	$(SPARK_SUBMIT) /opt/app/tests/integration/checkpoint_binding_checks.py
 
 sink:      ## đăng ký Kafka Connect S3 Sink -> lake/raw/
 	curl -s -X POST -H "Content-Type: application/json" --data @configs/connect/s3-sink.json http://localhost:8083/connectors

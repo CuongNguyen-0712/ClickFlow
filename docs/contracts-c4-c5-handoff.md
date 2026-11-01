@@ -44,12 +44,13 @@ không tham gia so sánh xung đột: các metadata này có thể đổi khi re
 `event_date` được suy ra từ `event_time`, không cần so sánh độc lập. Khi có
 xung đột nguồn, giữ nguyên toàn bộ dòng đầu và phát cảnh báo để kiểm tra.
 
-Watermark 1 giờ giới hạn state khử trùng của stream. Yêu cầu **không trùng
-trên toàn bảng**, kể cả replay ngoài cửa sổ, còn cần sink/khóa bền và đối
-soát; `unique_key` trong YAML không tự tạo ràng buộc UNIQUE của Delta.
-Đây là yêu cầu cho task Kafka streaming sắp tới, chưa phải bảo đảm đã được
-kiểm thử trên luồng Kafka. Xem [Spark watermark](https://downloads.apache.org/spark/docs/3.5.3/structured-streaming-programming-guide.html)
-và [Delta constraints](https://docs.delta.io/delta-constraints/).
+Kafka writer đã thực hiện insert-only MERGE theo `event_id` trên toàn bảng,
+kể cả replay ngoài watermark. `unique_key` trong YAML không tự tạo ràng buộc
+UNIQUE của Delta: bảo đảm này do writer, với một driver ghi tại một thời
+điểm. Watermark 1 giờ chỉ là marker progress; không có stateful dedup/drop.
+Sự kiện hợp lệ, ID mới vẫn được giữ khi đến muộn. Trong cùng batch, writer
+chọn ứng viên theo partition rồi offset; đây không phải thứ tự thời gian
+toàn cục giữa các partition.
 
 Batch mẫu đã được kiểm chứng ở `bronze/sample_events`, có 100.000 ID khác
 nhau. Bảng thử dùng `kafka_partition=-1`, `kafka_offset=-1`,
@@ -101,6 +102,21 @@ trước bước khử trùng. Với một `kafka.topic` cố định, retry cù
 `(kafka_partition, kafka_offset)` không được tạo thêm dòng quarantine;
 hai offset khác nhau là hai message, kể cả payload giống nhau.
 
+Writer kiểm tra JSON/C3 nghiêm ngặt trước khi Spark cast, rồi phân tuyến
+bằng một `foreachBatch` của cùng query Kafka. C5 dùng insert-only MERGE theo
+hai tọa độ Kafka. Topic không có cột riêng trong schema C5 nên checkpoint
+và hai đích chỉ được gắn với một topic cố định. Metadata binding lưu topic,
+broker, đường dẫn hai bảng, fingerprint C3 và phiên bản C4/C5. Checkpoint
+không rỗng/chưa binding bị từ chối trước init; đổi topic hoặc đích cần
+checkpoint/đích mới phù hợp hoặc migration rõ ràng, giữ nguyên bằng chứng cũ.
+
+Hai MERGE tạo **hai commit Delta riêng**, không có tính nguyên tử chung
+hai bảng. Lỗi sau commit bronze có thể để quarantine tạm thời chưa đủ;
+retry từ checkpoint giữ nguyên dòng C4 đã ghi và bổ sung C5 còn thiếu.
+Processing chỉ đối soát hai bảng sau batch thành công, không coi snapshot
+đọc giữa hai commit là một transaction chung. Xem
+[runbook Kafka](runbook.md#kafka--c4c5-streaming) để vận hành và khôi phục.
+
 ## Cách Processing đọc và kiểm chứng
 
 Spark dùng timezone UTC, S3A và Delta như `configs/spark-defaults.conf`.
@@ -116,14 +132,16 @@ kiểu và nullable, thay vì tự giả định mọi partition đều là date
 
 Chạy `python -m pytest -q tests/test_schemas.py` để kiểm tra giao diện và
 `python -m pytest -q` cho toàn bộ suite. Enum, thứ tự chọn lỗi, unique key và
-biểu thức ngày là yêu cầu cho writer; test schema không thay thế kiểm thử
-classifier/replay khi triển khai Kafka streaming. Đổi kiểu, xóa/đổi tên cột,
+biểu thức ngày là yêu cầu cho writer; test schema và kiểm thử classifier/replay
+Kafka cung cấp các bằng chứng riêng. Đổi kiểu, xóa/đổi tên cột,
 đổi khóa, partition hoặc nghĩa trường cần version contract mới, kế hoạch
 migration và nhóm consumer duyệt trước khi áp dụng.
 
 ## Kiểm chứng kỹ thuật ngày 01/11/2026
 
-- `tests/test_schemas.py`: **9 test đạt**; toàn bộ pytest: **12 test đạt**.
+- Mốc đối chiếu contract ban đầu: `tests/test_schemas.py` **9 test đạt**;
+  toàn bộ pytest lúc đó **12 test đạt**. Suite sau triển khai Kafka hiện có
+  **187 unit test đạt**.
 - Đối chiếu trực tiếp schema, thứ tự cột, type, nullable và partition của
   `bronze/events` (15 cột, 0 dòng), `quarantine/events` (6 cột, 0 dòng),
   `bronze/sample_events` (15 cột, 100.000 dòng và ID duy nhất): đều khớp.
@@ -133,6 +151,31 @@ migration và nhóm consumer duyệt trước khi áp dụng.
 - Báo cáo: `data/raw/c4-c5-contract-verification-2026-11-01.json`;
   log: `data/raw/c4-c5-contract-verification.log`. Kiểm chứng Delta chỉ đọc,
   không chạy lệnh xóa hoặc thay đổi dữ liệu/bảng hiện có.
+
+Kiểm chứng Kafka độc lập được giữ trong
+`data/raw/kafka-stream-test-767d9cd4c267/` (`case.json`, YAML và báo cáo JSON
+từng stage; log trong `data/raw/`). Harness
+`tests/integration/kafka_stream_checks.py` chạy `setup`, tạo topic 2 partition
+/ RF3 bằng Kafka CLI, rồi `fault`, `resume`, `append`, `verify`, mỗi stage
+bằng một driver mới:
+
+- Fault chủ động sau commit bronze: **1 C4, 0 C5**. Resume cùng checkpoint:
+  **1 C4, 2 C5**, giữ nguyên toàn bộ dòng C4 đầu, kể cả metadata.
+- Append: **2 C4, 7 C5**, đủ cả năm lý do lỗi; replay chỉ đổi metadata được
+  bỏ qua, một conflict giữ dòng đầu và phát cảnh báo. Bảy tọa độ C5 duy nhất.
+- Driver verify mới resume checkpoint đã commit không ghi thêm; version
+  hai Delta vẫn **2**. Payload giữ đúng chuỗi gốc và null tombstone.
+- Binding topic khác bị từ chối. Regression riêng đã tái hiện việc nhận
+  checkpoint không rỗng/chưa binding trước guard (RED), và xác nhận guard từ
+  chối trước init (GREEN).
+- Metrics HTTP đã scrape được. Counter sink đếm số thực chèn sau commit;
+  progress Spark có thể đếm lại input qua nhiều action. Counter reset khi
+  driver restart, không thay cho audit Delta lâu dài.
+
+Đây là bằng chứng chức năng fixture và replay, chưa phải benchmark toàn bộ
+dataset. CLI continuous mặc định đã phục vụ metrics ở cổng 8002 và dừng bằng
+SIGTERM đúng PID với exit code 0; xem log/mốc vận hành trong runbook.
+Trạng thái phê duyệt nhóm vẫn giữ nguyên như đầu tài liệu.
 
 ## Bản ghi duyệt nhóm
 
