@@ -49,6 +49,6 @@ stream:
   watermark: 1 hour
   max_offsets_per_trigger: 500000
   starting_offsets: earliest   # chỉ áp dụng lần đầu; sau đó resume từ checkpoint
-  checkpoint_path: s3a://lake/_checkpoints/kafka_to_delta/
+  checkpoint_path: s3a://lake/_checkpoints/kafka_to_delta_watermark_v1/  # stateful plan; giữ checkpoint stateless cũ
   query_name: clickflow-kafka-to-delta
   metrics_port: 8002

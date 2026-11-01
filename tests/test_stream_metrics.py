@@ -201,3 +201,70 @@ def test_unknown_quality_reason_does_not_partly_change_metrics():
     with pytest.raises(ValueError):
         metrics.record_sink('quarantine', 1, errors={'unknown': 1})
     assert sample(metrics, 'sink_rows_total', {'destination': 'quarantine'}) in (None, 0)
+
+
+def test_stateful_drop_counters_count_each_batch_once_and_restart_fresh(caplog):
+    metrics = make_metrics()
+    assert sample(metrics, "duplicates_dropped_total") == 0
+    assert sample(metrics, "late_records_dropped_total") == 0
+    progress = {
+        "id": "query-1", "runId": "run-1", "batchId": 0,
+        "stateOperators": [
+            {"customMetrics": {"numDroppedDuplicateRows": 1}, "numRowsDroppedByWatermark": 2},
+            {"customMetrics": {"numDroppedDuplicateRows": 2}, "numRowsDroppedByWatermark": 0},
+        ],
+    }
+    with caplog.at_level("INFO", logger=metrics_module.__name__):
+        metrics.record_progress(progress)
+        metrics.record_progress(progress)
+    assert sample(metrics, "duplicates_dropped_total") == 3
+    assert sample(metrics, "late_records_dropped_total") == 2
+    events = [json.loads(record.message) for record in caplog.records]
+    assert events == [{
+        "event": "dedup_progress", "query_id": "query-1", "run_id": "run-1", "batch_id": 0,
+        "duplicates_dropped": 3, "late_records_dropped": 2,
+    }]
+    metrics.record_progress({**progress, "batchId": 1, "stateOperators": [
+        {"customMetrics": {"numDroppedDuplicateRows": 4}, "numRowsDroppedByWatermark": 0},
+    ]})
+    metrics.record_progress(progress)  # An older notification cannot recount a batch.
+    assert sample(metrics, "duplicates_dropped_total") == 7
+    metrics.record_progress({**progress, "runId": "run-2"})
+    assert sample(metrics, "duplicates_dropped_total") == 10
+    assert sample(metrics, "late_records_dropped_total") == 4
+
+
+@pytest.mark.parametrize("bad", [None, "bad", -1, 1.5, float("nan"), float("inf"), True, {}, []])
+def test_bad_stateful_drop_counts_preserve_committed_sink_metrics(bad, caplog):
+    metrics = make_metrics()
+    metrics.record_sink("bronze", 5)
+    metrics.record_ignored(duplicates=6, conflicts=2)
+    metrics.record_progress({"stateOperators": [
+        {"customMetrics": {"numDroppedDuplicateRows": bad}, "numRowsDroppedByWatermark": bad},
+        {"customMetrics": {"numDroppedDuplicateRows": "3"}, "numRowsDroppedByWatermark": 2},
+    ]})
+    assert sample(metrics, "duplicates_dropped_total") == 3
+    assert sample(metrics, "late_records_dropped_total") == 2
+    assert sample(metrics, "sink_rows_total", {"destination": "bronze"}) == 5
+    assert sample(metrics, "duplicates_ignored_total") == 6
+    assert sample(metrics, "conflicting_event_ids_total") == 2
+    assert caplog.records
+
+
+@pytest.mark.parametrize("operators", [None, {}, "bad", [], [None, {}, {"customMetrics": []}]])
+def test_empty_or_malformed_state_operators_do_not_increment_drop_counters(operators):
+    metrics = make_metrics()
+    metrics.record_progress({"stateOperators": operators})
+    assert sample(metrics, "duplicates_dropped_total") == 0
+    assert sample(metrics, "late_records_dropped_total") == 0
+
+
+def test_unidentified_progress_counts_each_observation_without_retaining_identity():
+    metrics = make_metrics()
+    progress = {"batchId": 0, "stateOperators": [
+        {"customMetrics": {"numDroppedDuplicateRows": 2}, "numRowsDroppedByWatermark": 1},
+    ]}
+    metrics.record_progress(progress)
+    metrics.record_progress(progress)
+    assert sample(metrics, "duplicates_dropped_total") == 4
+    assert sample(metrics, "late_records_dropped_total") == 2

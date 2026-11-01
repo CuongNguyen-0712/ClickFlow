@@ -50,23 +50,23 @@ Một sự kiện đi qua pipeline theo thứ tự sau. Cột "Mã" chỉ chỗ 
 | # | Chặng | Việc xảy ra | Giao thức / định dạng | Mã |
 |---|---|---|---|---|
 | 0 | Kaggle → raw/csv | Tải tay `2019-Nov.csv` (ưu tiên 1), đẩy lên `lake/raw/csv/` bằng `make upload`. Làm một lần, xem mục Dữ liệu nguồn. | S3 API | `Makefile → upload` |
-| 1 | raw/csv → Simulator | Đọc `2019-Nov.csv` từ MinIO qua s3fs theo chunk, lọc theo ngày, giữ thứ tự `event_time`, phát với hệ số tăng tốc `SPEED` (×100 demo, ×1000 benchmark). Gắn `event_id` (hash dòng gốc), `source_file`, `produced_at`. Tuỳ chọn chèn bản ghi hỏng/trùng để kiểm chứng. | S3 API, pyarrow, chunk 100k dòng | `sources/read_csv.py`, `sources/simulator.py`, `sources/fault_injector.py` |
+| 1 | raw/csv → Simulator | Đọc `2019-Nov.csv` từ MinIO qua s3fs theo chunk, lọc theo ngày, giữ thứ tự `event_time`, phát với hệ số tăng tốc `SPEED` (×100 demo, ×1000 benchmark). Gắn `event_id` (hash dòng gốc), `source_file`, `produced_at`. Fault injector hiện tạo bản sao trùng chính xác để kiểm chứng; chèn bản ghi hỏng chưa triển khai. | S3 API, pyarrow, chunk 100k dòng | `sources/read_csv.py`, `sources/simulator.py`, `sources/fault_injector.py` |
 | 2a | Simulator → Kafka | Đường nạp khối lớn: producer gửi thẳng vào topic. `enable.idempotence=true`, `acks=all`, nén lz4, key = `user_id` để mọi sự kiện của một người dùng vào cùng partition. | Kafka protocol, JSON UTF-8 | `ingestion/producer.py` |
 | 2b | Simulator → Collector API → Kafka | Đường nạp mô phỏng web/app thật: `POST /events` lô ≤ 500 sự kiện, Pydantic kiểm tra schema C3, 202 nếu hợp lệ / 400 kèm lỗi, rồi đẩy vào cùng topic. | HTTP/JSON | `ingestion/collector_api/` |
 | 3 | Kafka `ecom.events.raw` | Bộ đệm bền: 6 partition, replication factor 3, `min.insync.replicas=2`, retention theo dung lượng. Tắt 1 broker vẫn ghi được. | — | `ingestion/create_topics.py`, `configs/kafka_topics.yaml` |
-| 4a | Kafka → Spark → bronze / quarantine | Một Structured Streaming query, trigger 10 s, kiểm tra C3 nghiêm ngặt trước khi Spark cast. Một `foreachBatch` phân tuyến luật 1–4 rồi insert-only MERGE: C4 theo `event_id` toàn bảng, C5 theo partition/offset của topic cố định. Checkpoint trên MinIO để resume. | Delta trên S3A | `storage/stream_to_bronze.py`, `storage/quality_rules.py`, `storage/stream_sink.py` |
+| 4a | Kafka → Spark → bronze / quarantine | Một Structured Streaming query, trigger 10 s, kiểm tra C3 trước khi Spark cast. Dòng hợp lệ qua watermark 1 giờ và stateful dedup theo `event_id`; dòng lỗi luật 1–4 đi thẳng tới nhánh C5. Hai nhánh union rồi dùng một `foreachBatch` với insert-only MERGE: C4 theo `event_id` toàn bảng, C5 theo partition/offset của topic cố định. Checkpoint trên MinIO để resume state và offset. | Delta trên S3A | `storage/stream_to_bronze.py`, `storage/quality_rules.py`, `storage/stream_sink.py` |
 | 4b | Kafka → Kafka Connect → raw/ecom.events.raw | S3 Sink ghi message Kafka theo giờ nạp, không qua code, để nạp lại khi job Spark lỗi. Nằm cạnh `raw/csv/` nhưng là prefix riêng. | JSON gzip, S3 API | `configs/connect/s3-sink.json` |
 | 5 | Bảo trì bronze | `OPTIMIZE ... ZORDER BY (user_id, product_id)` hằng ngày cho partition đã đóng, rồi `VACUUM`. | Delta | `storage/maintenance.py` |
 | 6 | Kiểm chứng | `make verify` đối soát số dòng nguồn vs bronze vs quarantine theo ngày; `latency.py` tính p50/p95 từ `produced_at` đến `ingested_at`. | Spark SQL | `monitoring/reconcile.py`, `queries/verify.sql` |
 | 7 | Giám sát | Mọi thành phần mở `/metrics`; Prometheus scrape 5 s; Grafana "Ingestion health": sự kiện/s vào Kafka và bronze, consumer lag theo partition, độ trễ p50/p95, quarantine theo luật, trạng thái 3 broker. | HTTP scrape | `common/metrics.py`, `monitoring/grafana/` |
 
-Luật kiểm tra khi ghi bronze (vi phạm → `quarantine/`, mỗi luật có bộ đếm):
+Luật kiểm tra khi ghi bronze (luật 1–4 → `quarantine/`; luật 5 bỏ và đếm):
 
 1. JSON không parse được hoặc sai schema C3.
 2. `event_time` null hoặc ngoài khoảng thời gian của file nguồn.
 3. `event_type` ngoài `{view, cart, purchase}`.
 4. `product_id` hoặc `user_id` null; `price` âm.
-5. Trùng `event_id` trên toàn bảng C4 → giữ dòng đầu, đếm số bỏ qua; cùng ID khác một trong 9 giá trị C1 → giữ dòng đầu và cảnh báo xung đột.
+5. Dòng hợp lệ dùng `withWatermark("event_time", "1 hour").dropDuplicatesWithinWatermark(["event_id"])` để bỏ trùng trong state. Dòng còn lại qua MERGE toàn bảng C4 để giữ tính duy nhất kể cả khi state đã hết hạn; chỉ các dòng tới sink mới được kiểm tra xung đột theo 9 giá trị C1.
 
 `category_code`, `brand`, `user_session` null là hợp lệ và vẫn vào bronze.
 
@@ -76,8 +76,14 @@ Metric `clickflow_stream_quality_rule_violations_total{rule="1"|"2"|"3"|"4"}`
 ưu tiên theo C5. Cả bốn series có giá trị 0 ngay khi driver khởi động;
 retry cùng Kafka offset không tăng lại bộ đếm. Chi tiết tại
 [runbook luật kiểm tra](docs/runbook.md#luật-kiểm-tra-14-và-bộ-đếm).
-Watermark 1 giờ là marker trong progress, không có stateful drop; sự kiện
-hợp lệ, ID mới vẫn được giữ dù đến muộn. Hai MERGE là hai commit Delta riêng:
+`clickflow_stream_duplicates_dropped_total` đếm trùng bị stateful dedup bỏ;
+`clickflow_stream_late_records_dropped_total` đếm riêng dòng hợp lệ quá watermark,
+kể cả ID mới. Hai loại này không vào C5. Dòng lỗi luật 1–4 bỏ qua toàn bộ state,
+nên timestamp null/tương lai không làm tăng watermark và vẫn tới quarantine.
+`clickflow_stream_duplicates_ignored_total` chỉ đếm trùng bị MERGE bền bỏ
+sau bước stateful.
+Các counter reset theo driver; đối chiếu manifest phải cộng các stage/driver.
+Hai MERGE là hai commit Delta riêng:
 reader có thể thấy bronze trước quarantine; retry cùng checkpoint hội tụ
 về kết quả đầy đủ, không tạo thêm dòng đã ghi.
 
@@ -152,8 +158,12 @@ Tạo `.env` từ `.env.example` nếu chưa có, rồi sửa mật khẩu trư�
 `make topics` vẫn là khung TV2; dùng Kafka CLI ở trên để tạo topic. Chỉ chạy
 một driver ghi cùng cặp bảng. Cấu hình mặc định: trigger 10 giây,
 `maxOffsetsPerTrigger=500000`, `startingOffsets=earliest` chỉ ở lần đầu,
-`failOnDataLoss=true`, checkpoint `s3a://lake/_checkpoints/kafka_to_delta/`.
-Các lần sau resume từ checkpoint. Xem [runbook](docs/runbook.md#kafka--c4c5-streaming)
+`failOnDataLoss=true`, checkpoint mới `s3a://lake/_checkpoints/kafka_to_delta_watermark_v1/`.
+Các lần sau resume cả state và offsets từ checkpoint này. Giữ nguyên checkpoint
+stateless cũ `kafka_to_delta/`; không dùng nó cho plan mới hoặc xóa để ép chạy.
+Marker `checkpoint_layout` bảo vệ operator, routing, keys, event-time, watermark
+và shuffle partitions; thay đổi state plan cần checkpoint mới hoặc migration.
+Xem [runbook](docs/runbook.md#kafka--c4c5-streaming)
 cho PowerShell, dừng/resume và kiểm thử từng driver.
 
 Kafka → C4/C5, quality routing, insert-only MERGE, checkpoint binding và
@@ -164,10 +174,16 @@ có thể đếm lại source do nhiều action trong `foreachBatch`. Counter re
 driver khởi động lại. Simulator/producer/Collector, `make topics` và một số
 job đối soát/benchmark vẫn là khung cho các task liên quan.
 
-Kiểm chứng ngày 01/11/2026: **187 unit test đạt**; integration giữ lại case
+Mốc lịch sử ngày 01/11/2026 **trước stateful Rule 5**: **187 unit test đạt**;
+integration giữ lại case
 `data/raw/kafka-stream-test-767d9cd4c267`, xác nhận lỗi giữa hai commit,
 resume, replay/conflict, đủ 5 lý do lỗi và restart không tăng Delta version.
 Đây là kiểm thử chức năng có fixture, chưa phải benchmark toàn bộ dataset.
+Suite sau triển khai Rule 5 đã đạt **240 unit test**. Kafka/Spark/MinIO thật
+đã xác nhận **26 duplicate drops khớp manifest**, C4 có **6 ID duy nhất**;
+restart phục hồi state, đổi timestamp trong một giờ vẫn bị loại, và durable
+MERGE giữ uniqueness sau state expiry. Recipe và bằng chứng nằm trong
+[runbook](docs/runbook.md#luật-5-stateful-dedup-và-watermark).
 
 | UI | URL |
 |---|---|
@@ -219,9 +235,11 @@ C4/C5 bản **1.0.0 sẵn sàng review, đang chờ nhóm duyệt**. C4 có 14 c
 liệu (9 C1 + 5 metadata) và `event_date` là cột thứ 15; C5 có 5 cột dữ liệu
 và `ingest_date` là cột thứ 6. Xem [bản bàn giao và phiếu duyệt nhóm](docs/contracts-c4-c5-handoff.md)
 để xác nhận nullability, UTC, dedup toàn bảng, payload gốc và thứ tự lỗi.
-Sink Kafka dùng MERGE bền theo khóa C4/C5, không dựa vào watermark để khử
-trùng. Metadata ràng buộc checkpoint với topic/broker, hai đích, fingerprint
-C3 và phiên bản C4/C5. Checkpoint không rỗng nhưng chưa có binding bị từ chối
+Sink Kafka giữ MERGE bền theo khóa C4/C5 sau stateful dedup của nhánh hợp lệ.
+Metadata ràng buộc nguồn/đích với topic/broker, hai đích, fingerprint C3 và
+phiên bản C4/C5; riêng checkpoint còn có `checkpoint_layout` cho state plan.
+Checkpoint stateless cũ hoặc layout thay đổi bị từ chối; binding nguồn/đích
+cũ tương thích vẫn được giữ. Checkpoint không rỗng nhưng chưa có binding bị từ chối
 trước khi init; đổi nguồn/đích phải chọn checkpoint và đích phù hợp hoặc lập
 kế hoạch migration, không xóa checkpoint để ép chạy lại.
 

@@ -50,8 +50,12 @@ deduplication:
   scope: table
   watermark: 1 hour
   watermark_alone_enforces_uniqueness: false
+  watermark_operator: dropDuplicatesWithinWatermark
+  watermark_keys: [event_id]
+  watermark_duplicate_action: drop_and_count_before_sink
   existing_event_id: ignore
   conflicting_existing_event_id: keep_first_and_alert
+  conflict_note: "Chỉ các bản ghi tới sink mới được so sánh/cảnh báo; duplicate đã bị stateful operator loại chỉ được đếm theo luật 5."
   conflict_columns: [event_time, event_type, product_id, category_id, category_code, brand, price, user_id, user_session]
   comparison: null_safe_typed_values
   ignored_for_conflict: [kafka_partition, kafka_offset, produced_at, ingested_at]

@@ -33,7 +33,7 @@ def _binding(spark, uri, expected):
             stream.close()
 
 
-def prepare_stream_storage(spark, settings):
+def prepare_stream_storage(spark, settings, *, checkpoint_layout=None):
     paths = {key: settings[key] for key in ('bronze', 'quarantine')}
     c3 = json.loads((ROOT / 'contracts/event.schema.json').read_text(encoding='utf-8'))
     c3.pop('title', None)
@@ -42,13 +42,14 @@ def prepare_stream_storage(spark, settings):
                 'bootstrap_servers': sorted(value.strip() for value in settings['bootstrap_servers'].split(',')),
                 **paths, 'c3_fingerprint': fingerprint,
                 'contracts': {name: table_contract(name)['version'] for name in paths}}
+    checkpoint_expected = {**expected, 'checkpoint_layout': checkpoint_layout} if checkpoint_layout else expected
     # Validate BEFORE creating tables or adopting a checkpoint. An old Kafka
     # checkpoint with different/unknown sinks could otherwise skip its history.
     root = spark._jvm.org.apache.hadoop.fs.Path(settings['checkpoint'])
     marker = spark._jvm.org.apache.hadoop.fs.Path(settings['checkpoint'] + '/_clickflow_stream_identity.json')
     fs = root.getFileSystem(spark._jsc.hadoopConfiguration())
     if fs.exists(marker):
-        _binding(spark, str(marker), expected)
+        _binding(spark, str(marker), checkpoint_expected)
     elif fs.exists(root) and len(fs.listStatus(root)):
         raise ValueError('Refusing an existing unbound checkpoint; use a fresh checkpoint or an explicit migration')
     initialize_lake(spark, {**paths, 'checkpoints': settings['checkpoint']})
@@ -61,7 +62,7 @@ def prepare_stream_storage(spark, settings):
         if not fs.exists(path) and DeltaTable.forPath(spark, uri).toDF().limit(1).count():
             raise ValueError(f'Nonempty {name} table has no source identity; choose new stream targets')
         _binding(spark, marker, expected)
-    _binding(spark, settings['checkpoint'] + '/_clickflow_stream_identity.json', expected)
+    _binding(spark, settings['checkpoint'] + '/_clickflow_stream_identity.json', checkpoint_expected)
 
 
 def merge_insert_only(spark, source, target, keys):

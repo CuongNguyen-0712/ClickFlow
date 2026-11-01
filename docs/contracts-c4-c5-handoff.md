@@ -41,16 +41,23 @@ phép tính latency sử dụng `produced_at`.
 khi cùng ID nhưng một trong **9 giá trị C1** khác nhau, so sánh đúng kiểu và
 null-safe. `kafka_partition`, `kafka_offset`, `produced_at`, `ingested_at`
 không tham gia so sánh xung đột: các metadata này có thể đổi khi replay.
-`event_date` được suy ra từ `event_time`, không cần so sánh độc lập. Khi có
-xung đột nguồn, giữ nguyên toàn bộ dòng đầu và phát cảnh báo để kiểm tra.
+`event_date` được suy ra từ `event_time`, không cần so sánh độc lập. Khi sink
+quan sát xung đột nguồn, giữ nguyên toàn bộ dòng đầu và phát cảnh báo để kiểm tra.
 
-Kafka writer đã thực hiện insert-only MERGE theo `event_id` trên toàn bảng,
-kể cả replay ngoài watermark. `unique_key` trong YAML không tự tạo ràng buộc
-UNIQUE của Delta: bảo đảm này do writer, với một driver ghi tại một thời
-điểm. Watermark 1 giờ chỉ là marker progress; không có stateful dedup/drop.
-Sự kiện hợp lệ, ID mới vẫn được giữ khi đến muộn. Trong cùng batch, writer
-chọn ứng viên theo partition rồi offset; đây không phải thứ tự thời gian
-toàn cục giữa các partition.
+Kafka writer dùng một query: nhánh hợp lệ sau luật 1–4 đi qua
+`withWatermark("event_time", "1 hour").dropDuplicatesWithinWatermark(["event_id"])`,
+rồi `unionByName` với nhánh lỗi trước một `foreachBatch`. Spark bỏ trùng
+trong state và bỏ riêng dòng hợp lệ quá watermark, kể cả ID mới; các dòng
+này không vào C5. Dòng lỗi không tham gia state hay watermark.
+
+Insert-only MERGE theo `event_id` toàn bảng vẫn giữ uniqueness cho các dòng
+sống sót, kể cả ID xuất hiện lại sau khi key state hết hạn. `unique_key`
+trong YAML không tự tạo ràng buộc UNIQUE của Delta: bảo đảm này do writer,
+với một driver ghi tại một thời điểm. Cảnh báo xung đột theo 9 giá trị C1
+chỉ áp dụng cho dòng còn tới sink; bản trùng bị state bỏ chỉ tăng counter.
+Writer chọn ứng viên còn lại trong cùng batch theo partition rồi offset;
+stateful dedup không cam kết chọn bản sao theo thứ tự toàn cục giữa các
+partition. Dòng C4 đã commit đầu tiên vẫn được giữ nguyên.
 
 Batch mẫu đã được kiểm chứng ở `bronze/sample_events`, có 100.000 ID khác
 nhau. Bảng thử dùng `kafka_partition=-1`, `kafka_offset=-1`,
@@ -97,17 +104,27 @@ Luật 1 kiểm tra cấu trúc/kiểu nhưng nhường các kiểm tra giá tr�
   `[2019-11-01 00:00:00 UTC, 2019-12-01 00:00:00 UTC)` → `bad_event_time`.
 
 Message hợp lệ bị trùng `event_id` thuộc luật 5: bỏ và đếm metric, không
-thêm `duplicate` vào enum C5. Các message hỏng vẫn được kiểm tra luật 1–4
-trước bước khử trùng. Với một `kafka.topic` cố định, retry cùng
+thêm `duplicate` vào enum C5. Message hợp lệ quá watermark cũng bị Spark
+bỏ riêng, không thêm lý do lỗi vào C5. Các message hỏng được phân loại luật
+1–4 rồi bỏ qua toàn bộ stateful dedup: timestamp null hoặc ngoài tháng,
+kể cả timestamp tương lai, vẫn tới C5 và không làm tăng watermark.
+Với một `kafka.topic` cố định, retry cùng
 `(kafka_partition, kafka_offset)` không được tạo thêm dòng quarantine;
 hai offset khác nhau là hai message, kể cả payload giống nhau.
 
-Writer kiểm tra JSON/C3 nghiêm ngặt trước khi Spark cast, rồi phân tuyến
-bằng một `foreachBatch` của cùng query Kafka. C5 dùng insert-only MERGE theo
+Writer kiểm tra JSON/C3 nghiêm ngặt trước khi Spark cast, tách nhánh hợp lệ
+và lỗi trước state, rồi union hai nhánh vào cùng query Kafka/`foreachBatch`.
+C5 dùng insert-only MERGE theo
 hai tọa độ Kafka. Topic không có cột riêng trong schema C5 nên checkpoint
 và hai đích chỉ được gắn với một topic cố định. Metadata binding lưu topic,
-broker, đường dẫn hai bảng, fingerprint C3 và phiên bản C4/C5. Checkpoint
-không rỗng/chưa binding bị từ chối trước init; đổi topic hoặc đích cần
+broker, đường dẫn hai bảng, fingerprint C3 và phiên bản C4/C5. Marker riêng
+checkpoint còn có `checkpoint_layout`: operator, keys, event-time,
+watermark, routing và shuffle partitions. Identity nguồn/đích cũ tương thích
+vẫn được giữ, nhưng checkpoint stateless hoặc layout thay đổi bị từ chối.
+Default mới là `s3a://lake/_checkpoints/kafka_to_delta_watermark_v1/`; giữ
+nguyên checkpoint stateless cũ `kafka_to_delta/`, không tái dùng cho plan
+mới hoặc xóa để vượt guard. Checkpoint không rỗng/chưa binding bị từ chối
+trước init; đổi topic hoặc đích cần
 checkpoint/đích mới phù hợp hoặc migration rõ ràng, giữ nguyên bằng chứng cũ.
 
 Hai MERGE tạo **hai commit Delta riêng**, không có tính nguyên tử chung
@@ -137,10 +154,15 @@ Kafka cung cấp các bằng chứng riêng. Đổi kiểu, xóa/đổi tên c�
 đổi khóa, partition hoặc nghĩa trường cần version contract mới, kế hoạch
 migration và nhóm consumer duyệt trước khi áp dụng.
 
-## Kiểm chứng kỹ thuật ngày 01/11/2026
+## Kiểm chứng kỹ thuật trước stateful Rule 5 — 01/11/2026
+
+Các kết quả trong mục này dùng plan stateless trước Rule 5. Giữ nguyên
+bằng chứng lịch sử; các nhận định replay/conflict không xác nhận hành vi
+stateful mới. Đặc biệt, bản trùng trong state window hiện có thể bị Spark
+bỏ trước khi tới bước kiểm tra xung đột của MERGE.
 
 - Mốc đối chiếu contract ban đầu: `tests/test_schemas.py` **9 test đạt**;
-  toàn bộ pytest lúc đó **12 test đạt**. Suite sau triển khai Kafka hiện có
+  toàn bộ pytest lúc đó **12 test đạt**. Suite sau triển khai Kafka lúc đó có
   **187 unit test đạt**.
 - Đối chiếu trực tiếp schema, thứ tự cột, type, nullable và partition của
   `bronze/events` (15 cột, 0 dòng), `quarantine/events` (6 cột, 0 dòng),
@@ -176,6 +198,39 @@ bằng một driver mới:
 dataset. CLI continuous mặc định đã phục vụ metrics ở cổng 8002 và dừng bằng
 SIGTERM đúng PID với exit code 0; xem log/mốc vận hành trong runbook.
 Trạng thái phê duyệt nhóm vẫn giữ nguyên như đầu tài liệu.
+
+## Rule 5 hiện tại và đối soát Processing
+
+- `clickflow_stream_duplicates_dropped_total` cộng
+  `stateOperators[].customMetrics.numDroppedDuplicateRows`.
+- `clickflow_stream_late_records_dropped_total` cộng riêng
+  `stateOperators[].numRowsDroppedByWatermark`.
+- `clickflow_stream_duplicates_ignored_total` chỉ phản ánh guard MERGE bền
+  sau stateful dedup; C4 giữ duy nhất toàn bảng sau state expiry.
+- C5 và counter luật 1–4 vẫn chỉ đếm dòng lỗi mới commit theo tọa độ Kafka.
+
+Hai counter stateful có 0 ngay khi driver khởi động và reset khi restart. Progress lặp
+trong cùng query/run/batch không cộng lại state counts; log `dedup_progress`
+ghi query/run/batch và số drop mới để đối chiếu. Manifest qua nhiều driver
+phải cộng theo stage; không dùng input progress làm số dòng đã commit.
+
+Prototype Spark 3.5.3 đã xác nhận bỏ 2 duplicates và nhánh lỗi timestamp
+không làm tăng watermark. Guard checkpoint thật đã kiểm tra từ chối plan
+stateless cũ/layout thay đổi; suite triển khai Rule 5 có **240 unit test đạt**.
+Recipe `tests/integration/watermark_dedup_checks.py` gồm `setup`, tạo topic
+2 partition/RF3, `seed`, `recover`, `within-hour` bằng các driver mới, nằm trong
+[runbook Rule 5](runbook.md#luật-5-stateful-dedup-và-watermark).
+
+Case `data/raw/watermark-dedup-test-386af898f66d` đã kiểm chứng thành công:
+seed C4/C5 **5/2**, drop **10**; replay trong driver mới phục hồi state và bỏ
+**15**; advance 3 giờ làm hết hạn ít nhất 5 keys; boundary bỏ riêng **2** late
+records, MERGE giữ ID cũ sau expiry và hai lỗi vẫn tới C5. Gửi lại cùng ID
+với timestamp **03:01 → 03:30 UTC** bị state loại thêm **1**, không tới MERGE.
+Báo cáo `acceptance-report.json` xác nhận C4 **6 dòng/6 ID**, C5 **4**,
+**26 duplicate drops khớp manifest**. Đối soát Kafka offsets:
+**39 = 6 bronze + 4 quarantine + 26 state drops + 2 late drops + 1 durable ignored**.
+Đã scrape counter qua HTTP; timestamp lỗi không tác động watermark và payload
+C5 giữ nguyên. Những kết quả kỹ thuật này không thay cho phê duyệt nhóm.
 
 ## Bản ghi duyệt nhóm
 

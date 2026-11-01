@@ -1,6 +1,7 @@
 """Kafka Structured Streaming -> C4/C5 Delta, or the finite sample mode."""
 import argparse
 import json
+import logging
 import os
 from pathlib import Path
 import signal
@@ -23,6 +24,7 @@ def start_kafka_stream(spark, config, *, available_now=False):
     from functools import partial
     from src.common.metrics import StreamMetrics
     from src.monitoring.stream_listener import attach_listener
+    from src.storage.deduplication import deduplicate_valid_records
     from src.storage.quality_rules import classify_records
     from src.storage.stream_config import resolve_kafka_config
     from src.storage.stream_sink import prepare_stream_storage, process_batch
@@ -30,7 +32,12 @@ def start_kafka_stream(spark, config, *, available_now=False):
     settings = resolve_kafka_config(config)
     if spark.conf.get('spark.sql.session.timeZone') != 'UTC':
         raise ValueError('C4/C5 require Spark session timezone UTC')
-    prepare_stream_storage(spark, settings)
+    prepare_stream_storage(spark, settings, checkpoint_layout={
+        'operator': 'dropDuplicatesWithinWatermark', 'keys': ['event_id'],
+        'event_time': 'event_time', 'watermark': settings['watermark'],
+        'routing': 'valid_union_invalid_v1',
+        'shuffle_partitions': int(spark.conf.get('spark.sql.shuffle.partitions')),
+    })
     raw = (spark.readStream.format('kafka')
            .option('kafka.bootstrap.servers', settings['bootstrap_servers'])
            .option('subscribe', settings['topic'])
@@ -41,9 +48,8 @@ def start_kafka_stream(spark, config, *, available_now=False):
                    F.col('partition').alias('kafka_partition'),
                    F.col('offset').alias('kafka_offset'))
            .withColumn('ingested_at', F.current_timestamp()))
-    # The marker is observable in progress. Durable MERGE keys, rather than
-    # event-time eviction, enforce dedup and preserve late unique events.
-    classified = classify_records(raw).withWatermark('event_time', settings['watermark'])
+    # Errors bypass stateful filtering; null/out-of-range timestamps must reach C5.
+    classified = deduplicate_valid_records(classify_records(raw), settings['watermark'])
     metrics = StreamMetrics(settings['query_name'], port=settings['metrics_port'])
     listener = attach_listener(spark, metrics)
     try:
@@ -156,6 +162,8 @@ def run_pipeline(spark, config, *, available_now=False, stop_requested=None):
 
 
 def main():
+    logging.basicConfig(level=logging.WARNING, format='%(message)s')
+    logging.getLogger('src.common.metrics').setLevel(logging.INFO)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', choices=['sample', 'kafka'], help='Override stream.source for this run')
     parser.add_argument('--config', type=Path, help='Optional pipeline YAML path')

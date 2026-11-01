@@ -2,13 +2,16 @@
 
 Sink counters describe rows actually inserted into Delta. Spark progress can
 count source rows repeatedly when foreachBatch performs multiple actions; those
-observations are operational gauges, never the committed-row audit.
+input observations are operational gauges, never the committed-row audit.
+Stateful drop counters accumulate Spark's per-batch operator counts separately.
 """
 
+import json
 import logging
 import math
 from collections.abc import Mapping
 from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
 
 from prometheus_client import CollectorRegistry, Counter, Gauge, start_http_server
 
@@ -21,9 +24,10 @@ LOGGER = logging.getLogger(__name__)
 class StreamMetrics:
     """One query's metrics and optional HTTP server, owned by the driver.
 
-    Counters reset when the driver restarts. Duplicate and conflict counters
-    describe attempted rows ignored and conflicting IDs observed during
-    successfully handled batches; they are not persistent Delta audit totals.
+    Counters reset when the driver restarts. Ignored-duplicate and conflict
+    counters describe attempted rows ignored and conflicting IDs observed during
+    successfully handled batches. Stateful drop counters describe Spark progress;
+    neither set is a persistent Delta audit total.
     """
 
     def __init__(self, query_name="clickflow-kafka-to-delta", port=None):
@@ -44,6 +48,10 @@ class StreamMetrics:
         for rule in range(1, 5):
             self._quality_rules.labels(rule=str(rule))
         self._duplicates = counter("duplicates_ignored_total", "Attempted duplicate rows ignored in handled batches")
+        self._duplicates_dropped = counter("duplicates_dropped_total", "Rows dropped by Spark stateful deduplication")
+        self._late_records_dropped = counter("late_records_dropped_total", "Rows dropped by Spark stateful operators after the watermark")
+        self._progress_run = None
+        self._last_state_batch = -1
         self._conflicts = counter("conflicting_event_ids_total", "Conflicting event IDs observed in handled batches")
         self._batches = counter("batches_total", "Spark progress events observed")
         self._failures = counter("failures_total", "Query terminations with an exception")
@@ -84,12 +92,73 @@ class StreamMetrics:
         except (TypeError, ValueError, OverflowError):
             LOGGER.warning("Ignoring malformed streaming progress field %s", field)
 
+    @staticmethod
+    def _progress_count(value, field):
+        """Accept only finite nonnegative integer counts representable by Prometheus."""
+        try:
+            number = Decimal(str(value))
+            if (not number.is_finite() or number < 0 or number != number.to_integral_value()
+                    or not math.isfinite(float(number))):
+                raise ValueError("expected a finite nonnegative integer")
+            return int(number)
+        except (InvalidOperation, TypeError, ValueError, OverflowError):
+            LOGGER.warning("Ignoring malformed streaming progress field %s", field)
+            return None
+
+    def _record_state_drops(self, progress):
+        """Count each batch once in the current run, using constant memory.
+
+        Spark supplies ordered batch IDs and stable query/run IDs. Repeated or
+        older notifications in that run cannot add counts again. Without a
+        complete valid identity each call is an independent observation.
+        """
+        query_id, run_id = progress.get("id"), progress.get("runId")
+        query_id = query_id if isinstance(query_id, str) and query_id else None
+        run_id = run_id if isinstance(run_id, str) and run_id else None
+        batch_id = None
+        if "batchId" in progress:
+            batch_id = self._progress_count(progress["batchId"], "batchId")
+        if query_id is not None and run_id is not None and batch_id is not None:
+            run = (query_id, run_id)
+            if run == self._progress_run and batch_id <= self._last_state_batch:
+                return
+            self._progress_run = run
+            self._last_state_batch = batch_id
+
+        duplicates, late = 0, 0
+        operators = progress.get("stateOperators", [])
+        if not isinstance(operators, (list, tuple)):
+            LOGGER.warning("Ignoring malformed streaming progress field stateOperators")
+            operators = []
+        for operator in operators:
+            if not isinstance(operator, Mapping):
+                LOGGER.warning("Ignoring malformed streaming progress state operator")
+                continue
+            custom = operator.get("customMetrics", {})
+            if not isinstance(custom, Mapping):
+                LOGGER.warning("Ignoring malformed streaming progress field customMetrics")
+            elif "numDroppedDuplicateRows" in custom:
+                duplicates += self._progress_count(
+                    custom["numDroppedDuplicateRows"], "customMetrics.numDroppedDuplicateRows"
+                ) or 0
+            if "numRowsDroppedByWatermark" in operator:
+                late += self._progress_count(
+                    operator["numRowsDroppedByWatermark"], "numRowsDroppedByWatermark"
+                ) or 0
+        self._duplicates_dropped.inc(duplicates)
+        self._late_records_dropped.inc(late)
+        LOGGER.info(json.dumps({
+            "event": "dedup_progress", "query_id": query_id, "run_id": run_id,
+            "batch_id": batch_id, "duplicates_dropped": duplicates, "late_records_dropped": late,
+        }))
+
     def record_progress(self, progress):
         """Update Spark observations; malformed fields cannot fail the query."""
         if not isinstance(progress, Mapping):
             LOGGER.warning("Ignoring malformed streaming progress payload")
             return
         self._batches.inc()
+        self._record_state_drops(progress)
         for field, metric in (
             ("batchId", self._batch_id),
             ("numInputRows", self._input_rows),

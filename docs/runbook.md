@@ -219,12 +219,21 @@ C4 dùng insert-only MERGE theo `event_id` toàn bảng; C5 theo
 `(kafka_partition, kafka_offset)` trong một topic cố định. Payload lỗi được
 giữ nguyên, kể cả khoảng trắng; tombstone giữ `payload=null`.
 
-Watermark `1 hour` chỉ làm marker event-time trong progress. Job không dùng
-stateful dedup/drop: một event hợp lệ, ID mới vẫn được ghi dù đến muộn.
-Với cùng ID, dòng C4 đã tồn tại luôn được giữ nguyên. Xung đột so sánh đúng
-kiểu, null-safe trên 9 giá trị C1; Kafka/producer/ingestion metadata thay đổi
-khi replay không tạo xung đột. Trong cùng batch, ứng viên đầu được chọn theo
-partition rồi offset, không suy diễn thứ tự toàn cục giữa các partition.
+Sau classifier, chỉ nhánh `error_reason IS NULL` đi qua
+`withWatermark("event_time", "1 hour").dropDuplicatesWithinWatermark(["event_id"])`.
+Nhánh lỗi luật 1–4 bỏ qua state rồi `unionByName` với nhánh hợp lệ để giữ
+một query và một callback. Timestamp null/ngoài tháng/tương lai của dòng
+lỗi không tham gia watermark và vẫn tới C5.
+
+Spark bỏ riêng cả dòng hợp lệ quá watermark, kể cả ID mới. State có thể
+hết hạn theo watermark; vì vậy MERGE vẫn bảo vệ tính duy nhất toàn bảng C4
+cho các dòng còn lại. Với cùng ID, dòng C4 đã tồn tại luôn được giữ nguyên.
+Chỉ dòng sống sót qua stateful dedup mới tới bước cảnh báo xung đột: so sánh
+đúng kiểu, null-safe trên 9 giá trị C1; Kafka/producer/ingestion metadata
+thay đổi khi replay không tạo xung đột. Trùng trong cửa sổ chỉ bị bỏ và
+đếm, không tới bước so sánh C1. Writer chọn ứng viên còn lại trong cùng
+batch theo partition rồi offset; stateful dedup không cam kết chọn bản sao
+theo thứ tự toàn cục giữa các partition.
 
 ### Khởi động
 
@@ -258,12 +267,12 @@ cần chạy init riêng. Cấu hình mặc định trong `configs/pipeline.yaml
 | `stream.source` | `kafka`; override bằng `--source sample` hoặc `make stream-sample` |
 | `kafka.topic` | `ecom.events.raw`, đúng một topic |
 | `kafka.bootstrap_servers_internal` | `kafka-1:9092,kafka-2:9092,kafka-3:9092` |
-| `stream.checkpoint_path` | `s3a://lake/_checkpoints/kafka_to_delta/` |
+| `stream.checkpoint_path` | `s3a://lake/_checkpoints/kafka_to_delta_watermark_v1/` |
 | `stream.trigger_seconds` | `10` |
 | `stream.max_offsets_per_trigger` | `500000`, giới hạn Kafka offsets mỗi trigger |
 | `stream.starting_offsets` | `earliest`, chỉ khi chưa có offsets checkpoint |
 | `failOnDataLoss` | Luôn `true`; không tự bỏ qua offsets đã mất do retention |
-| `stream.watermark` | `1 hour`, marker progress |
+| `stream.watermark` | `1 hour`, stateful dedup và xử lý dòng hợp lệ quá watermark |
 | `stream.query_name` | `clickflow-kafka-to-delta` |
 | `stream.metrics_port` | `8002`, bind `0.0.0.0` trong driver container |
 
@@ -302,7 +311,17 @@ khởi động driver mới. Giữ nguyên checkpoint và các bảng khi dừng
 
 `_clickflow_stream_identity.json` trong checkpoint và từng đích ràng buộc
 topic, danh sách broker, đường dẫn bronze/quarantine, fingerprint schema C3
-và phiên bản contract C4/C5. Binding không khớp bị từ chối. Checkpoint đã có
+và phiên bản contract C4/C5. Riêng marker checkpoint có `checkpoint_layout`
+ghi operator `dropDuplicatesWithinWatermark`, keys `[event_id]`, cột
+`event_time`, watermark, routing `valid_union_invalid_v1` và shuffle partitions.
+Identity nguồn/đích cũ tương thích vẫn dùng được; checkpoint stateless cũ
+thiếu layout hoặc checkpoint có state plan thay đổi bị từ chối trước init.
+Default mới dùng prefix `kafka_to_delta_watermark_v1/`; giữ nguyên prefix
+stateless `kafka_to_delta/` cùng mọi bằng chứng cũ. Không tái dùng checkpoint
+cũ cho state plan mới. Thay operator/keys/routing/event-time/watermark hoặc
+shuffle partitions cần checkpoint mới hoặc migration rõ ràng.
+
+Binding không khớp bị từ chối. Checkpoint đã có
 nội dung nhưng chưa có binding bị từ chối **trước khi khởi tạo bảng hoặc
 nhận checkpoint**. Bảng không rỗng chưa có binding cũng không được tự nhận.
 Đổi topic/đích/schema cần checkpoint và đích mới phù hợp hoặc kế hoạch
@@ -329,8 +348,14 @@ không cần publish cổng metrics ra host. Endpoint chỉ sống khi driver s�
   commit, lấy từ Delta operation metrics; replay không cộng lại dòng cũ.
 - `clickflow_stream_quarantine_errors_total{reason}`: số dòng mới theo lỗi C5.
 - `clickflow_stream_duplicates_ignored_total` và
-  `clickflow_stream_conflicting_event_ids_total`: số attempted rows bỏ qua
-  và conflict IDs quan sát ở các batch xử lý thành công.
+  `clickflow_stream_conflicting_event_ids_total`: số attempted rows bị MERGE
+  bền bỏ qua và conflict IDs quan sát trong các dòng đã qua stateful dedup,
+  ở các batch sink xử lý thành công.
+- `clickflow_stream_duplicates_dropped_total`: tổng
+  `stateOperators[].customMetrics.numDroppedDuplicateRows` từ Spark.
+- `clickflow_stream_late_records_dropped_total`: tổng riêng
+  `stateOperators[].numRowsDroppedByWatermark`; dòng hợp lệ quá watermark
+  không được cộng vào duplicate drops hoặc C5.
 - Progress gauges: `input_rows_per_second`, `processed_rows_per_second`,
   `input_rows`, `batch_id`, `batch_duration_milliseconds`,
   `event_watermark_seconds`, cùng prefix `clickflow_stream_`; có thêm
@@ -341,8 +366,25 @@ action; không dùng nó để đối soát dòng đã commit. Counter trong mem
 khi driver restart và không thay thế audit lâu dài trong Delta. Log
 `stream_batch_committed` tóm tắt insert/ignored/conflict của mỗi batch;
 `event_id_conflict` ghi cảnh báo kèm một số ID để điều tra.
+Log JSON `dedup_progress` chỉ ghi query/run/batch và hai số drop mới, kể cả
+batch có 0 drop. Cả hai counter stateful có giá trị 0 ngay khi driver khởi
+động. Progress lặp/cũ trong cùng query/run không cộng lại; tracker chỉ giữ
+batch cuối của run hiện tại. Nếu payload thiếu identity hợp lệ, mỗi lần gọi
+là một observation mới; Spark thực tế cung cấp query ID, run ID và batch ID.
+Field count hỏng được cảnh báo và bỏ qua, không làm dừng query. Đối chiếu
+manifest nhiều driver phải cộng số của từng stage, tránh cộng lại scrape
+của cùng driver. `duplicates_ignored_total` không thay cho counter stateful.
 
-### Integration Kafka: lỗi giữa commit và restart driver
+### Bằng chứng Kafka trước stateful Rule 5 — 01/11/2026
+
+Các kết quả và recipe bên dưới đã chạy với plan stateless trước Rule 5;
+giữ lại để đối chiếu lịch sử. Replay/conflict trong state window hiện có
+thể bị Spark bỏ trước MERGE, nên không dùng các kỳ vọng cũ để đánh giá plan
+mới. Không dùng lại checkpoint stateless. Recipe kiểm chứng plan hiện tại
+ở mục Luật 5 bên dưới.
+
+Lệnh dưới đây lưu cách chạy tại mốc lịch sử; không chạy fixture stateless
+này với plan mới. Dùng recipe Luật 5 để kiểm chứng triển khai hiện tại.
 
 Harness dùng topic/đích/checkpoint riêng theo UUID, giữ toàn bộ artifact.
 Mỗi stage sau setup phải chạy bằng **một spark-submit mới**, không dùng lại
@@ -397,6 +439,91 @@ Hồi quy `--source sample` cũng đạt: bảng thử vẫn **100.000 dòng**, 
 Báo cáo tổng hợp: `data/raw/kafka-stream-verification.json`. Review độc lập
 không còn phát hiện quan trọng sau khi sửa guard checkpoint. Toàn bộ kiểm
 chứng giữ topic, checkpoint, Delta và log; không chạy lệnh xóa.
+
+## Luật 5: stateful dedup và watermark
+
+Rule 5 dùng Spark 3.5 `dropDuplicatesWithinWatermark(["event_id"])` trên
+nhánh hợp lệ, sau watermark event-time `1 hour`. Một query union hai nhánh
+hợp lệ/lỗi rồi gọi `foreachBatch` hiện có. Rules 1–4, schema C4/C5 và sample
+override không đổi; nguồn mặc định vẫn là Kafka.
+
+Prototype Spark 3.5.3 đã xác nhận operator `dedupeWithinWatermark`, bỏ
+**2 duplicates** và không để timestamp null/tương lai của dòng lỗi làm tăng
+watermark. Guard checkpoint thật đã xác nhận từ chối plan stateless cũ và
+layout thay đổi. Suite sau triển khai có **240 unit test đạt**. Bảng acceptance
+bên dưới là kết quả chạy Kafka/Spark/MinIO thật ngày 01/11/2026, case
+`data/raw/watermark-dedup-test-386af898f66d`.
+
+`src/sources/fault_injector.py` cung cấp
+`inject_duplicates(events, duplicate_ratio=1.0, seed=42)`: trả về records
+đã shuffle bằng RNG riêng và manifest. Số bản sao thêm là
+`floor(original_records * duplicate_ratio)`, lấy mẫu có hoàn lại. Mỗi record
+được deep-copy; giữ nguyên C3, `event_id` và timestamp, không sửa input hay
+random state toàn cục. Manifest gồm `original_records`,
+`input_duplicate_records`, `injected_duplicates`, `emitted_records`,
+`unique_event_ids`, `expected_duplicates_dropped`, `seed`, `duplicate_ratio`.
+Expected drops bằng emitted trừ unique IDs, với điều kiện các dòng hợp lệ
+và trong watermark. Chưa có tính năng chèn record hỏng; harness tự tạo
+fixture lỗi riêng cho C5.
+
+Harness mới giữ topic, checkpoint, Delta, manifest và báo cáo từng phase.
+Chạy `setup`, tạo topic **2 partition / RF3**, rồi `seed`, `recover` và
+`within-hour` bằng **ba spark-submit mới**. `recover` tự thực hiện replay,
+advance watermark và boundary check; không cần gọi các phase đó bằng CLI riêng.
+
+```powershell
+docker compose exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /opt/app/tests/integration/watermark_dedup_checks.py --stage setup
+# Điền đúng case và topic từ JSON setup vừa in:
+$case = '/opt/app/data/raw/watermark-dedup-test-<run_id>/case.json'
+$topic = 'watermark-dedup-test-<run_id>'
+docker compose exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-1:9092 --create --if-not-exists --topic $topic --partitions 2 --replication-factor 3
+if ($LASTEXITCODE -ne 0) { throw 'Topic creation failed' }
+foreach ($stage in @('seed', 'recover', 'within-hour')) {
+    docker compose exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /opt/app/tests/integration/watermark_dedup_checks.py --case $case --stage $stage
+    if ($LASTEXITCODE -ne 0) { throw "Integration stage failed: $stage" }
+}
+```
+
+Không chạy lại stage đã tạo manifest/report trên cùng case; file được tạo
+exclusive để giữ bằng chứng. Tạo case mới cho lần kiểm chứng mới, giữ
+nguyên artifact cũ. Harness so sánh counter với tổng custom metric Spark và
+manifest của từng phase, đồng thời đọc lại C4/C5 và scrape HTTP.
+
+| Phase | Kết quả đã kiểm chứng |
+|---|---|
+| `seed` | 5 ID hợp lệ + 10 bản sao được chèn + 2 lỗi timestamp → C4 **5**, C5 **2**, duplicate drops **10**, late drops **0** |
+| `recover`: replay | Driver mới cùng query ID, run ID mới; state phục hồi bỏ **15** record replay; C4/C5 vẫn **5/2**, giữ nguyên metadata dòng đầu |
+| Advance watermark | Event ở **03:00 UTC** đẩy max event-time thêm 3 giờ; loại ít nhất **5** state keys cũ; C4 tăng lên **6** |
+| Boundary | 2 dòng hợp lệ quá watermark bị bỏ riêng; cùng ID cũ với thời gian mới **03:01 UTC** qua state rồi bị MERGE bỏ **1**; 2 lỗi timestamp vẫn tới C5 |
+| `within-hour` | Gửi lại ID ở **03:01** với timestamp **03:30 UTC**: state bỏ **1**, durable MERGE bỏ **0**; C4/C5 giữ **6/4** |
+| Cuối case | C4 **6 dòng / 6 ID duy nhất**, C5 **4**; manifest khớp **26 duplicate drops**, **2 late drops** riêng và **1 durable duplicate ignored** |
+
+Các dòng quá watermark không vào C5; duplicate trong state không tạo
+`event_id_conflict`. Chỉ trường hợp còn tới MERGE sau expiry mới được kiểm
+tra xung đột và giữ dòng C4 đầu. Counter reset mỗi driver; cộng báo cáo
+seed/replay/within-hour để so với manifest **26**, không lấy riêng counter driver cuối.
+
+Báo cáo cuối: `data/raw/watermark-dedup-test-386af898f66d/acceptance-report.json`.
+Tổng Kafka end offsets xác nhận **39 message = 6 bronze + 4 quarantine +
+26 state duplicate drops + 2 late drops + 1 durable duplicate ignored**.
+Không dùng `numInputRows` để đối soát vì hai nhánh union có thể đọc lại nguồn.
+Quarantine chỉ chứa bốn lỗi timestamp, giữ payload và tọa độ Kafka gốc.
+Các log giữ tại `data/raw/watermark-dedup-seed.log`,
+`data/raw/watermark-dedup-recover.log`, `data/raw/watermark-dedup-within-hour.log`.
+
+Kiểm tra tương đương workflow CI trong Python 3.11 Linux đạt **238 passed,
+2 skipped** (hai callback cần PySpark); log
+`data/raw/watermark-ci-python311.log`. Đây là kiểm chứng local, chưa tạo run
+GitHub Actions. Trong image Spark có PySpark, đủ **240 passed**.
+
+Hồi quy lỗi giữa hai sink cũng đã chạy lại với plan stateful mới, case
+`data/raw/kafka-stream-test-d6f3f3347503`: cố tình lỗi sau bronze commit cho
+**1 C4 / 0 C5**, driver mới resume cho **1/2**; append cho **2/7** và đủ năm
+lý do C5. Driver verify tiếp theo giữ nguyên số dòng và Delta version **2/2**,
+đồng thời từ chối topic khác trên checkpoint cũ. Báo cáo từng stage nằm trong
+case; log giữ ở `data/raw/watermark-fault-{fault,resume,append,verify}.log`.
+Review độc lập không còn phát hiện quan trọng. Toàn bộ topic, checkpoint,
+Delta và artifact kiểm thử được giữ lại.
 
 ## Luật kiểm tra 1–4 và bộ đếm
 

@@ -18,7 +18,7 @@ def resolve_kafka_config(config):
         'bootstrap_servers': kafka['bootstrap_servers_internal'],
         'bronze': uri(lake['bronze']),
         'quarantine': uri(lake['quarantine']),
-        'checkpoint': uri(stream.get('checkpoint_path', lake['checkpoints'].rstrip('/') + '/kafka_to_delta')),
+        'checkpoint': uri(stream.get('checkpoint_path', lake['checkpoints'].rstrip('/') + '/kafka_to_delta_watermark_v1')),
         'trigger_seconds': stream.get('trigger_seconds', 10),
         'max_offsets_per_trigger': stream.get('max_offsets_per_trigger', 500000),
         'starting_offsets': stream.get('starting_offsets', 'earliest'),
