@@ -119,6 +119,12 @@ Vùng lưu trữ trong bucket `lake`:
 - Windows: dùng Git Bash hoặc WSL; cài `make` qua `winget install GnuWin32.Make` hoặc `scoop install make`. Không có `make` thì chạy thẳng lệnh trong `Makefile`.
 - File `2019-Nov.csv` tải tay từ Kaggle, đặt vào `data/raw/` (gitignore)
 
+Môi trường phát triển/test dùng Python 3.11 và PySpark **3.5.3**, khớp phiên bản
+Spark container. Cài bằng `python -m pip install -r requirements-dev.txt`, rồi
+chạy `python -m pytest -q`. CI cũng cài file này để chạy đủ test listener.
+`requirements.txt` vẫn dành cho các service Python; PySpark trong cluster đã
+có sẵn ở image Spark.
+
 ## Chạy nhanh
 
 **Chưa tải dataset:** vẫn khởi tạo và kiểm chứng được MinIO + Spark bằng

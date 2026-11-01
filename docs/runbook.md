@@ -563,10 +563,16 @@ python -m pytest -q
 docker compose --env-file .env.example config -q
 ```
 
-Workflow `.github/workflows/ci.yml` đã chạy toàn bộ pytest và Compose
-validation, vì vậy tự bao gồm test luật và counter mới. Hai test callback
-listener sẽ skip khi môi trường CI không cài PySpark; test luật/counter vẫn
-chạy đầy đủ.
+Workflow `.github/workflows/ci.yml` chạy toàn bộ pytest và Compose validation.
+CI cài `requirements-dev.txt`, bao gồm PySpark **3.5.3** khớp Spark container,
+để chạy cả hai test callback listener. Khi tự tạo môi trường phát triển, dùng
+`python -m pip install -r requirements-dev.txt` trước khi chạy pytest.
+
+Sau khi cài PySpark 3.5.3 ngày 01/11/2026, môi trường Python 3.11 Linux
+đã chạy **240 passed, 0 skipped**; `pip check` không có dependency lỗi.
+Container `clickflow-pyspark-ci-20261101` và log
+`data/raw/pyspark-install-ci-python311.log` được giữ lại. Đây là kết quả local
+theo cấu hình CI mới; chưa tạo run GitHub Actions.
 
 Kiểm chứng Spark/Delta thật khi storage cluster đã sẵn sàng:
 
