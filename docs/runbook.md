@@ -199,3 +199,13 @@ Log: `data/raw/sample-100k-generation.log`,
 `sample-100k-generation-rerun.log`, `sample-bronze-first.log`,
 `sample-bronze-rerun.log`, `sample-bronze-tests.log`,
 `sample-bronze-final-state-after-restart.log` (đều trong `data/raw/`).
+
+## Contract C4/C5 và bàn giao Processing
+
+Bản 1.0.0 của C4/C5 giữ schema vật lý hiện có: C4 **14+1=15 cột**, C5
+**5+1=6 cột**. [Bản bàn giao](contracts-c4-c5-handoff.md) mô tả ý nghĩa,
+nullability, UTC, unique key, error precedence, truy vấn đọc và phiếu duyệt.
+Trạng thái hiện tại là **review_ready, approval pending**; 9 schema test và
+12 pytest đã đạt, schema ba bảng Delta hiện có đã được đối chiếu thành công.
+Phê duyệt nhóm và kiểm thử classifier/replay Kafka là các xác nhận riêng,
+chưa được suy ra từ kết quả test schema.

@@ -91,8 +91,8 @@ Vùng lưu trữ trong bucket `lake`:
 |---|---|---|---|---|
 | raw/csv | `s3a://lake/raw/csv/` | CSV gốc Kaggle, tải tay | — (1 file/tháng) | Người dùng (`make upload`) |
 | raw/ecom.events.raw | `s3a://lake/raw/ecom.events.raw/` | JSON gzip nguyên bản từ Kafka | `dt`, `hour` (giờ nạp) | Kafka Connect |
-| bronze | `s3a://lake/bronze/events/` | Delta, 14 cột đúng kiểu, không trùng `event_id` | `event_date` | Spark Streaming |
-| quarantine | `s3a://lake/quarantine/events/` | Delta, payload gốc + `error_reason` | `ingest_date` | Spark Streaming |
+| bronze | `s3a://lake/bronze/events/` | Delta, 14 cột dữ liệu + 1 partition = 15; khóa `event_id` | `event_date` | Spark Streaming |
+| quarantine | `s3a://lake/quarantine/events/` | Delta, 5 cột dữ liệu + 1 partition = 6; payload gốc + `error_reason` | `ingest_date` | Spark Streaming |
 | checkpoints | `s3a://lake/_checkpoints/` | Offset và trạng thái stream | — | Spark Streaming |
 
 ## Yêu cầu máy
@@ -196,6 +196,13 @@ Năm hợp đồng trong `contracts/` là giao diện giữa các tầng; đổi
 | C3 | Topic `ecom.events.raw` (12 trường, key = `user_id`) | Simulator, API → Spark, Connect | JSON Schema |
 | C4 | Bảng `bronze/events` | Spark → nhóm Processing | Đối soát số dòng theo ngày |
 | C5 | Bảng `quarantine/events` | Spark → nhóm dữ liệu | Mỗi bản ghi hỏng cố ý đều xuất hiện |
+
+C4/C5 bản **1.0.0 sẵn sàng review, đang chờ nhóm duyệt**. C4 có 14 cột dữ
+liệu (9 C1 + 5 metadata) và `event_date` là cột thứ 15; C5 có 5 cột dữ liệu
+và `ingest_date` là cột thứ 6. Xem [bản bàn giao và phiếu duyệt nhóm](docs/contracts-c4-c5-handoff.md)
+để xác nhận nullability, UTC, dedup toàn bảng, payload gốc và thứ tự lỗi.
+Watermark 1 giờ chưa thay cho bảo đảm unique key toàn bảng; sink Kafka ở
+task tiếp theo phải có chống replay bền và đối soát.
 
 ## Quản lý công việc
 
