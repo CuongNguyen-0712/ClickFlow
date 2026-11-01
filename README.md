@@ -104,6 +104,23 @@ Vùng lưu trữ trong bucket `lake`:
 
 ## Chạy nhanh
 
+**Chưa tải dataset:** vẫn khởi tạo và kiểm chứng được MinIO + Spark bằng
+fixture tổng hợp 3 dòng, xem [runbook storage](docs/runbook.md). Không cần
+Kafka hay Python trên host cho luồng này:
+
+```bash
+cp .env.example .env          # chỉ khi chưa có .env
+make up-storage
+make init-lake
+make smoke-storage
+make test-storage
+```
+
+`smoke-storage` đọc CSV theo C1 từ MinIO rồi ghi/đọc Delta qua hai worker.
+Fixture có tên riêng, không tạo file giả `2019-Nov.csv`; bảng C4/C5 vẫn rỗng.
+Khi tải và upload dataset thật, chạy `make smoke-storage-real` để kiểm tra
+tối đa 100 dòng từ `raw/csv/2019-Nov.csv`.
+
 ```bash
 cp .env.example .env          # sửa mật khẩu
 pip install -r requirements.txt
@@ -120,7 +137,7 @@ make down
 
 `make up-core` bỏ qua Prometheus/Grafana/kafka-exporter cho máy yếu. `make test` chạy pytest. `make bench` chạy E1–E5, kết quả vào `benchmarks/results/`.
 
-Trạng thái hiện tại: hạ tầng (compose, configs, contracts, CI) đã chạy được với MinIO; các file trong `src/` ngoài `common/` và `collector_api/health` mới là khung có docstring mô tả việc cần làm, theo task trên Jira.
+Trạng thái hiện tại: MinIO + Spark có lệnh khởi tạo lake theo C4/C5 và smoke test CSV C1 → Delta, không cần dataset thật. Các phần nguồn, ingestion và streaming khác ngoài `common/` và `collector_api/health` vẫn chủ yếu là khung theo task trên Jira.
 
 | UI | URL |
 |---|---|

@@ -1,9 +1,24 @@
 COMPOSE      := docker compose
 DAY          ?= 2019-11-01
 SPEED        ?= 100
-SPARK_SUBMIT := $(COMPOSE) exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
+SPARK_SUBMIT = $(COMPOSE) exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
-.PHONY: up up-core down topics upload sample replay stream sink verify bench test
+.PHONY: up up-core up-storage init-lake smoke-storage smoke-storage-real test-storage down topics upload sample replay stream sink verify bench test
+
+up-storage: ## MinIO + master + 2 workers; no dataset or Kafka required
+	$(COMPOSE) up -d --build --wait minio minio-init spark-master spark-worker-1 spark-worker-2
+
+init-lake: ## prefixes + empty Delta C4/C5; safe to repeat
+	$(SPARK_SUBMIT) /opt/app/src/storage/init_lake.py
+
+smoke-storage: ## synthetic C1 CSV -> MinIO -> Spark -> Delta -> Spark
+	$(SPARK_SUBMIT) /opt/app/src/storage/smoke_lake.py --sample
+
+smoke-storage-real: ## read up to 100 rows from raw/csv/2019-Nov.csv
+	$(SPARK_SUBMIT) /opt/app/src/storage/smoke_lake.py
+
+test-storage: ## integration checks, including reinitialization without data loss
+	$(SPARK_SUBMIT) /opt/app/tests/integration/storage_checks.py
 
 up:        ## toàn bộ stack (core + monitoring)
 	$(COMPOSE) --profile monitoring up -d --build

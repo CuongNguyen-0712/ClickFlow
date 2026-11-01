@@ -32,11 +32,15 @@ x-spark: &spark
   environment: &spark-env
     AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
     AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+    LAKE_BUCKET: ${LAKE_BUCKET:-lake}
+    PYSPARK_PYTHON: python3
     PYTHONPATH: /opt/app:/opt/spark/python:/opt/spark/python/lib/py4j-0.10.9.7-src.zip
   volumes:
     - ./src:/opt/app/src
     - ./configs:/opt/app/configs
     - ./queries:/opt/app/queries
+    - ./contracts:/opt/app/contracts:ro
+    - ./tests:/opt/app/tests:ro
     - ./data:/opt/app/data
     - ./configs/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
 
@@ -149,13 +153,27 @@ services:
 
   spark-master:
     <<: *spark
+    hostname: spark-master
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    depends_on:
+      minio-init: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/json/', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
     ports: ["8090:8080", "7077:7077", "4040:4040"]
 
   spark-worker-1: &spark-worker
     <<: *spark
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-    depends_on: [spark-master]
+    depends_on:
+      spark-master: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import json, urllib.request; s=json.load(urllib.request.urlopen('http://localhost:8081/json/', timeout=3)); assert s['masterwebuiurl']"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
     environment:
       <<: *spark-env
       SPARK_WORKER_CORES: 2
