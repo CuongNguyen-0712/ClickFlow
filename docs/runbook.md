@@ -525,6 +525,132 @@ case; log giữ ở `data/raw/watermark-fault-{fault,resume,append,verify}.log`.
 Review độc lập không còn phát hiện quan trọng. Toàn bộ topic, checkpoint,
 Delta và artifact kiểm thử được giữ lại.
 
+## Bảo trì Delta: OPTIMIZE ZORDER và VACUUM
+
+`src/storage/maintenance.py` dùng Spark 3.5.3 / Delta 3.2.1 để OPTIMIZE
+**một ngày đã đóng**, `ZORDER BY (user_id, product_id)`, rồi VACUUM preview.
+`--day` và `--closed-before` là bắt buộc. Ngày cần bảo trì phải nhỏ hơn mốc
+đóng độc quyền; mốc đóng không được sau ngày hiện tại UTC. Operator chỉ công bố
+mốc này sau khi writer, simulator replay và backfill không còn ghi các ngày
+trước đó. Watermark hoặc ngày lịch đã qua không tự chứng minh partition đóng.
+
+Mặc định dùng `lake.bronze`, tôn trọng `LAKE_BUCKET`; `--table-path` cho phép
+chọn bảng thử/sample riêng. Lệnh dưới đây chạy OPTIMIZE và **chỉ DRY RUN**:
+
+```powershell
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/src/storage/maintenance.py --day 2019-11-01 --closed-before 2019-11-02
+# Tương đương nếu có GNU Make:
+make maintenance DAY=2019-11-01 CLOSED_BEFORE=2019-11-02
+```
+
+Scheduler hằng ngày gọi lệnh này sau khi bước đóng ngày hoàn tất, truyền ngày
+và mốc đóng do pipeline xác nhận. Ví dụ đóng ngày D xong thì bảo trì `DAY=D`,
+`CLOSED_BEFORE=D+1`; không lấy ngày hôm qua một cách tự động khi replay còn chạy.
+Chưa cài lịch chạy trên host. Target Make không có cờ xóa tự động.
+
+Chính sách người dùng đã chọn trong `configs/pipeline.yaml → maintenance`:
+
+| Cấu hình | Giá trị / ý nghĩa |
+|---|---|
+| `retention_hours` | **720 giờ / 30 ngày**, mức giữ file khi VACUUM |
+| `time_travel_hours` | **720 giờ / 30 ngày** cần bảo vệ |
+| `max_stream_lag_hours` | **168 giờ / 7 ngày** gián đoạn/lag tối đa của stream đọc Delta |
+| `max_transaction_hours` | **24 giờ**, tăng nếu writer/reader transaction có thể lâu hơn |
+| `target_file_size_bytes` | **128 MiB**, mục tiêu file OPTIMIZE, không phải cam kết kích thước chính xác |
+| `small_file_size_bytes` | File **<16 MiB** được đếm là nhỏ |
+
+Retention phải ít nhất 7 ngày, đủ cửa sổ time travel và lớn hơn thời gian
+transaction/stream lag. Job không giảm `delta.deletedFileRetentionDuration`
+đã có; bảng đặt lớn hơn 30 ngày thì tăng retention của job tương ứng. Job
+từ chối nếu `delta.logRetentionDuration` ngắn hơn 30 ngày hoặc nếu
+`spark.databricks.delta.retentionDurationCheck.enabled=false`. Không tắt
+safety check, không sửa table properties để ép chạy. Log retention mặc định
+Delta là 30 ngày; nếu tăng time travel thì phải tăng cả log retention của bảng.
+Chính sách này giữ các phiên bản còn tồn tại, không phục hồi file đã bị xóa
+trong quá khứ. Thời gian retention dựa trên tuổi file/tombstone, **không phải**
+`event_time=2019` của dataset. Tham khảo [Delta retention và VACUUM](https://docs.delta.io/delta-utility/#remove-files-no-longer-referenced-by-a-delta-table),
+[table properties](https://docs.delta.io/table-properties/).
+
+`OPTIMIZE WHERE event_date = ...` chỉ viết lại partition đích;
+**VACUUM áp dụng toàn bảng**, có thể chọn file cũ thuộc các ngày khác.
+DRY RUN liệt kê candidate paths, không xóa và không giải phóng dung lượng.
+Chỉ thêm `--execute-vacuum` khi đã được duyệt xóa thật cho đúng bảng và retention;
+job vẫn preview trước khi execute. Phải tính cả reader/stream/time travel cần
+giữ của **toàn bảng**, không chỉ partition vừa compact. Tài liệu [OPTIMIZE và
+ZORDER](https://docs.delta.io/optimizations-oss/#z-ordering-multi-dimensional-clustering)
+mô tả partition predicate và data skipping.
+
+Job xuất JSON log `before`, `after_optimize`, kết quả cuối và mặc định tạo
+`data/raw/maintenance-<day>-<uuid>.json`; có thể chỉ định `--report /opt/app/data/raw/<file-moi>.json`.
+Report tồn tại bị từ chối trước khi thay đổi bảng. Ngày không có file sẽ báo
+`skipped_empty_partition`, không chạy OPTIMIZE/VACUUM. Bảng sai partition/type,
+ngày mở hoặc retention không an toàn bị từ chối trước OPTIMIZE.
+
+`before/after` ghi Delta version, số active files, tổng bytes, small files,
+min/max/avg bytes cho cả bảng và partition. Số liệu lấy từ AddFile trong snapshot
+Delta 3.2.1, không quét toàn bộ dòng Parquet. File cũ đã bỏ khỏi snapshot vẫn
+còn vật lý để giữ time travel: không diễn giải `files_reduced` thành số object
+đã xóa hoặc dung lượng đĩa đã thu hồi. `optimize_metrics`, `elapsed_seconds`,
+SQL, plan và `vacuum.candidate_paths` dùng làm bằng chứng E5.
+
+Kiểm chứng fixture riêng (không chạy xóa):
+
+```powershell
+make test-maintenance
+# PowerShell không có make:
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/tests/integration/maintenance_checks.py
+```
+
+Fixture tạo 4.800 dòng/12 file nhỏ ở ngày đích, 1.200 dòng/3 file ở ngày khác.
+Harness đối chiếu dữ liệu chính xác bằng `exceptAll` hai chiều, schema,
+time travel trước OPTIMIZE, file paths của partition khác, empty-day no-op,
+retention guard và safety flag. Mỗi lần chạy dùng prefix UUID mới, giữ toàn bộ
+fixture/report; đây là kiểm chứng chức năng cho E5, chưa phải benchmark toàn bộ Kaggle.
+
+Kết quả đã chạy ngày 01/11/2026:
+
+| Kiểm tra | Kết quả |
+|---|---|
+| Fixture ngày đích | **12 → 1 active file**, small files **12 → 1** (giảm **91,7%**); bytes **137.099 → 66.895** |
+| Toàn bảng fixture | **15 → 4 active files**; **6.000 dòng** giữ nguyên chính xác, schema khớp |
+| Partition khác / time travel | Ba file ngày khác giữ nguyên đường dẫn; đọc lại version trước OPTIMIZE thành công |
+| Guards | Empty date no-op; safety flag false và retention bảng 60 ngày bị từ chối trước OPTIMIZE |
+| CLI trên sample 100k | OPTIMIZE thành công, Delta **v1 → v2**; **100.000 dòng / 100.000 ID** và schema giữ nguyên chính xác, đọc lại v1 thành công; sample vốn chỉ có một file nên vẫn **1 → 1**, không phải case đo giảm file |
+| VACUUM | Cả fixture và sample đều **DRY RUN 720 giờ**, **0 candidate paths**, chưa chạy xóa thật |
+| Unit / cấu hình | **283 passed, 0 skipped** trong Python 3.11 + PySpark 3.5.3; Compose config và diff whitespace đạt |
+
+Bằng chứng fixture:
+`data/raw/maintenance-verification-0f53e3542bfd432480e866918b7198d3.json`;
+log `data/raw/maintenance-integration-verified.log`. Bằng chứng CLI sample:
+`data/raw/maintenance-sample-100k-d08972cae2584e75a4a9764b2d11c211.json`.
+Đối chiếu 100k bằng `exceptAll` hai chiều:
+`data/raw/maintenance-sample-100k-d08972cae2584e75a4a9764b2d11c211-readback.json`;
+log `data/raw/maintenance-sample-readback.log`.
+Unit log: `data/raw/maintenance-unit-final.log`. Các fixture RED và runtime
+trước bản sửa cũng được giữ nguyên, không xóa để làm sạch kết quả.
+
+Review độc lập không có lỗi Critical/Important trong luồng preview. Hạn chế
+nhỏ còn lại: nếu Spark không khởi động được, file report đã dành chỗ có thể
+rỗng; xem stderr/log của `spark-submit`. Kiểm chứng time travel là đọc ngay
+phiên bản trước trên dữ liệu còn giữ, chưa mô phỏng 30 ngày trôi qua hoặc
+stream ngừng đủ 7 ngày. Các kết quả trên là mốc preview ban đầu.
+
+Sau khi người dùng cho phép, đã chạy **một lần VACUUM thật** trên
+`s3a://lake/bronze/sample_events` với `RETAIN 720 HOURS` ngày 01/11/2026.
+CLI hoàn tất với exit code **0**, safety check vẫn bật. Preview mới có **0**
+candidate paths; Delta báo **Deleted 0 files and directories**. Lần CLI này
+chạy OPTIMIZE trước VACUUM, đưa sample từ version **2 → 3**, vẫn một active file.
+Không chạy VACUUM trên bảng khác hoặc tự động cấp quyền cho các lần xóa tiếp theo.
+
+Báo cáo: `data/raw/maintenance-vacuum-approved-dd384b6b5a8341d1b961340404243e6f.json`;
+log cùng tên `.log`. Đây là kiểm chứng nhánh execute với 0 đối tượng đủ tuổi,
+không phải bằng chứng đã thu hồi dung lượng hoặc đã xóa file cũ hơn 30 ngày.
+Đọc lại sau VACUUM xác nhận **100.000 dòng / 100.000 ID duy nhất**, schema giữ
+nguyên, `exceptAll` hai chiều với **version 1** đều rỗng và version 1 vẫn đọc
+được. Bằng chứng: báo cáo cùng tên `-readback.json`, log
+`data/raw/maintenance-vacuum-approved-readback.log`. Task bảo trì đã được
+kiểm chứng cả nhánh preview và execute trong phạm vi được duyệt.
+
 ## Luật kiểm tra 1–4 và bộ đếm
 
 `src/storage/quality_rules.py` kiểm tra C3 trước khi Spark ép kiểu, giữ chính

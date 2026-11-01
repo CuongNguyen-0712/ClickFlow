@@ -1,9 +1,10 @@
 COMPOSE      := docker compose
 DAY          ?= 2019-11-01
+CLOSED_BEFORE ?=
 SPEED        ?= 100
 SPARK_SUBMIT = $(COMPOSE) exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
-.PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding down topics upload sample replay stream stream-sample stream-drain sink verify bench test
+.PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding test-maintenance maintenance down topics upload sample replay stream stream-sample stream-drain sink verify bench test
 
 up-storage: ## MinIO + master + 2 workers; no dataset or Kafka required
 	$(COMPOSE) up -d --build --wait minio minio-init spark-master spark-worker-1 spark-worker-2
@@ -58,6 +59,12 @@ stream-drain: ## xử lý offsets hiện có rồi thoát; giữ checkpoint đ�
 
 test-checkpoint-binding: ## từ chối checkpoint cũ không có nhận diện nguồn; giữ artifact
 	$(SPARK_SUBMIT) /opt/app/tests/integration/checkpoint_binding_checks.py
+
+maintenance: ## OPTIMIZE ngày đã đóng + VACUUM DRY RUN; CLOSED_BEFORE là mốc đóng độc quyền
+	$(SPARK_SUBMIT) /opt/app/src/storage/maintenance.py --day $(DAY) --closed-before "$(CLOSED_BEFORE)"
+
+test-maintenance: ## fixture E5 riêng: giảm file nhỏ, giữ dữ liệu/time travel; không xóa
+	$(SPARK_SUBMIT) /opt/app/tests/integration/maintenance_checks.py
 
 sink:      ## đăng ký Kafka Connect S3 Sink -> lake/raw/
 	curl -s -X POST -H "Content-Type: application/json" --data @configs/connect/s3-sink.json http://localhost:8083/connectors

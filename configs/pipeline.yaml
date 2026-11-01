@@ -52,3 +52,11 @@ stream:
   checkpoint_path: s3a://lake/_checkpoints/kafka_to_delta_watermark_v1/  # stateful plan; giữ checkpoint stateless cũ
   query_name: clickflow-kafka-to-delta
   metrics_port: 8002
+
+maintenance:
+  retention_hours: 720           # 30 ngày; VACUUM mặc định DRY RUN
+  time_travel_hours: 720         # yêu cầu giữ time travel 30 ngày
+  max_stream_lag_hours: 168      # stream được phép gián đoạn tối đa 7 ngày
+  max_transaction_hours: 24      # tăng nếu transaction có thể chạy lâu hơn
+  target_file_size_bytes: 134217728  # mục tiêu OPTIMIZE 128 MiB
+  small_file_size_bytes: 16777216    # log file nhỏ <16 MiB

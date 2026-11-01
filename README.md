@@ -56,7 +56,7 @@ Một sự kiện đi qua pipeline theo thứ tự sau. Cột "Mã" chỉ chỗ 
 | 3 | Kafka `ecom.events.raw` | Bộ đệm bền: 6 partition, replication factor 3, `min.insync.replicas=2`, retention theo dung lượng. Tắt 1 broker vẫn ghi được. | — | `ingestion/create_topics.py`, `configs/kafka_topics.yaml` |
 | 4a | Kafka → Spark → bronze / quarantine | Một Structured Streaming query, trigger 10 s, kiểm tra C3 trước khi Spark cast. Dòng hợp lệ qua watermark 1 giờ và stateful dedup theo `event_id`; dòng lỗi luật 1–4 đi thẳng tới nhánh C5. Hai nhánh union rồi dùng một `foreachBatch` với insert-only MERGE: C4 theo `event_id` toàn bảng, C5 theo partition/offset của topic cố định. Checkpoint trên MinIO để resume state và offset. | Delta trên S3A | `storage/stream_to_bronze.py`, `storage/quality_rules.py`, `storage/stream_sink.py` |
 | 4b | Kafka → Kafka Connect → raw/ecom.events.raw | S3 Sink ghi message Kafka theo giờ nạp, không qua code, để nạp lại khi job Spark lỗi. Nằm cạnh `raw/csv/` nhưng là prefix riêng. | JSON gzip, S3 API | `configs/connect/s3-sink.json` |
-| 5 | Bảo trì bronze | `OPTIMIZE ... ZORDER BY (user_id, product_id)` hằng ngày cho partition đã đóng, rồi `VACUUM`. | Delta | `storage/maintenance.py` |
+| 5 | Bảo trì bronze | `OPTIMIZE ... ZORDER BY (user_id, product_id)` theo ngày đã đóng; log active files trước/sau. `VACUUM` giữ tối thiểu 30 ngày, mặc định `DRY RUN`; xóa thật cần duyệt. | Delta | `storage/maintenance.py` |
 | 6 | Kiểm chứng | `make verify` đối soát số dòng nguồn vs bronze vs quarantine theo ngày; `latency.py` tính p50/p95 từ `produced_at` đến `ingested_at`. | Spark SQL | `monitoring/reconcile.py`, `queries/verify.sql` |
 | 7 | Giám sát | Mọi thành phần mở `/metrics`; Prometheus scrape 5 s; Grafana "Ingestion health": sự kiện/s vào Kafka và bronze, consumer lag theo partition, độ trễ p50/p95, quarantine theo luật, trạng thái 3 broker. | HTTP scrape | `common/metrics.py`, `monitoring/grafana/` |
 
@@ -111,6 +111,14 @@ Vùng lưu trữ trong bucket `lake`:
 | bronze | `s3a://lake/bronze/events/` | Delta, 14 cột dữ liệu + 1 partition = 15; khóa `event_id` | `event_date` | Spark Streaming |
 | quarantine | `s3a://lake/quarantine/events/` | Delta, 5 cột dữ liệu + 1 partition = 6; payload gốc + `error_reason` | `ingest_date` | Spark Streaming |
 | checkpoints | `s3a://lake/_checkpoints/` | Offset và trạng thái stream | — | Spark Streaming |
+
+**Bảo trì Delta:** chạy `make maintenance DAY=2019-11-01 CLOSED_BEFORE=2019-11-02`
+khi writer/replay đã đóng các ngày trước mốc này. Job chỉ OPTIMIZE ngày được
+chọn, rồi preview VACUUM toàn bảng; không xóa file mặc định. Cấu hình giữ
+time travel **30 ngày**, hỗ trợ stream gián đoạn **7 ngày**. Dùng
+`make test-maintenance` để đo giảm file nhỏ trên fixture riêng cho E5;
+[runbook bảo trì](docs/runbook.md#bảo-trì-delta-optimize-zorder-và-vacuum)
+có lệnh PowerShell, lịch chạy hằng ngày và cách đọc báo cáo.
 
 ## Yêu cầu máy
 
