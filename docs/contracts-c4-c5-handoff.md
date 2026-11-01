@@ -232,6 +232,73 @@ Báo cáo `acceptance-report.json` xác nhận C4 **6 dòng/6 ID**, C5 **4**,
 Đã scrape counter qua HTTP; timestamp lỗi không tác động watermark và payload
 C5 giữ nguyên. Những kết quả kỹ thuật này không thay cho phê duyệt nhóm.
 
+## SQL đối soát và query mẫu cho Processing
+
+Hai file bàn giao hiện tại là [verify.sql](../queries/verify.sql) và
+[sample_queries.sql](../queries/sample_queries.sql). Runner
+`src/monitoring/reconcile.py` thực thi toàn bộ **chín query** với timezone UTC,
+ngày/path được kiểm tra và version Delta C4/C5 được pin trong report; không
+ghi vào C4/C5 hoặc checkpoint. Hướng dẫn và manifest ở
+[runbook đối soát](runbook.md#đối-soát-sql-và-bàn-giao-processing).
+
+```powershell
+# Mẫu 100k, finite batch không có Kafka drops/C5:
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/src/monitoring/reconcile.py --sample --day 2019-11-01
+# Bảng chính, nguồn CSV tháng thật; cần --audit-manifest nếu muốn chứng minh drop counts:
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/src/monitoring/reconcile.py --day 2019-11-01
+```
+
+CSV có đúng thứ tự:
+`event_date,rows_source,rows_bronze,rows_quarantine,duplicates_dropped,match`.
+`duplicates_dropped` chỉ là stateful drops; JSON `accounting_diagnostics`
+ghi riêng late và durable MERGE drops. Balance đầy đủ là source = C4 + C5 +
+state drops + late drops + durable ignored. C5 được quy về ngày nguồn bằng
+payload timestamp đã hợp lệ hoặc mapping Kafka partition/offset cho
+`parse_error`/`bad_event_time`; không dùng `ingest_date` làm ngày sự kiện.
+Thiếu evidence, ngày chưa xác định, sai balance hoặc duplicate C4/C5 trong
+ngày đều không nhận `match=true`. Global uniqueness theo C4 vẫn là kiểm tra
+toàn bảng riêng; manifest phải đại diện đúng các lần phát/replay của cohort.
+
+Null profile bao phủ **9 cột C1 + 15 cột vật lý C4 + 6 cột vật lý C5**,
+đưa cả partition vào báo cáo. Các nullable hợp lệ không tự động là lỗi;
+`rows_total=0` trả ratio NULL. Query latency bỏ dòng `produced_at=null`, vì
+sample không có timestamp producer thật. Năm query mẫu đều lọc trực tiếp
+`event_date`, gồm EXPLAIN FORMATTED để Processing xem partition pruning.
+
+Kết quả chạy thật ngày 01/11/2026 cho event date **01/11/2019**:
+
+```csv
+event_date,rows_source,rows_bronze,rows_quarantine,duplicates_dropped,match
+2019-11-01,100000,100000,0,0,true
+```
+
+Đây là đối soát đúng cohort `data/sample/events_sample_100k.csv` với
+`s3a://lake/bronze/sample_events`, **không phải bảng production**. Toàn bộ
+query mẫu chạy thành công. Báo cáo/CSV:
+`data/raw/processing-sample-59ff2843b8cd46558002a589c422fedd.{json,csv}`.
+
+Đã quét CSV tháng thật trên MinIO: ngày 01/11/2019 có **1.445.360 dòng nguồn**;
+C4/C5 chính hiện **0/0 dòng**, chưa có drop manifest nên CSV là
+`2019-11-01,1445360,0,0,,false`, CLI exit **2**. Không nạp dữ liệu giả vào
+bảng chính hoặc coi mismatch này là PASS. Bằng chứng:
+`data/raw/processing-production-59ff2843b8cd46558002a589c422fedd.{json,csv}`.
+
+Fixture `processing-query-verification-b62428e85048490c975b1e46b6c23c16.json`
+trong `data/raw` kiểm tra **9 = 2 C4 + 3 C5 + 2 state drops + 1 late +
+1 durable** và đủ 30 null-profile rows. C5 nhận năm 2026 vẫn được quy đúng
+ngày nguồn 2019. Metric của FileSourceScanExec xác nhận chỉ đọc **1 file ngày
+đích** trong bảng có hai ngày. Negative cases chứng minh thiếu/sai bằng chứng,
+ngày C5 chưa gán và duplicate C4 không thể bị che bằng drop count bù trừ;
+pin version vẫn tái lập kết quả sau một append chỉ trên fixture riêng.
+Regression mapping C5 đã có RED→GREEN: chuyển ngày hợp lệ từ 02/11 sang
+01/11 và giảm duplicate count để bù bị từ chối trước khi báo cáo. Suite cuối
+**332 passed, 0 skipped**; log `data/raw/processing-queries-unit-final.log`
+và `data/raw/processing-queries-final-integration.log`. Compose config và
+`git diff --check` đạt; chưa tạo run CI từ push/PR.
+
+Kết quả kỹ thuật bổ sung vào gói bàn giao; trạng thái duyệt nhóm bên dưới
+giữ nguyên, chưa có ai được tự điền làm reviewer.
+
 ## Bản ghi duyệt nhóm
 
 | Vai trò | Nội dung cần xác nhận | Người duyệt / ngày / bằng chứng |

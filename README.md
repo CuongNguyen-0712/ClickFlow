@@ -120,6 +120,15 @@ time travel **30 ngày**, hỗ trợ stream gián đoạn **7 ngày**. Dùng
 [runbook bảo trì](docs/runbook.md#bảo-trì-delta-optimize-zorder-và-vacuum)
 có lệnh PowerShell, lịch chạy hằng ngày và cách đọc báo cáo.
 
+**Đối soát / bàn giao Processing:** `make verify-sample DAY=2019-11-01`
+đối chiếu mẫu 100k với `bronze/sample_events`; `make verify DAY=2019-11-01`
+đọc CSV tháng từ MinIO và đối chiếu bảng chính. Runner thực thi
+[verify.sql](queries/verify.sql) và [sample_queries.sql](queries/sample_queries.sql),
+xuất CSV sáu cột yêu cầu, null profile đủ **9/15/6 cột C1/C4/C5**, query mẫu
+và EXPLAIN partition pruning. Thiếu manifest drop counts thì `match=false`,
+không tự suy ra duplicate để cân bằng. Xem [runbook đối soát](docs/runbook.md#đối-soát-sql-và-bàn-giao-processing)
+và [bàn giao C4](docs/contracts-c4-c5-handoff.md#sql-đối-soát-và-query-mẫu-cho-processing).
+
 ## Yêu cầu máy
 
 - RAM ≥ 16 GB, đĩa trống ≥ 40 GB (CSV gốc ~9 GB trên host + bản sao ~9 GB trong MinIO, Kafka log tối đa ~18 GB, bronze)

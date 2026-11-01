@@ -651,6 +651,141 @@ nguyên, `exceptAll` hai chiều với **version 1** đều rỗng và version 1
 `data/raw/maintenance-vacuum-approved-readback.log`. Task bảo trì đã được
 kiểm chứng cả nhánh preview và execute trong phạm vi được duyệt.
 
+## Đối soát SQL và bàn giao Processing
+
+`queries/verify.sql` cung cấp đối soát ngày, chẩn đoán accounting, null profile
+và kiểm tra ID trùng trong ngày. `queries/sample_queries.sql` có năm query:
+20 event mẫu, tổng theo event type, activity/revenue theo product, latency
+p50/p95 (bỏ `produced_at=null`), và EXPLAIN FORMATTED. Mỗi query C4 có điều kiện
+trực tiếp `event_date = DATE ...` để partition pruning. Không thay bộ lọc
+partition bằng `TO_DATE(event_time)`.
+
+Chạy toàn bộ chín query bằng Spark, giữ timezone UTC và **không ghi Delta**:
+
+```powershell
+# Cohort mẫu hữu hạn 100k, bảng bronze/sample_events, không có giai đoạn C5/Kafka:
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/src/monitoring/reconcile.py --sample --day 2019-11-01
+# CSV tháng thật -> kiểm tra C4/C5 chính; mặc định đọc toàn file CSV trên MinIO:
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/src/monitoring/reconcile.py --day 2019-11-01
+# Nếu có Make:
+make verify-sample DAY=2019-11-01
+make verify DAY=2019-11-01
+make test-processing-queries
+```
+
+CLI mặc định lấy nguồn từ `lake.raw_csv` + file đầu `simulator.files` (hiện
+`2019-Nov.csv`); với tháng khác truyền `--source-path` đúng file. `--sample`
+dùng `stream.sample_path` và `stream.sample_bronze_path`, C5 là view rỗng có
+đúng kiểu vì job sample không ghi quarantine. Có thể truyền `--bronze-path`,
+`--quarantine-path`, `--source-path` để chọn cohort thử riêng. Đường dẫn bên
+trong container dùng `/opt/app/...` hoặc `s3a://...`.
+
+Kết quả CSV có đúng thứ tự cột:
+
+```csv
+event_date,rows_source,rows_bronze,rows_quarantine,duplicates_dropped,match
+```
+
+`rows_source` đếm dòng **thực có** trong cohort CSV của ngày UTC được chọn;
+`rows_bronze` từ partition C4, `rows_quarantine` theo ngày nguồn đã xác định.
+`duplicates_dropped` là **stateful** drops từ bằng chứng, không gộp late hoặc
+durable MERGE. Điều kiện số học:
+
+```text
+rows_source = rows_bronze + rows_quarantine + duplicates_dropped
+              + late_records_dropped + durable_duplicates_ignored
+```
+
+Hai số cuối nằm trong kết quả `accounting_diagnostics` của JSON, giữ CSV đúng
+sáu cột. `match` còn yêu cầu evidence đầy đủ, không có ngày nguồn chưa xác định,
+không trùng ID C4 trong ngày và không trùng tọa độ C5 được đếm. Không lấy
+`source - bronze - quarantine` làm số duplicate và không dùng `numInputRows`
+của Spark (có thể đọc lặp nguồn). Counter driver reset qua restart: manifest
+phải tổng hợp đúng các driver/batch/nguồn của cohort, đối chiếu từ bằng chứng
+đã giữ. Bản CSV Kaggle ban đầu không tự đại diện cho các message replay/injected
+thêm; khi đối soát Kafka cần cohort CSV tương ứng các dòng thực đã phát.
+
+Thiếu manifest cho ngày thì các drop counts là **NULL**, `match=false`; CSV
+ghi field NULL rỗng. Sample mode biết chắc không có state/late/MERGE drops
+nên dùng 0. Mismatch xuất đủ báo cáo rồi thoát **code 2**; lỗi đọc/schema/
+manifest có exception, không được coi là mismatch bình thường.
+
+Manifest JSON, truyền bằng `--audit-manifest /opt/app/data/raw/<audit>.json`:
+
+```json
+{
+  "source_path": "s3a://lake/raw/csv/2019-Nov.csv",
+  "bronze_path": "s3a://lake/bronze/events",
+  "quarantine_path": "s3a://lake/quarantine/events",
+  "days": [{"event_date": "2019-11-01", "duplicates_dropped": 0,
+            "late_records_dropped": 0, "durable_duplicates_ignored": 0}],
+  "quarantine_dates": [{"kafka_partition": 0, "kafka_offset": 42,
+                         "event_date": "2019-11-01"}]
+}
+```
+
+Đây là mẫu cấu trúc, **không phải bằng chứng 0 drops của bảng chính**; thay số
+và mapping bằng giá trị đo thực tế hoặc bỏ `quarantine_dates` nếu không cần.
+Ba đường dẫn phải khớp cohort hiện chạy (không slash cuối cho bảng); số phải là
+integer >=0 trong miền bigint, ngày hợp lệ/không trùng, mapping partition/offset
+không trùng. Không dùng lại manifest cho topic/nguồn/đích khác.
+
+C5 phân vùng theo **ingest_date**, không phải event_date. `parse_error` hoặc
+`bad_event_time` cần mapping ngày nguồn từ manifest producer/offset; không suy
+ngày từ `source_file` chỉ có tháng, ngày nạp, hoặc timestamp lỗi. Lỗi khác đã
+qua luật timestamp lấy ngày UTC từ payload; mapping mâu thuẫn với ngày hợp lệ
+bị từ chối, không thể chuyển dòng C5 sang ngày khác để cân số. Dòng chưa xác định được ngày
+được báo riêng và ngăn `match=true`, kể cả khi thay drop count làm phép cộng
+tình cờ cân. Có thể giới hạn cohort C5 bằng `--ingest-from YYYY-MM-DD` và
+`--ingest-to YYYY-MM-DD` (hai đầu bao gồm); chọn cửa sổ nạp thực của cohort,
+không tự truyền ngày 2019 khi dữ liệu được nạp năm 2026.
+
+Runner pin version C4 và C5 trong report trước khi chạy SQL. Đây là cặp snapshot
+tái lập được, không phải một transaction chung hai bảng: chỉ đối soát sau batch
+hoàn tất trên cohort đã đóng. CSV nguồn cần bất biến trong lần chạy. ID trùng
+được kiểm tra trong ngày được chọn; kiểm chứng global uniqueness C4 là bước
+toàn bảng riêng theo contract, không suy ra từ một báo cáo ngày.
+
+Null profile trả **30 dòng**: C1=9, C4=15 (cả `event_date`), C5=6 (cả
+`ingest_date`). `null_ratio` trong [0,1], tính null thật, không coi chuỗi rỗng
+hay NaN là SQL NULL. Nhóm 0 dòng có `null_count=0`, ratio **NULL**, không giả
+vờ có dữ liệu sạch. Timestamp nguồn/C5 chưa gán được ngày nằm trong diagnostics,
+không bị bỏ qua để nhận PASS. Optional null của contract không mặc nhiên là lỗi.
+
+Mỗi query có marker `-- name: ...`; runner đọc cả khối, không tách theo dấu
+chấm phẩy trong string. Tham số `${day}`, `${bronze_path}`, `${bronze_version}`
+được kiểm tra ngày/URI/version trước khi render. Khi dùng `spark-sql` thủ công,
+đặt ba biến substitution này rồi chạy từng statement; `verify.sql` còn cần
+ba temp view `verify_source`, `verify_quarantine` (có `source_event_date`),
+`verify_audit` như header. Cách tái lập đầy đủ là dùng CLI ở trên.
+
+Mặc định ghi `data/raw/processing-verify-<day>-<uuid>.json` và CSV cùng tên;
+`--report /opt/app/data/raw/<file-moi>.json` chọn vị trí khác. Không ghi đè report
+đã có. JSON giữ version, scope, manifest provenance, đủ kết quả chín query và
+EXPLAIN. Chỉ tạo view/session và artifact local, không sửa bảng/checkpoint.
+
+Kết quả đã chạy ngày 01/11/2026:
+
+- Mẫu100k: CSV `2019-11-01,100000,100000,0,0,true`, sample C4 version **3**;
+  đủ chín query. Báo cáo `data/raw/processing-sample-59ff2843b8cd46558002a589c422fedd.{json,csv}`.
+- CSV MinIO tháng thật: ngày 01/11/2019 có **1.445.360 dòng**; main C4/C5
+  **0/0**, thiếu drop manifest, CSV `2019-11-01,1445360,0,0,,false`, exit **2**.
+  Báo cáo `data/raw/processing-production-59ff2843b8cd46558002a589c422fedd.{json,csv}`.
+- Fixture hai ngày: **9 = 2 bronze + 3 quarantine + 2 state drops + 1 late +
+  1 durable**; 30 null-profile rows đúng, chỉ đọc **1 file** ngày đích, không
+  đọc file ngày kia. Evidence `data/raw/processing-query-verification-b62428e85048490c975b1e46b6c23c16.json`.
+  Runner không làm tăng Delta version; append duplicate dùng test pinning chỉ
+  tác động fixture riêng. Log `data/raw/processing-queries-final-integration.log`.
+- Review đã sửa lỗi mapping ghi đè timestamp C5 hợp lệ bằng regression
+  RED→GREEN; mapping mâu thuẫn và drop count bù không còn nhận PASS.
+  Suite cuối **332 passed, 0 skipped**, log `data/raw/processing-queries-unit-final.log`;
+  Compose validation và diff whitespace đạt. Đây là kiểm chứng local, chưa push/PR.
+
+`make verify` mặc định chưa truyền manifest; dùng CLI có `--audit-manifest`
+khi đã có evidence đo được. Hạn chế báo cáo lỗi: nếu ghi CSV thất bại sau khi
+JSON đã serialize, error object có thể được nối thêm làm JSON không parse
+được; process vẫn lỗi, cần xem stderr/log. Các report và fixture đều được giữ.
+
 ## Luật kiểm tra 1–4 và bộ đếm
 
 `src/storage/quality_rules.py` kiểm tra C3 trước khi Spark ép kiểu, giữ chính

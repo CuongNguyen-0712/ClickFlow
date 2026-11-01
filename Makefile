@@ -4,7 +4,7 @@ CLOSED_BEFORE ?=
 SPEED        ?= 100
 SPARK_SUBMIT = $(COMPOSE) exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
-.PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding test-maintenance maintenance down topics upload sample replay stream stream-sample stream-drain sink verify bench test
+.PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding test-maintenance test-processing-queries maintenance down topics upload sample replay stream stream-sample stream-drain sink verify verify-sample bench test
 
 up-storage: ## MinIO + master + 2 workers; no dataset or Kafka required
 	$(COMPOSE) up -d --build --wait minio minio-init spark-master spark-worker-1 spark-worker-2
@@ -70,7 +70,13 @@ sink:      ## đăng ký Kafka Connect S3 Sink -> lake/raw/
 	curl -s -X POST -H "Content-Type: application/json" --data @configs/connect/s3-sink.json http://localhost:8083/connectors
 
 verify:    ## đối soát số dòng nguồn vs bronze theo ngày
-	$(SPARK_SUBMIT) /opt/app/src/monitoring/reconcile.py
+	$(SPARK_SUBMIT) /opt/app/src/monitoring/reconcile.py --day "$(DAY)"
+
+verify-sample: ## đối soát đúng cohort mẫu 100k và chạy query bàn giao C4
+	$(SPARK_SUBMIT) /opt/app/src/monitoring/reconcile.py --sample --day "$(DAY)"
+
+test-processing-queries: ## fixture SQL hai ngày, lỗi C5, pruning, negative cases; giữ artifact
+	$(SPARK_SUBMIT) /opt/app/tests/integration/processing_query_checks.py
 
 bench:     ## chạy E1..E5, kết quả vào benchmarks/results/
 	for f in benchmarks/e*.sh; do bash $$f || exit 1; done
