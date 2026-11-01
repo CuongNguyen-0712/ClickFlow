@@ -4,7 +4,7 @@ CLOSED_BEFORE ?=
 SPEED        ?= 100
 SPARK_SUBMIT = $(COMPOSE) exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
-.PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding test-maintenance test-processing-queries maintenance down topics upload sample replay stream stream-sample stream-drain sink verify verify-sample bench test
+.PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding test-maintenance test-processing-queries maintenance down topics upload sample replay stream stream-sample stream-drain sink verify verify-sample bench bench-e3 test
 
 up-storage: ## MinIO + master + 2 workers; no dataset or Kafka required
 	$(COMPOSE) up -d --build --wait minio minio-init spark-master spark-worker-1 spark-worker-2
@@ -80,6 +80,9 @@ test-processing-queries: ## fixture SQL hai ngày, lỗi C5, pruning, negative c
 
 bench:     ## chạy E1..E5, kết quả vào benchmarks/results/
 	for f in benchmarks/e*.sh; do bash $$f || exit 1; done
+
+bench-e3:  ## E3 thật:6 cấu hình × ít nhất3 lần, giữ toàn bộ artifact
+	bash benchmarks/e3_latency.sh
 
 test:
 	python -m pytest -q

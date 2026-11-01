@@ -786,6 +786,175 @@ khi đã có evidence đo được. Hạn chế báo cáo lỗi: nếu ghi CSV t
 JSON đã serialize, error object có thể được nối thêm làm JSON không parse
 được; process vẫn lỗi, cần xem stderr/log. Các report và fixture đều được giữ.
 
+## E3: latency và file nhỏ
+
+`benchmarks/e3_latency.sh` chạy riêng E3; `src/monitoring/e3_benchmark.py`
+là replayer phục vụ thí nghiệm, dùng producer native `confluent-kafka` và
+**pipeline production hiện có** trong `start_kafka_stream`. Các module
+simulator/producer tổng quát vẫn là task riêng, không được coi đã hoàn tất
+nhờ benchmark này.
+
+Ma trận mặc định gồm **6 cấu hình × 3 lần = 18 trial**: processing-time trigger
+5/10/30 giây, replay100/1000x. Trong mỗi block repetition, thứ tự sáu cấu hình
+được shuffle với seed42. Mỗi trial dùng cùng **100.000 dòng C1 thật** từ
+`data/sample/events_sample_100k.csv`, giữ giá trị, thứ tự event-time và timestamp
+nguồn. SHA256, số dòng và biên thời gian nằm trong manifest. Mẫu hiện có span
+**3.452 giây** (15:35:08–16:32:40 UTC ngày 01/11/2019), nên thời gian phát
+mục tiêu là **34,52s ở100x**, **3,452s ở1000x**. Đây là thí nghiệm cohort cố định,
+bao gồm burst ngắn; không suy ra steady-state throughput hay toàn bộ Kaggle.
+
+### Chạy và artifact
+
+Cluster Kafka3/MinIO/Spark master+hai workers phải đang healthy. Từ Git Bash
+(Windows) hoặc Bash/WSL/Linux ở repo root:
+
+```bash
+bash benchmarks/e3_latency.sh
+# Hoặc:
+make bench-e3
+# Pilot1000 dòng, chỉ kiểm tra đường chạy; KHÔNG đủ điều kiện Done E3:
+bash benchmarks/e3_latency.sh --pilot --rows 1000
+```
+
+Script cài `benchmarks/requirements.txt` (confluent-kafka2.6.0,
+matplotlib3.9.2) vào `/tmp/clickflow-e3-deps` trong Spark master rồi thiết lập
+PYTHONPATH riêng cho driver. Không recreate container và không thay package của
+worker. Trên Git Bash, script tắt chuyển đổi path MSYS cho Docker; dùng Git Bash
+thực thay cho `C:\Windows\System32\bash.exe` nếu máy chưa có WSL.
+
+Output được stage trong `data/raw/e3-<id>/`, rồi copy vào
+`benchmarks/results/e3-<id>/`, giữ driver log và artifact kể cả khi có lỗi:
+
+- `manifest.json`, `environment.json`: source SHA, thứ tự trial, cấu hình cố định,
+  source/contract/code hashes, phiên bản Python/Spark/Delta/producer và Spark resources.
+- `trial-01.json`…: số đo từng lần, source/query/Kafka identities, offsets,
+  warm-up baseline, progress và scrape metrics. JSON trial đã xác minh không ghi đè.
+- `trials.csv`, `summary.csv`, `README.md`: bảng raw và tổng hợp mean/sample SD.
+- `latency.png/.svg`, `tradeoff.png/.svg`: biểu đồ riêng để xuất/chia sẻ.
+- `completed.json`: `full_e3_complete=true` chỉ khi đủ matrix và >=3 trial/cell.
+  Pilot luôn `false`, không trộn vào bảng E3 chính.
+
+Bảng/biểu đồ là artifact dẫn xuất có thể tái tạo từ JSON gốc khi export bị ngắt;
+không thay thế JSON bằng chứng. Mỗi lần gọi wrapper tạo session mới. **Không
+truyền `--resume` hay `--output` tùy ý qua wrapper** vì copy path của wrapper
+thuộc session mới. Resume trực tiếp đúng stage cũ:
+
+```powershell
+docker compose exec -T -e PYTHONPATH=/tmp/clickflow-e3-deps:/opt/app:/opt/spark/python:/opt/spark/python/lib/py4j-0.10.9.7-src.zip -e MPLCONFIGDIR=/tmp/clickflow-e3-mpl spark-master /opt/spark/bin/spark-submit /opt/app/src/monitoring/e3_benchmark.py --output /opt/app/data/raw/e3-<id> --resume
+docker compose cp spark-master:/opt/app/data/raw/e3-<id>/. benchmarks/results/e3-<id>/
+```
+
+Resume từ chối thay đổi source, row count, matrix, producer/pipeline cấu hình,
+Spark/dependency môi trường hoặc code/contract đã bind. Cached trial còn phải
+khớp cell/repetition, session, workload và fingerprint hiện tại. Nếu chủ động
+đổi implementation thì bắt đầu session mới; không trộn kết quả trước/sau.
+Failure attempt được giữ riêng, không tự xóa topic hay checkpoint để chạy lại.
+
+### Định nghĩa phép đo
+
+Warm-up200 dòng có prefix riêng, đợi **Delta đã commit + Kafka offsets đã drain**
+trước khi lấy baseline Delta version. Phát dữ liệu đo ở pha1/6,1/2,5/6 của
+trigger theo repetition, căn theo **epoch trigger grid của Spark**, không theo
+timestamp startup/warm-up. Requested và observed phase đều được lưu. Producer
+giữ key=user_id, `acks=all`, idempotence, LZ4, linger20ms, batch262144 như cấu hình.
+Sáu partition/RF3/minISR2 cố định; chờ metadata có leader và full ISR trước warm-up.
+
+`produced_at` là UTC trước lần gọi enqueue đầu tiên. `ingested_at` hiện được
+Spark thay bằng timestamp của micro-batch (`CurrentBatchTimestamp`), xem
+[mã Spark3.5.3](https://github.com/apache/spark/blob/v3.5.3/sql/core/src/main/scala/org/apache/spark/sql/execution/streaming/MicroBatchExecution.scala#L631).
+Metric chính là **hiệu có dấu** `(ingested_at-produced_at)` theo microsecond,
+trả ms với exact `percentile` p50/p95; **chưa bao gồm thời gian Delta commit**.
+Report thêm thời điểm toàn cohort visible/drain và số batch overrun; không đổi
+định nghĩa `ingested_at` của C4 để làm đẹp số.
+
+NULL được đếm riêng, nhóm không có timestamp trả percentileNULL. Độ trễ âm
+không bị clip hoặc bỏ khỏi percentile; `negative_latency_rows` cho biết có bao
+nhiêu cặp như vậy (chúng có thể xuất hiện gần ranh giới snapshot offsets/batch
+timestamp). Trial E3 phải có đủ timestamp cho cả100k dòng. Nếu BufferError xảy
+ra, timestamp trước enqueue đầu tiên vẫn được giữ, nên phép đo bao gồm thời
+gian retry; `buffer_full_retries` và pacing lag ghi rõ trường hợp này. Đây là
+hạn chế boundary cho tải vượt queue, không được gọi là successful-enqueue time.
+
+Không ép `processAllAvailable`, AvailableNow, OPTIMIZE hay VACUUM trong thí
+nghiệm. `files_created` đếm **AddFile actions sau baseline warm-up** qua Delta
+log; `small_files_created` là các file đó <16MiB. Có thêm số active files/bytes
+cuối trial. Không nhầm số active files gồm warm-up với số file sinh ra khi đo,
+hoặc số object vật lý còn giữ để time travel.
+
+Trước khi chấp nhận trial, phải khớp: số producer delivery thành công, Kafka
+end offsets, sink rows đã commit và100k dòng/100k ID đo trong Delta; C5 và ba
+nhóm state/late/durable drops phải0. Không dùng `numInputRows` của union làm số
+message thật. Producer pace đo độc lập bằng monotonic clock: chỉ đánh dấu đạt
+khi actual speed trong ±10% của target. Miss vẫn được ghi và đếm, không đổi tên
+tốc độ hay tự loại lần chạy chậm để chọn kết quả đẹp.
+
+Biểu đồ/table tổng hợp **mean của percentile từng trial**, error bar là sample
+SD của >=3 lần, chấm là raw trial. Đây không phải percentile pooled toàn bộ
+event, CI95 hay dự đoán production. Cùng100k dòng giúp so sánh file count;
+cohort1000x ngắn có thể vào1–2 batch nên đánh đổi file khác100x.
+
+Profile một bảng đã có bằng script chỉ đọc:
+
+```powershell
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/src/monitoring/latency.py --table-path s3a://lake/bronze/events
+```
+
+`--event-id-prefix` chọn cohort đo, `--after-version` chọn baseline đếm AddFile.
+Không có produced_at thật (như finite sample C4) thì percentile làNULL, không0.
+Kiểm chứng metric độc lập: `tests/integration/latency_metric_checks.py` đã xác
+nhận p50=1,5ms/p95=3,7ms trên signed[-1,1,2,4]ms, đúng NULL coverage và chỉ1file
+sinh sau warm-up; fixture/report đều được giữ.
+
+### Kết quả E3 đã kiểm chứng — 01/11/2026
+
+Run `benchmarks/results/e3-3eb2dde82e154bf09283424977d28cf6/` hoàn tất18/18
+trial, **3 lần ở mỗi cell**, từ22:18:15 đến22:38:42 Asia/Saigon. Có1,8 triệu
+dòng đo,3.600 warm-up; **48 AddFile sau baseline**, tất cả <16MiB. Mọi trial
+đủ100.000 dòng/ID/delivery và Kafka offsets; không có NULL timestamp, signed
+negative latency, quarantine hoặc state/late/durable drop.
+
+[Bảng/biểu đồ](../benchmarks/results/e3-3eb2dde82e154bf09283424977d28cf6/README.md)
+và [ANALYSIS](../benchmarks/results/e3-3eb2dde82e154bf09283424977d28cf6/ANALYSIS.md)
+giữ đủ số liệu, raw trial dots và SD. Hai file PNG và hai SVG đã được xem kiểm
+tra bố cục. Ví dụ ở100x:5s trigger trung bình7file/p95=6,911s;30s trigger2file/
+p95=28,315s. Đây là quan sát trên cohort/máy này, không phải khuyến nghị SLA.
+
+**16/18 trial đạt pace trong ±10%.** Hai outlier10s/100x đạt75,533x và67,386x,
+p95 lần lượt48,678s và110,311s; không loại khỏi mean/SD. Cell này vì vậy không
+đủ để tách tác động riêng của trigger khi actual input rate cố định100x.
+Snapshot tải máy và Docker VM12CPU/7,558GiB nằm cùng kết quả; được lấy sau
+outlier, chưa chứng minh nguyên nhân. Không sửa nguồn/sink production để làm
+thay đổi kết quả.
+
+[Audit độc lập](../benchmarks/results/e3-3eb2dde82e154bf09283424977d28cf6/independent-audit.json)
+đọc lại toàn bộ1,8M timestamp pairs, dùng NumPy linear percentiles và parse
+AddFile JSON trực tiếp:18/18 khớp, code hashes không đổi. Script/log audit được
+đóng gói cùng kết quả. Suite **378 passed, 0 skipped**;14 warning deprecation
+từ Matplotlib/pyparsing, không có test fail. Log unit được giữ tại
+`benchmarks/results/e3-3eb2dde82e154bf09283424977d28cf6/verification/unit-final.log`;
+proof metric và log integration cùng thư mục `verification/`.
+Compose validation, Bash syntax và diff whitespace đạt; chưa commit/push/remoteCI.
+
+Review độc lập đã sửa hai phát hiện quan trọng bằng test RED→GREEN: epoch-grid
+phase và code/contract-bound resume. Hai hạn chế nhỏ còn lại (wrapper resume và
+timestamp BufferError) đã ghi ở trên; lượt chính có0 BufferError retry nên không
+bị trường hợp timestamp stale này. Không chạy lệnh xóa hay bảo trì Delta.
+
+Sau khi E3 hoàn tất, người dùng yêu cầu dọn file không cần thiết: đã xóa bản
+staging local, hai pilot, log debug/TDD trung gian và execution ledger nội bộ.
+Toàn bộ18 trial chính, bảng/biểu đồ, manifest/environment, driver log, audit và
+bằng chứng kiểm chứng cuối được giữ trong thư mục kết quả trên.35 artifact
+cuối ban đầu đã được kiểm tra hash không đổi sau khi dọn. Danh sách60 file đã
+dọn và hash trước khi xóa nằm trong `cleanup-manifest.json` cùng kết quả.
+
+Stage cũ `data/raw/e3-3eb2dde82e154bf09283424977d28cf6/` không còn cần cho run
+đã hoàn tất và đã được dọn; lệnh resume ở trên dành cho run còn stage chưa
+dọn. Nếu cần audit lại bản lưu, copy `manifest.json`, `completed.json`,
+`trial-*.json` và `independent-audit.py` vào một thư mục mới trong container rồi
+chạy audit trên thư mục đó; không copy `independent-audit.json` cũ vì script
+tạo report mới bằng chế độ exclusive. Dataset CSV, Kafka topic, Delta và
+checkpoint MinIO không bị tác động bởi việc dọn local này.
+
 ## Luật kiểm tra 1–4 và bộ đếm
 
 `src/storage/quality_rules.py` kiểm tra C3 trước khi Spark ép kiểu, giữ chính

@@ -1,0 +1,7 @@
+ecom-kafka-2-1 CPU=154.12% MEM=529.3MiB / 7.558GiB
+ecom-kafka-1-1 CPU=151.70% MEM=489.6MiB / 7.558GiB
+ecom-kafka-3-1 CPU=150.63% MEM=535.4MiB / 7.558GiB
+ecom-spark-worker-1-1 CPU=79.05% MEM=1.804GiB / 7.558GiB
+ecom-spark-worker-2-1 CPU=70.56% MEM=1.506GiB / 7.558GiB
+ecom-spark-master-1 CPU=103.39% MEM=1.701GiB / 7.558GiB
+ecom-minio-1 CPU=16.37% MEM=366MiB / 7.558GiB

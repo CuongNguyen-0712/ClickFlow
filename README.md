@@ -129,6 +129,20 @@ và EXPLAIN partition pruning. Thiếu manifest drop counts thì `match=false`,
 không tự suy ra duplicate để cân bằng. Xem [runbook đối soát](docs/runbook.md#đối-soát-sql-và-bàn-giao-processing)
 và [bàn giao C4](docs/contracts-c4-c5-handoff.md#sql-đối-soát-và-query-mẫu-cho-processing).
 
+**E3 latency / file nhỏ:** `bash benchmarks/e3_latency.sh` (hoặc `make bench-e3`)
+chạy riêng E3: trigger **5/10/30 giây** × replay **100/1000x**, ít nhất **3 lần/cấu hình**,
+trên cùng mẫu thật 100k. Mỗi trial dùng topic/Delta/checkpoint riêng; warm-up
+được loại khỏi thống kê. Bảng CSV, Markdown và biểu đồ PNG/SVG nằm trong
+`benchmarks/results/e3-<id>/`. Metric là hiệu `produced_at → ingested_at`
+(batch timestamp của Spark), chưa bao gồm thời gian commit Delta. Xem
+[runbook E3](docs/runbook.md#e3-latency-và-file-nhỏ) về cách đo, diễn giải và resume.
+
+Kết quả đã chạy: [18 trial / bảng và biểu đồ](benchmarks/results/e3-3eb2dde82e154bf09283424977d28cf6/README.md),
+[phân tích](benchmarks/results/e3-3eb2dde82e154bf09283424977d28cf6/ANALYSIS.md).
+Audit độc lập đã kiểm tra **1,8 triệu dòng đo và 48 file sinh ra**. Có **2 pacing
+miss** ở10s/100x được giữ nguyên; không coi cell đó là so sánh actual100x được
+kiểm soát hoàn toàn.
+
 ## Yêu cầu máy
 
 - RAM ≥ 16 GB, đĩa trống ≥ 40 GB (CSV gốc ~9 GB trên host + bản sao ~9 GB trong MinIO, Kafka log tối đa ~18 GB, bronze)

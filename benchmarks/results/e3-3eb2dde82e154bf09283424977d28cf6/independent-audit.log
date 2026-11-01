@@ -1,0 +1,87 @@
+docker : 26/11/01 15:40:18 INFO SparkContext: Running Spark version 3.5.3
+At line:2 char:1
++ docker compose exec -T -e PYTHONPATH=/tmp/clickflow-e3-deps:/opt/app: ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (26/11/01 15:40:...k version 3.5.3:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+26/11/01 15:40:18 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+26/11/01 15:40:18 INFO SparkContext: Java version 17.0.12
+26/11/01 15:40:18 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java 
+classes where applicable
+26/11/01 15:40:18 INFO ResourceUtils: ==============================================================
+26/11/01 15:40:18 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/11/01 15:40:18 INFO ResourceUtils: ==============================================================
+26/11/01 15:40:18 INFO SparkContext: Submitted application: e3-independent-audit
+26/11/01 15:40:18 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, 
+amount: 2, script: , vendor: , memory -> name: memory, amount: 1500, script: , vendor: , offHeap -> name: offHeap, 
+amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/11/01 15:40:18 INFO ResourceProfile: Limiting resource is cpus at 2 tasks per executor
+26/11/01 15:40:18 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/11/01 15:40:18 INFO SecurityManager: Changing view acls to: spark
+26/11/01 15:40:18 INFO SecurityManager: Changing modify acls to: spark
+26/11/01 15:40:18 INFO SecurityManager: Changing view acls groups to: 
+26/11/01 15:40:18 INFO SecurityManager: Changing modify acls groups to: 
+26/11/01 15:40:18 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view 
+permissions: spark; groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify 
+permissions: EMPTY
+26/11/01 15:40:18 INFO Utils: Successfully started service 'sparkDriver' on port 35633.
+26/11/01 15:40:18 INFO SparkEnv: Registering MapOutputTracker
+26/11/01 15:40:18 INFO SparkEnv: Registering BlockManagerMaster
+26/11/01 15:40:18 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting 
+topology information
+26/11/01 15:40:18 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/11/01 15:40:18 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/11/01 15:40:18 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-8877705c-1982-4c40-a3df-789bb93f5335
+26/11/01 15:40:19 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+26/11/01 15:40:19 INFO SparkEnv: Registering OutputCommitCoordinator
+26/11/01 15:40:19 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/11/01 15:40:19 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/11/01 15:40:19 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/11/01 15:40:19 INFO TransportClientFactory: Successfully created connection to spark-master/172.23.0.3:7077 after 
+31 ms (0 ms spent in bootstraps)
+26/11/01 15:40:19 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20261101154019-0039
+26/11/01 15:40:19 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' 
+on port 36143.
+26/11/01 15:40:19 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:36143
+26/11/01 15:40:19 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication 
+policy
+26/11/01 15:40:19 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 36143, None)
+26/11/01 15:40:19 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:36143 with 434.4 MiB RAM, 
+BlockManagerId(driver, spark-master, 36143, None)
+26/11/01 15:40:19 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 36143, None)
+26/11/01 15:40:19 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 36143, None)
+26/11/01 15:40:19 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101154019-0039/0 on 
+worker-20261101111639-172.23.0.4-37435 (172.23.0.4:37435) with 2 core(s)
+26/11/01 15:40:19 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101154019-0039/0 on hostPort 
+172.23.0.4:37435 with 2 core(s), 1500.0 MiB RAM
+26/11/01 15:40:19 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101154019-0039/1 on 
+worker-20261101111639-172.23.0.5-36921 (172.23.0.5:36921) with 2 core(s)
+26/11/01 15:40:19 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101154019-0039/1 on hostPort 
+172.23.0.5:36921 with 2 core(s), 1500.0 MiB RAM
+26/11/01 15:40:19 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached 
+minRegisteredResourcesRatio: 0.0
+26/11/01 15:40:19 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261101154019-0039/1 is now RUNNING
+26/11/01 15:40:21 WARN MetricsConfig: Cannot locate configuration: tried 
+hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+26/11/01 15:40:29 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This 
+behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+{"event": "e3_independent_trial_verified", "trial_id": "0280a32d9c45", "trigger_seconds": 10, "speed": 1000, "repetition": 1, "rows": 100000, "p50_latency_ms": 6532.0215, "p95_latency_ms": 8125.018150000001, "files_created": 1, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "181dda13fa47", "trigger_seconds": 5, "speed": 1000, "repetition": 1, "rows": 100000, "p50_latency_ms": 2354.6275, "p95_latency_ms": 3947.5722, "files_created": 1, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "daed99ff8181", "trigger_seconds": 10, "speed": 100, "repetition": 1, "rows": 100000, "p50_latency_ms": 5266.798500000001, "p95_latency_ms": 9425.21525, "files_created": 4, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "2376d6242178", "trigger_seconds": 30, "speed": 100, "repetition": 1, "rows": 100000, "p50_latency_ms": 17347.623499999998, "p95_latency_ms": 28408.40225, "files_created": 2, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "beec7edd4dac", "trigger_seconds": 5, "speed": 100, "repetition": 1, "rows": 100000, "p50_latency_ms": 2605.1505, "p95_latency_ms": 4916.4271499999995, "files_created": 7, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "418e7dddee79", "trigger_seconds": 30, "speed": 1000, "repetition": 1, "rows": 100000, "p50_latency_ms": 23208.006999999998, "p95_latency_ms": 24801.07115, "files_created": 1, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "ea3730da20c8", "trigger_seconds": 10, "speed": 1000, "repetition": 2, "rows": 100000, "p50_latency_ms": 3201.165, "p95_latency_ms": 4794.11815, "files_created": 1, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "a06072d4ebf9", "trigger_seconds": 5, "speed": 100, "repetition": 2, "rows": 100000, "p50_latency_ms": 3118.2780000000002, "p95_latency_ms": 10927.0186, "files_created": 6, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "a023f9e0f30a", "trigger_seconds": 10, "speed": 100, "repetition": 2, "rows": 100000, "p50_latency_ms": 31015.6175, "p95_latency_ms": 48678.2517, "files_created": 2, "pace_target_met": false}
+{"event": "e3_independent_trial_verified", "trial_id": "c73404aad61c", "trigger_seconds": 30, "speed": 100, "repetition": 2, "rows": 100000, "p50_latency_ms": 14040.402, "p95_latency_ms": 28270.165349999996, "files_created": 2, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "cfdb9ab447b8", "trigger_seconds": 30, "speed": 1000, "repetition": 2, "rows": 100000, "p50_latency_ms": 13187.5585, "p95_latency_ms": 14780.591149999998, "files_created": 1, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "fce93cdff607", "trigger_seconds": 5, "speed": 1000, "repetition": 2, "rows": 100000, "p50_latency_ms": 1740.87, "p95_latency_ms": 7700.60315, "files_created": 2, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "eb028aeeaf68", "trigger_seconds": 10, "speed": 1000, "repetition": 3, "rows": 100000, "p50_latency_ms": 8332.542, "p95_latency_ms": 9838.289249999998, "files_created": 2, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "6430b4b40773", "trigger_seconds": 5, "speed": 1000, "repetition": 3, "rows": 100000, "p50_latency_ms": 4072.6565, "p95_latency_ms": 5626.346299999999, "files_created": 2, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "2cb94000c3a8", "trigger_seconds": 10, "speed": 100, "repetition": 3, "rows": 100000, "p50_latency_ms": 77372.7685, "p95_latency_ms": 110310.6483, "files_created": 3, "pace_target_met": false}
+{"event": "e3_independent_trial_verified", "trial_id": "bcd8e467a4ab", "trigger_seconds": 5, "speed": 100, "repetition": 3, "rows": 100000, "p50_latency_ms": 2654.003, "p95_latency_ms": 4889.3562, "files_created": 8, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "b95977fd88b5", "trigger_seconds": 30, "speed": 100, "repetition": 3, "rows": 100000, "p50_latency_ms": 12485.925500000001, "p95_latency_ms": 28265.7083, "files_created": 2, "pace_target_met": true}
+{"event": "e3_independent_trial_verified", "trial_id": "114033311f24", "trigger_seconds": 30, "speed": 1000, "repetition": 3, "rows": 100000, "p50_latency_ms": 3208.2799999999997, "p95_latency_ms": 4801.38515, "files_created": 1, "pace_target_met": true}
+{"event": "e3_independent_audit_verified", "report": "/opt/app/data/raw/e3-3eb2dde82e154bf09283424977d28cf6/independent-audit.json"}

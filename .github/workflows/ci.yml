@@ -15,6 +15,7 @@ jobs:
           cache-dependency-path: |
             requirements.txt
             requirements-dev.txt
+            benchmarks/requirements.txt
       - run: pip install -r requirements-dev.txt
       - run: python -m pytest -q
       - run: docker compose --env-file .env.example config -q
