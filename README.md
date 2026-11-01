@@ -121,6 +121,15 @@ Fixture có tên riêng, không tạo file giả `2019-Nov.csv`; bảng C4/C5 v�
 Khi tải và upload dataset thật, chạy `make smoke-storage-real` để kiểm tra
 tối đa 100 dòng từ `raw/csv/2019-Nov.csv`.
 
+**Task mẫu 100k → bronze thử:** sau khi upload dataset thật, chạy `make sample`
+rồi `make stream` (`stream.source: sample` mặc định). Spark tạo
+`data/sample/events_sample_100k.csv` với 100.000 sự kiện khác nhau trong ngày
+2019-11-01, rồi ghi C4 Delta tại `lake/bronze/sample_events/`, partition
+`event_date`. Chạy lại cùng mẫu giữ nguyên số dòng; dữ liệu khác ở cùng đích
+sẽ bị từ chối, không ghi đè. Xem [runbook](docs/runbook.md) để chạy PowerShell.
+Đây là batch mẫu hữu hạn; luồng Kafka/quality/quarantine sẽ được triển khai
+ở task streaming tiếp theo trước khi chuyển `stream.source` sang `kafka`.
+
 ```bash
 cp .env.example .env          # sửa mật khẩu
 pip install -r requirements.txt
@@ -137,7 +146,10 @@ make down
 
 `make up-core` bỏ qua Prometheus/Grafana/kafka-exporter cho máy yếu. `make test` chạy pytest. `make bench` chạy E1–E5, kết quả vào `benchmarks/results/`.
 
-Trạng thái hiện tại: MinIO + Spark có lệnh khởi tạo lake theo C4/C5 và smoke test CSV C1 → Delta, không cần dataset thật. Các phần nguồn, ingestion và streaming khác ngoài `common/` và `collector_api/health` vẫn chủ yếu là khung theo task trên Jira.
+Trạng thái hiện tại: MinIO + Spark có khởi tạo lake C4/C5, smoke test CSV → Delta,
+tạo mẫu 100k và ghi/kiểm chứng bronze thử bằng `stream.source: sample`.
+Các phần simulator, ingestion, Kafka streaming và quality routing khác vẫn
+chủ yếu là khung theo task trên Jira.
 
 | UI | URL |
 |---|---|

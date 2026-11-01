@@ -3,7 +3,7 @@ DAY          ?= 2019-11-01
 SPEED        ?= 100
 SPARK_SUBMIT = $(COMPOSE) exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
-.PHONY: up up-core up-storage init-lake smoke-storage smoke-storage-real test-storage down topics upload sample replay stream sink verify bench test
+.PHONY: up up-core up-storage init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze down topics upload sample replay stream stream-sample sink verify bench test
 
 up-storage: ## MinIO + master + 2 workers; no dataset or Kafka required
 	$(COMPOSE) up -d --build --wait minio minio-init spark-master spark-worker-1 spark-worker-2
@@ -36,12 +36,18 @@ upload:    ## đẩy data/raw/*.csv (tải tay từ Kaggle) lên lake/raw/csv/; 
 	$(COMPOSE) exec minio sh -c 'mc alias set -q local http://127.0.0.1:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD && mc cp /upload/*.csv local/$$LAKE_BUCKET/raw/csv/'
 
 sample:    ## cắt data/sample/events_sample_100k.csv
-	python -m src.sources.make_sample
+	$(SPARK_SUBMIT) /opt/app/src/sources/make_sample.py
+
+stream-sample: ## ghi/kiểm chứng 100k sự kiện vào bronze/sample_events
+	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py --source sample
+
+test-sample-bronze: ## kiểm tra kiểu, partition, chạy lại; giữ artifact
+	$(SPARK_SUBMIT) /opt/app/tests/integration/sample_bronze_checks.py
 
 replay:    ## make replay DAY=2019-11-01 SPEED=100
 	python -m src.sources.simulator --day $(DAY) --speed $(SPEED)
 
-stream:    ## Spark Structured Streaming Kafka -> bronze + quarantine
+stream:    ## chạy nguồn được cấu hình trong stream.source
 	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py
 
 sink:      ## đăng ký Kafka Connect S3 Sink -> lake/raw/
