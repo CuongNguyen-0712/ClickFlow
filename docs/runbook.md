@@ -397,3 +397,73 @@ Hồi quy `--source sample` cũng đạt: bảng thử vẫn **100.000 dòng**, 
 Báo cáo tổng hợp: `data/raw/kafka-stream-verification.json`. Review độc lập
 không còn phát hiện quan trọng sau khi sửa guard checkpoint. Toàn bộ kiểm
 chứng giữ topic, checkpoint, Delta và log; không chạy lệnh xóa.
+
+## Luật kiểm tra 1–4 và bộ đếm
+
+`src/storage/quality_rules.py` kiểm tra C3 trước khi Spark ép kiểu, giữ chính
+xác bigint và chọn một lỗi chính theo thứ tự C5:
+
+| Luật | error_reason | Điều kiện chính |
+|---|---|---|
+| 1 | parse_error | JSON không parse được, sai cấu trúc/kiểu/schema |
+| 2 | bad_event_time | Thiếu/null/hỏng timestamp hoặc ngoài tháng UTC của source_file |
+| 3 | bad_event_type | Thiếu/null hoặc string ngoài view/cart/purchase |
+| 4 | missing_id, negative_price | product_id/user_id thiếu/null; hoặc price < 0 |
+
+`category_code`, `brand`, `user_session` thiếu hoặc null hợp lệ; các giá trị
+khác null vẫn phải đúng kiểu C3 (session có format UUID). Luật 1 nhường các
+trường hợp giá trị dành riêng cho luật 2–4 như quy định trong contract C5.
+Khi thiếu ID đồng thời price âm, lý do chính là `missing_id`.
+
+Hai nhóm counter có cùng cơ sở là **số dòng quarantine mới chèn thành công**:
+
+- `clickflow_stream_quarantine_errors_total{reason}`: 5 lý do C5.
+- `clickflow_stream_quality_rule_violations_total{rule}`: 4 luật, nhãn
+  `"1"`, `"2"`, `"3"`, `"4"`; cả bốn được tạo với giá trị 0.
+
+`quality_rule_counts()` gộp `missing_id + negative_price` vào luật 4 và
+kiểm tra đầu vào trước khi cập nhật metrics. Mỗi dòng chỉ tính một luật
+theo lý do ưu tiên; tổng bốn bộ đếm bằng tổng số dòng quarantine mới ghi
+trong vòng đời driver. Không tăng counter trong Python UDF, vì Spark có
+thể thực thi lại task. Retry cùng tọa độ Kafka bị sink bỏ qua nên không
+cộng lại. Counter reset khi driver restart; dùng Delta để đối soát lâu dài.
+
+Chạy các test pure (không cần PySpark):
+
+```bash
+python -m pytest -q tests/test_quality_rules.py tests/test_stream_metrics.py
+python -m pytest -q
+docker compose --env-file .env.example config -q
+```
+
+Workflow `.github/workflows/ci.yml` đã chạy toàn bộ pytest và Compose
+validation, vì vậy tự bao gồm test luật và counter mới. Hai test callback
+listener sẽ skip khi môi trường CI không cài PySpark; test luật/counter vẫn
+chạy đầy đủ.
+
+Kiểm chứng Spark/Delta thật khi storage cluster đã sẵn sàng:
+
+```powershell
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/tests/integration/quality_rule_checks.py
+```
+
+Fixture có 9 message: 1 hợp lệ với cả ba optional field null, 8 lỗi bao phủ
+bốn luật, gồm JSON hỏng, sai schema, null/out-of-month timestamp, sai
+event_type, hai ID null và giá âm. Kết quả kiểm chứng ngày 01/11/2026:
+bronze **1**, quarantine **8**, counter theo luật **2/2/1/3**. Retry cùng
+batch giữ nguyên dữ liệu và bộ đếm; payload nguyên bản và int64 đã được
+đối chiếu, metric đã đọc qua HTTP.
+
+Báo cáo được giữ tại
+`data/raw/quality-rules-verification-70767c47e8a245d784237b2d4331b3cf.json`;
+log: `data/raw/quality-rules-integration.log`. Mỗi lần test dùng prefix UUID
+riêng, không xóa hoặc ghi đè các artifact cũ. Unit test trong image Spark:
+**196 passed**, trong đó **168 test luật/aggregation**.
+
+Kiểm tra tương đương CI đã chạy local trong Python 3.11 Linux: cài toàn bộ
+`requirements.txt` thành công, pytest **194 passed, 2 skipped** (hai callback
+listener cần PySpark), và `docker compose --env-file .env.example config -q`
+đạt. Container `clickflow-quality-ci-20261101` đã thoát với code **0** và
+được giữ lại. Log: `data/raw/quality-rules-ci-python311.log`.
+Đây là kết quả kiểm tra local theo workflow; chưa tạo run GitHub Actions từ
+push/PR. Review độc lập không có phát hiện cần sửa.

@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 
 from prometheus_client import CollectorRegistry, Counter, Gauge, start_http_server
 
+from src.storage.quality_rules import quality_rule_counts
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,6 +40,9 @@ class StreamMetrics:
 
         self._sink_rows = counter("sink_rows_total", "Rows actually inserted into a Delta sink", ("destination",))
         self._quarantine_errors = counter("quarantine_errors_total", "Inserted quarantine rows by error reason", ("reason",))
+        self._quality_rules = counter("quality_rule_violations_total", "Inserted quarantine rows by first-matching rule", ("rule",))
+        for rule in range(1, 5):
+            self._quality_rules.labels(rule=str(rule))
         self._duplicates = counter("duplicates_ignored_total", "Attempted duplicate rows ignored in handled batches")
         self._conflicts = counter("conflicting_event_ids_total", "Conflicting event IDs observed in handled batches")
         self._batches = counter("batches_total", "Spark progress events observed")
@@ -54,10 +59,13 @@ class StreamMetrics:
 
     def record_sink(self, destination, inserted, errors=None):
         """Record only the insert counts returned after a successful sink commit."""
+        rules = quality_rule_counts({} if errors is None else errors) if destination == 'quarantine' else {}
         self._sink_rows.labels(destination=destination).inc(inserted)
         if destination == "quarantine" and errors:
             for reason, count in errors.items():
                 self._quarantine_errors.labels(reason=reason).inc(count)
+        for rule, count in rules.items():
+            self._quality_rules.labels(rule=str(rule)).inc(count)
 
     def record_ignored(self, duplicates, conflicts):
         """Record attempted ignored rows and conflict IDs after batch success."""

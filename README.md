@@ -69,6 +69,13 @@ Luật kiểm tra khi ghi bronze (vi phạm → `quarantine/`, mỗi luật có 
 5. Trùng `event_id` trên toàn bảng C4 → giữ dòng đầu, đếm số bỏ qua; cùng ID khác một trong 9 giá trị C1 → giữ dòng đầu và cảnh báo xung đột.
 
 `category_code`, `brand`, `user_session` null là hợp lệ và vẫn vào bronze.
+
+Metric `clickflow_stream_quality_rule_violations_total{rule="1"|"2"|"3"|"4"}`
+đếm dòng quarantine **mới commit** theo luật lỗi chính. Luật 4 gộp
+`missing_id` và `negative_price`; bản ghi vi phạm nhiều luật chỉ tính lý do
+ưu tiên theo C5. Cả bốn series có giá trị 0 ngay khi driver khởi động;
+retry cùng Kafka offset không tăng lại bộ đếm. Chi tiết tại
+[runbook luật kiểm tra](docs/runbook.md#luật-kiểm-tra-14-và-bộ-đếm).
 Watermark 1 giờ là marker trong progress, không có stateful drop; sự kiện
 hợp lệ, ID mới vẫn được giữ dù đến muộn. Hai MERGE là hai commit Delta riêng:
 reader có thể thấy bronze trước quarantine; retry cùng checkpoint hội tụ

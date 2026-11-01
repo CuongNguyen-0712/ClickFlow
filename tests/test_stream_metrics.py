@@ -25,15 +25,15 @@ def sample(metrics, name, labels=None):
 def test_committed_sink_counts_are_separate_from_observed_progress():
     metrics = make_metrics()
     metrics.record_sink("bronze", 7)
-    metrics.record_sink("quarantine", 3, errors={"invalid_json": 2, "invalid_price": 1})
+    metrics.record_sink("quarantine", 3, errors={"parse_error": 2, "negative_price": 1})
     metrics.record_sink("bronze", 0)
     metrics.record_ignored(duplicates=4, conflicts=2)
     metrics.record_progress({"batchId": 0, "numInputRows": 60})
 
     assert sample(metrics, "sink_rows_total", {"destination": "bronze"}) == 7
     assert sample(metrics, "sink_rows_total", {"destination": "quarantine"}) == 3
-    assert sample(metrics, "quarantine_errors_total", {"reason": "invalid_json"}) == 2
-    assert sample(metrics, "quarantine_errors_total", {"reason": "invalid_price"}) == 1
+    assert sample(metrics, "quarantine_errors_total", {"reason": "parse_error"}) == 2
+    assert sample(metrics, "quarantine_errors_total", {"reason": "negative_price"}) == 1
     assert sample(metrics, "duplicates_ignored_total") == 4
     assert sample(metrics, "conflicting_event_ids_total") == 2
     assert sample(metrics, "input_rows") == 60
@@ -181,3 +181,23 @@ def test_listener_ignores_other_queries_and_success_does_not_count_failure():
     listener.onQueryTerminated(QueryTerminatedEvent(query_id, run_id, None, None))
     assert sample(metrics, "running") == 0
     assert sample(metrics, "failures_total") == 0
+
+
+def test_rule_counters_export_zero_and_group_both_rule_four_reasons():
+    metrics = make_metrics()
+    name = 'quality_rule_violations_total'
+    assert [sample(metrics, name, {'rule': str(rule)}) for rule in range(1, 5)] == [0, 0, 0, 0]
+    metrics.record_sink('quarantine', 8, errors={
+        'parse_error': 2, 'bad_event_time': 2, 'bad_event_type': 1,
+        'missing_id': 2, 'negative_price': 1,
+    })
+    assert [sample(metrics, name, {'rule': str(rule)}) for rule in range(1, 5)] == [2, 2, 1, 3]
+    metrics.record_sink('quarantine', 0, errors={})
+    assert [sample(metrics, name, {'rule': str(rule)}) for rule in range(1, 5)] == [2, 2, 1, 3]
+
+
+def test_unknown_quality_reason_does_not_partly_change_metrics():
+    metrics = make_metrics()
+    with pytest.raises(ValueError):
+        metrics.record_sink('quarantine', 1, errors={'unknown': 1})
+    assert sample(metrics, 'sink_rows_total', {'destination': 'quarantine'}) in (None, 0)

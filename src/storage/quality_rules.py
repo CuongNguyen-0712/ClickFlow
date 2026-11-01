@@ -5,6 +5,7 @@ original payload is never replaced, including malformed JSON and tombstones.
 Duplicate JSON keys are rejected rather than silently choosing one value.
 """
 
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from decimal import Decimal, DecimalException
 import json
@@ -27,6 +28,32 @@ _RFC3339 = re.compile(
 _UUID = re.compile(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}")
 _INT64_MIN = -(2**63)
 _INT64_MAX = 2**63 - 1
+
+_ERROR_RULES = {
+    'parse_error': 1,
+    'bad_event_time': 2,
+    'bad_event_type': 3,
+    'missing_id': 4,
+    'negative_price': 4,
+}
+
+
+def quality_rule_counts(error_counts):
+    """Aggregate first-matching C5 reasons into four rule counters.
+
+    The caller supplies newly committed quarantine rows by reason, not every
+    rule a row could violate. No worker-side increments or mutable global counts.
+    """
+    if not isinstance(error_counts, Mapping):
+        raise ValueError('Quality counts must be a mapping of C5 reasons to counts')
+    counts = {1: 0, 2: 0, 3: 0, 4: 0}
+    for reason, count in error_counts.items():
+        if reason not in _ERROR_RULES:
+            raise ValueError(f'Unknown C5 error reason: {reason}')
+        if type(count) is not int or count < 0:
+            raise ValueError('Quality counts must be nonnegative integers')
+        counts[_ERROR_RULES[reason]] += count
+    return counts
 
 
 def _object_without_duplicates(pairs):

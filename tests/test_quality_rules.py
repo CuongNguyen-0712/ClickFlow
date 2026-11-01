@@ -220,3 +220,36 @@ def test_import_does_not_import_pyspark():
         capture_output=True, text=True, check=False,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_primary_reason_counts_aggregate_into_four_rules():
+    module = importlib.import_module('src.storage.quality_rules')
+    assert hasattr(module, 'quality_rule_counts'), 'Per-rule aggregation is not implemented'
+    errors = {'parse_error': 2, 'bad_event_time': 3, 'bad_event_type': 5,
+              'missing_id': 7, 'negative_price': 11}
+    original = errors.copy()
+    assert module.quality_rule_counts(errors) == {1: 2, 2: 3, 3: 5, 4: 18}
+    assert errors == original
+    assert module.quality_rule_counts({}) == {1: 0, 2: 0, 3: 0, 4: 0}
+
+
+def test_rule_count_mapping_agrees_with_c5_contract():
+    import yaml
+    from src.common.config import ROOT
+
+    module = importlib.import_module('src.storage.quality_rules')
+    assert hasattr(module, 'quality_rule_counts'), 'Per-rule aggregation is not implemented'
+    contract = yaml.safe_load((ROOT / 'contracts/quarantine_events.yaml').read_text(encoding='utf-8'))
+    for case in contract['error_rules']:
+        expected = {1: 0, 2: 0, 3: 0, 4: 0}
+        expected[case['rule']] = 1
+        assert module.quality_rule_counts({case['reason']: 1}) == expected
+
+
+@pytest.mark.parametrize('errors', [None, {'unknown': 1}, {'parse_error': -1},
+                                    {'parse_error': 1.5}, {'parse_error': True}])
+def test_invalid_rule_count_input_is_rejected(errors):
+    module = importlib.import_module('src.storage.quality_rules')
+    assert hasattr(module, 'quality_rule_counts'), 'Per-rule aggregation is not implemented'
+    with pytest.raises(ValueError):
+        module.quality_rule_counts(errors)
