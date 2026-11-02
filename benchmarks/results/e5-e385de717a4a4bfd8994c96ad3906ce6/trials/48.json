@@ -1,0 +1,34 @@
+{
+  "variant_id": "delta_partitioned_before",
+  "query": "event_type_totals",
+  "repetition": 2,
+  "trial_number": 48,
+  "elapsed_ms": 1273.869369999943,
+  "result_sha256": "baa8f55d14ebda8d63f86199527d40e5e9217832e41e2dda86897a51b9f326d3",
+  "expected_sha256": "baa8f55d14ebda8d63f86199527d40e5e9217832e41e2dda86897a51b9f326d3",
+  "result_rows": 3,
+  "scans": [
+    {
+      "numFiles": 8,
+      "scanTime": 156,
+      "pruningTime": 0,
+      "metadataTime": 0,
+      "filesSize": 2093778,
+      "numOutputRows": 50000,
+      "numPartitions": 1,
+      "partition_filters": "[isnotnull(event_date#25658), (event_date#25658 = 2019-11-01)]",
+      "data_filters": "[]",
+      "format": "Parquet"
+    }
+  ],
+  "pruning": {
+    "verified": true,
+    "total_active_files": 16,
+    "selected_files": 8,
+    "partition_filters_present": true,
+    "selected_file_bytes": 2093778,
+    "bytes_definition": "Full sizes of selected files; not actual IO bytes"
+  },
+  "verified": true,
+  "timing": "Driver wall clock: build reader/view, plan, execute and collect; excludes checks/metrics"
+}

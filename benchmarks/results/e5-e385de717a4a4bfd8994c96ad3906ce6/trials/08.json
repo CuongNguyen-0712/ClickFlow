@@ -1,0 +1,33 @@
+{
+  "variant_id": "json_gzip_partitioned",
+  "query": "user_product_lookup",
+  "repetition": 1,
+  "trial_number": 8,
+  "elapsed_ms": 243.51428600004965,
+  "result_sha256": "67f0d07d8ef011d95091db79fa6388fa4edf8dc03741fd98b1fccb65a23d2344",
+  "expected_sha256": "67f0d07d8ef011d95091db79fa6388fa4edf8dc03741fd98b1fccb65a23d2344",
+  "result_rows": 25,
+  "scans": [
+    {
+      "numFiles": 8,
+      "pruningTime": 0,
+      "metadataTime": 0,
+      "filesSize": 1858257,
+      "numOutputRows": 50,
+      "numPartitions": 1,
+      "partition_filters": "[isnotnull(event_date#19494), (event_date#19494 = 2019-11-01)]",
+      "data_filters": "[isnotnull(user_id#19492L), isnotnull(product_id#19487L), (user_id#19492L = 557746614), (product_id#19487L = 1801881)]",
+      "format": "JSON"
+    }
+  ],
+  "pruning": {
+    "verified": true,
+    "total_active_files": 16,
+    "selected_files": 8,
+    "partition_filters_present": true,
+    "selected_file_bytes": 1858257,
+    "bytes_definition": "Full sizes of selected files; not actual IO bytes"
+  },
+  "verified": true,
+  "timing": "Driver wall clock: build reader/view, plan, execute and collect; excludes checks/metrics"
+}

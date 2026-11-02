@@ -1,0 +1,32 @@
+{
+    "benchmark":  {
+                      "Status":  "exited",
+                      "Running":  false,
+                      "Paused":  false,
+                      "Restarting":  false,
+                      "OOMKilled":  false,
+                      "Dead":  false,
+                      "Pid":  0,
+                      "ExitCode":  0,
+                      "Error":  "",
+                      "StartedAt":  "2026-11-02T01:04:04.079358221Z",
+                      "FinishedAt":  "2026-11-02T01:06:28.833223206Z"
+                  },
+    "audit":  {
+                  "Status":  "exited",
+                  "Running":  false,
+                  "Paused":  false,
+                  "Restarting":  false,
+                  "OOMKilled":  false,
+                  "Dead":  false,
+                  "Pid":  0,
+                  "ExitCode":  0,
+                  "Error":  "",
+                  "StartedAt":  "2026-11-02T01:09:08.950090158Z",
+                  "FinishedAt":  "2026-11-02T01:09:31.772118291Z"
+              },
+    "image":  "sha256:8389f7a23ae36ac2586384faf41ba73ead83b2251ae7044018586b923c8667dd",
+    "compose_exitcode":  0,
+    "bash_exitcode":  0,
+    "diff_check_exitcode":  0
+}

@@ -246,6 +246,18 @@ phục hồi cùng checkpoint, không mất/trùng; ngày 01/11 có **10.027 dò
 02/11 có **9.973 dòng**, cả hai `match=true`. Xem [báo cáo và minh chứng](benchmarks/results/e4b-1016f257a6024eb085ee425572dbdaea/README.md)
 và [video terminal 25 giây](benchmarks/results/e4b-1016f257a6024eb085ee425572dbdaea/failover.mp4).
 
+**E5 định dạng / phân vùng:** `bash benchmarks/e5_storage.sh` hoặc `make bench-e5`
+so sánh CSV, JSON gzip và Delta trên **100k dòng thật**, 50k/ngày 01–02/11/2019.
+Tám cấu hình gồm có/không partition và Delta trước/sau OPTIMIZE ZORDER; ba truy vấn
+được đo ba lần mỗi cấu hình, lưu bảng dung lượng/số file/thời gian, biểu đồ và
+query plan trong `benchmarks/results/e5-<id>/`. Xem [runbook E5](docs/runbook.md#e5-format-partition-và-optimize-zorder).
+
+E5 đã **PASS:8 cấu hình /72 lần đo**, mọi dữ liệu và query result khớp nguồn,
+**36/36 trial partitioned có pruning**. Delta partitioned giảm **16→2 active files**
+sau OPTIMIZE ZORDER. [Bảng/biểu đồ chương6–7](benchmarks/results/e5-e385de717a4a4bfd8994c96ad3906ce6/publication/README.md)
+và [phân tích số liệu](benchmarks/results/e5-e385de717a4a4bfd8994c96ad3906ce6/ANALYSIS.md)
+giữ rõ kết quả CSV/JSON nhanh hơn Delta trong cohort nhỏ này.
+
 ## Cấu trúc repo
 
 ```

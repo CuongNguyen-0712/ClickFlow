@@ -1114,3 +1114,93 @@ Primary evidence in `benchmarks/results/e4b-<id>/`:
 Inspect the two CSV rows: each must have `match=True`. A successful terminal ends
 with `E4B_PASS`. The stopped controller, test topic and all MinIO objects are
 retained intentionally; removing them requires the user's deletion permission.
+## E5 format, partition và OPTIMIZE ZORDER
+
+Điều kiện: Docker Desktop Linux đang chạy, Spark master + hai worker + MinIO
+healthy (`make up-storage`), và `data/raw/2019-Nov.csv` đã có local. Không chạy
+Spark job khác trong lúc đo. Từ Git Bash/Linux:
+
+```bash
+bash benchmarks/e5_storage.sh
+# hoặc
+make bench-e5
+```
+
+PowerShell trên máy này:
+
+```powershell
+& 'D:\Git\Git\bin\bash.exe' benchmarks/e5_storage.sh
+```
+
+Mỗi lần tạo container/result directory và prefix MinIO riêng. Chỉ file nguồn
+November và code/config/contract được mount read-only; thư mục kết quả E5 được
+mount writable. Không mount `.env` như file hoặc mount cả workspace. Các giá trị
+MinIO cần thiết được truyền qua môi trường Docker như Spark hiện có.
+
+Cohort mặc định là **100.000 dòng thật**, 50.000 dòng đầu của từng ngày
+01/11/2019 và 02/11/2019; giữ timestamp và số lần xuất hiện gốc. Extractor đọc
+tuần tự tới khi đủ quota, lưu SHA-256 prefix nguồn đã đọc và CSV cohort. Không
+dùng lại mẫu một ngày rồi sửa timestamp. Đây là mẫu kiểm soát theo first-N,
+không phải mẫu ngẫu nhiên đại diện toàn ngày hoặc toàn tháng.
+
+Tất cả format dùng cùng 9 cột C1 có kiểu rõ ràng và `event_date` dạng date suy ra
+từ UTC event_time. CSV không nén; JSON là newline JSON gzip; Delta là Snappy
+Parquet. Tám task ghi được dùng cho mọi format. Hai ngày có thể làm output
+partitioned sinh nhiều file hơn output flat; báo cáo ghi số file thực tế.
+
+Ma trận tám cấu hình:
+
+| Format | Không partition | Partition event_date |
+|---|---|---|
+| CSV | original | original |
+| JSON gzip | original | original |
+| Delta | before / after OPTIMIZE ZORDER | before / after OPTIMIZE ZORDER |
+
+Delta pin version trước/sau thay vì đo hai pha cách xa nhau. Chỉ khi cả tám
+snapshot vượt kiểm tra multiset hai chiều (bao gồm kiểu int64, null và duplicate)
+thì mới đo. OPTIMIZE chạy riêng hai ngày đã đóng đối với bảng partitioned,
+toàn bảng đối với flat; ZORDER `(user_id, product_id)`, target file128MiB.
+Không VACUUM, xóa hay overwrite target cũ. File/version cũ được giữ với retention
+30 ngày, nên physical footprint bao gồm lịch sử và metadata. Hai version của
+cùng bảng dùng chung physical directory; không cộng trùng physical totals.
+
+Ba truy vấn lọc trực tiếp `event_date=DATE '2019-11-01'`:
+
+1. Đếm theo event_type và distinct users.
+2. Top20 product activity/revenue, dùng decimal cho tổng tiền.
+3. Lookup user_id/product_id có thật trong cohort, lấy toàn bộ các cột.
+
+Mỗi cell có một warmup không tính giờ, rồi ba vòng cân bằng với thứ tự xáo trộn
+seed42 (**72 lần đo**). Mọi kết quả phải khớp baseline. Thời gian wall clock gồm
+tạo reader/view, planning, execute và collect; không gồm validation/metrics.
+Không cache DataFrame/kết quả Spark; JVM, OS và MinIO cache vẫn warm. Không gọi
+đây là phép đo cold IO. File sizes được chọn trong scan metric cũng không phải
+số byte IO thực đọc. Pruning cần cả filter `event_date` và `numFiles` thực nhỏ
+hơn số file active; không kết luận từ mỗi từ khóa EXPLAIN.
+
+Kết quả `benchmarks/results/e5-<id>/`:
+
+- `comparison.csv`, `storage.csv`, `query-summary.csv`, `query-trials.csv`:
+  bảng dùng chương6–7, có median/mean/sample SD và các lần đo gốc.
+- `storage-comparison.png`, `query-comparison.png`, `README.md`: biểu đồ và
+  phạm vi diễn giải; không quy kết riêng lợi ích ZORDER từ treatment gộp compaction.
+- `pruning.csv`, `plans/` (24 query plans), `trials/` (72 JSON): scan metrics
+  và bằng chứng pruning được tính lại khi dựng báo cáo.
+- `snapshots/`, `variants.json`: active files so với physical files giữ lại,
+  version và metrics OPTIMIZE.
+- `manifest.json`, `workload.json`, `cohort.csv`, `driver.log`, `verification.json`:
+  nguồn, hash, schema, query, cấu hình và kết luận PASS có kiểm tra.
+
+Nếu dựng biểu đồ/báo cáo gián đoạn sau khi đã có đủ số đo, giữ nguyên chúng và
+dựng lại vào **thư mục mới**; không xóa file để ép chạy lại:
+
+```bash
+python -m src.monitoring.e5_report benchmarks/results/e5-<id> \
+  --output benchmarks/results/e5-<id>/report-v2
+```
+
+Lệnh này cần Python có `benchmarks/requirements.txt`, không cần Spark job mới.
+Nó xác minh đủ72 cell, result hashes, pruning metrics,24plans và8snapshots trước
+khi xuất báo cáo. Muốn đo mới thì chạy lại shell wrapper để tạo scope mới.
+Tài liệu phương pháp: [Delta OPTIMIZE/ZORDER](https://docs.delta.io/optimizations-oss/)
+và [Spark3.5.3 scan metrics](https://github.com/apache/spark/blob/v3.5.3/sql/core/src/main/scala/org/apache/spark/sql/execution/DataSourceScanExec.scala).

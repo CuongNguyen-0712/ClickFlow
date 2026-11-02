@@ -1,0 +1,46 @@
+== Physical Plan ==
+TakeOrderedAndProject (7)
++- * HashAggregate (6)
+   +- Exchange (5)
+      +- * HashAggregate (4)
+         +- * Project (3)
+            +- * ColumnarToRow (2)
+               +- Scan parquet  (1)
+
+
+(1) Scan parquet 
+Output [4]: [event_type#17791, product_id#17792L, price#17796, event_date#17799]
+Batched: true
+Location: PreparedDeltaFileIndex [s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned]
+PartitionFilters: [isnotnull(event_date#17799), (event_date#17799 = 2019-11-01)]
+ReadSchema: struct<event_type:string,product_id:bigint,price:double>
+
+(2) ColumnarToRow [codegen id : 1]
+Input [4]: [event_type#17791, product_id#17792L, price#17796, event_date#17799]
+
+(3) Project [codegen id : 1]
+Output [3]: [event_type#17791, product_id#17792L, price#17796]
+Input [4]: [event_type#17791, product_id#17792L, price#17796, event_date#17799]
+
+(4) HashAggregate [codegen id : 1]
+Input [3]: [event_type#17791, product_id#17792L, price#17796]
+Keys [1]: [product_id#17792L]
+Functions [4]: [partial_sum(CASE WHEN (event_type#17791 = view) THEN 1 ELSE 0 END), partial_sum(CASE WHEN (event_type#17791 = cart) THEN 1 ELSE 0 END), partial_sum(CASE WHEN (event_type#17791 = purchase) THEN 1 ELSE 0 END), partial_sum(CASE WHEN (event_type#17791 = purchase) THEN cast(price#17796 as decimal(20,2)) ELSE 0.00 END)]
+Aggregate Attributes [5]: [sum#17931L, sum#17932L, sum#17933L, sum#17934, isEmpty#17935]
+Results [6]: [product_id#17792L, sum#17936L, sum#17937L, sum#17938L, sum#17939, isEmpty#17940]
+
+(5) Exchange
+Input [6]: [product_id#17792L, sum#17936L, sum#17937L, sum#17938L, sum#17939, isEmpty#17940]
+Arguments: hashpartitioning(product_id#17792L, 8), ENSURE_REQUIREMENTS, [plan_id=5713]
+
+(6) HashAggregate [codegen id : 2]
+Input [6]: [product_id#17792L, sum#17936L, sum#17937L, sum#17938L, sum#17939, isEmpty#17940]
+Keys [1]: [product_id#17792L]
+Functions [4]: [sum(CASE WHEN (event_type#17791 = view) THEN 1 ELSE 0 END), sum(CASE WHEN (event_type#17791 = cart) THEN 1 ELSE 0 END), sum(CASE WHEN (event_type#17791 = purchase) THEN 1 ELSE 0 END), sum(CASE WHEN (event_type#17791 = purchase) THEN cast(price#17796 as decimal(20,2)) ELSE 0.00 END)]
+Aggregate Attributes [4]: [sum(CASE WHEN (event_type#17791 = view) THEN 1 ELSE 0 END)#17814L, sum(CASE WHEN (event_type#17791 = cart) THEN 1 ELSE 0 END)#17815L, sum(CASE WHEN (event_type#17791 = purchase) THEN 1 ELSE 0 END)#17816L, sum(CASE WHEN (event_type#17791 = purchase) THEN cast(price#17796 as decimal(20,2)) ELSE 0.00 END)#17817]
+Results [5]: [product_id#17792L, sum(CASE WHEN (event_type#17791 = view) THEN 1 ELSE 0 END)#17814L AS views#17810L, sum(CASE WHEN (event_type#17791 = cart) THEN 1 ELSE 0 END)#17815L AS carts#17811L, sum(CASE WHEN (event_type#17791 = purchase) THEN 1 ELSE 0 END)#17816L AS purchases#17812L, sum(CASE WHEN (event_type#17791 = purchase) THEN cast(price#17796 as decimal(20,2)) ELSE 0.00 END)#17817 AS revenue#17813]
+
+(7) TakeOrderedAndProject
+Input [5]: [product_id#17792L, views#17810L, carts#17811L, purchases#17812L, revenue#17813]
+Arguments: 20, [purchases#17812L DESC NULLS LAST, product_id#17792L ASC NULLS FIRST], [product_id#17792L, views#17810L, carts#17811L, purchases#17812L, revenue#17813]
+

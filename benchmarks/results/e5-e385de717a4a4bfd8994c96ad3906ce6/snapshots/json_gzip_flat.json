@@ -1,0 +1,75 @@
+{
+  "version": null,
+  "active_files": [
+    {
+      "path": "part-00000-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 475428
+    },
+    {
+      "path": "part-00001-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 474953
+    },
+    {
+      "path": "part-00002-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 476131
+    },
+    {
+      "path": "part-00003-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 469530
+    },
+    {
+      "path": "part-00004-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 469724
+    },
+    {
+      "path": "part-00005-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 472793
+    },
+    {
+      "path": "part-00006-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 467444
+    },
+    {
+      "path": "part-00007-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 479612
+    }
+  ],
+  "physical_files": [
+    {
+      "path": "_SUCCESS",
+      "size": 0
+    },
+    {
+      "path": "part-00000-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 475428
+    },
+    {
+      "path": "part-00001-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 474953
+    },
+    {
+      "path": "part-00002-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 476131
+    },
+    {
+      "path": "part-00003-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 469530
+    },
+    {
+      "path": "part-00004-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 469724
+    },
+    {
+      "path": "part-00005-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 472793
+    },
+    {
+      "path": "part-00006-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 467444
+    },
+    {
+      "path": "part-00007-fb35dc8f-46e1-4c51-9f97-9808c8d8eb78-c000.json.gz",
+      "size": 479612
+    }
+  ]
+}

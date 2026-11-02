@@ -1,0 +1,119 @@
+Collecting confluent-kafka==2.6.0
+  Downloading confluent_kafka-2.6.0-cp310-cp310-manylinux_2_28_x86_64.whl (3.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 9.1 MB/s eta 0:00:00
+Collecting matplotlib==3.9.2
+  Downloading matplotlib-3.9.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (8.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 1.5 MB/s eta 0:00:00
+Collecting pillow>=8
+  Downloading pillow-12.3.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.9/6.9 MB 3.7 MB/s eta 0:00:00
+Collecting kiwisolver>=1.3.1
+  Downloading kiwisolver-1.5.1-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 4.6 MB/s eta 0:00:00
+Collecting packaging>=20.0
+  Downloading packaging-26.3-py3-none-any.whl (129 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 KB 6.5 MB/s eta 0:00:00
+Collecting fonttools>=4.22.0
+  Downloading fonttools-4.65.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.3/5.3 MB 5.1 MB/s eta 0:00:00
+Collecting cycler>=0.10
+  Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Collecting numpy>=1.23
+  Downloading numpy-2.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.8/16.8 MB 7.2 MB/s eta 0:00:00
+Collecting pyparsing>=2.3.1
+  Downloading pyparsing-3.3.3-py3-none-any.whl (126 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.4/126.4 KB 5.5 MB/s eta 0:00:00
+Collecting contourpy>=1.0.1
+  Downloading contourpy-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (325 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 325.0/325.0 KB 8.4 MB/s eta 0:00:00
+Collecting python-dateutil>=2.7
+  Downloading python_dateutil-3.0.0-py2.py3-none-any.whl (94 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 94.7/94.7 KB 11.2 MB/s eta 0:00:00
+Collecting tzdata
+  Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 348.2/348.2 KB 6.5 MB/s eta 0:00:00
+Collecting six>=1.6
+  Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Installing collected packages: confluent-kafka, tzdata, six, pyparsing, pillow, packaging, numpy, kiwisolver, fonttools, cycler, python-dateutil, contourpy, matplotlib
+Successfully installed confluent-kafka-2.6.0 contourpy-1.3.2 cycler-0.12.1 fonttools-4.65.0 kiwisolver-1.5.1 matplotlib-3.9.2 numpy-2.2.6 packaging-26.3 pillow-12.3.0 pyparsing-3.3.3 python-dateutil-3.0.0 six-1.17.0 tzdata-2026.6
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+26/11/02 01:00:35 INFO SparkContext: Running Spark version 3.5.3
+26/11/02 01:00:35 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+26/11/02 01:00:35 INFO SparkContext: Java version 17.0.12
+26/11/02 01:00:35 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/11/02 01:00:35 INFO ResourceUtils: ==============================================================
+26/11/02 01:00:35 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/11/02 01:00:35 INFO ResourceUtils: ==============================================================
+26/11/02 01:00:35 INFO SparkContext: Submitted application: e5-storage-benchmark
+26/11/02 01:00:35 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 2, script: , vendor: , memory -> name: memory, amount: 1500, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/11/02 01:00:35 INFO ResourceProfile: Limiting resource is cpus at 2 tasks per executor
+26/11/02 01:00:35 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/11/02 01:00:35 INFO SecurityManager: Changing view acls to: root
+26/11/02 01:00:35 INFO SecurityManager: Changing modify acls to: root
+26/11/02 01:00:35 INFO SecurityManager: Changing view acls groups to: 
+26/11/02 01:00:35 INFO SecurityManager: Changing modify acls groups to: 
+26/11/02 01:00:35 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/11/02 01:00:35 INFO Utils: Successfully started service 'sparkDriver' on port 39277.
+26/11/02 01:00:35 INFO SparkEnv: Registering MapOutputTracker
+26/11/02 01:00:35 INFO SparkEnv: Registering BlockManagerMaster
+26/11/02 01:00:35 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/11/02 01:00:35 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/11/02 01:00:35 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/11/02 01:00:35 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-02289e33-6ee7-4087-8419-253e3edd997a
+26/11/02 01:00:35 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+26/11/02 01:00:35 INFO SparkEnv: Registering OutputCommitCoordinator
+26/11/02 01:00:35 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/11/02 01:00:35 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/11/02 01:00:36 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/11/02 01:00:36 INFO TransportClientFactory: Successfully created connection to spark-master/172.23.0.6:7077 after 15 ms (0 ms spent in bootstraps)
+26/11/02 01:00:36 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20261102010036-0000
+26/11/02 01:00:36 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261102010036-0000/0 on worker-20261102005545-172.23.0.8-37799 (172.23.0.8:37799) with 2 core(s)
+26/11/02 01:00:36 INFO StandaloneSchedulerBackend: Granted executor ID app-20261102010036-0000/0 on hostPort 172.23.0.8:37799 with 2 core(s), 1500.0 MiB RAM
+26/11/02 01:00:36 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261102010036-0000/1 on worker-20261102005545-172.23.0.7-43103 (172.23.0.7:43103) with 2 core(s)
+26/11/02 01:00:36 INFO StandaloneSchedulerBackend: Granted executor ID app-20261102010036-0000/1 on hostPort 172.23.0.7:43103 with 2 core(s), 1500.0 MiB RAM
+26/11/02 01:00:36 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 42543.
+26/11/02 01:00:36 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:42543
+26/11/02 01:00:36 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/11/02 01:00:36 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 42543, None)
+26/11/02 01:00:36 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:42543 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 42543, None)
+26/11/02 01:00:36 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 42543, None)
+26/11/02 01:00:36 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 42543, None)
+26/11/02 01:00:36 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261102010036-0000/0 is now RUNNING
+26/11/02 01:00:36 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261102010036-0000/1 is now RUNNING
+26/11/02 01:00:36 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+26/11/02 01:02:47 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+Traceback (most recent call last):
+  File "/opt/app/src/monitoring/e5_storage.py", line 369, in <module>
+    main()
+  File "/opt/app/src/monitoring/e5_storage.py", line 363, in main
+    run(spark, args.directory, source_path=args.source, rows_per_day=args.rows_per_day, seed=args.seed)
+  File "/opt/app/src/monitoring/e5_storage.py", line 278, in run
+    fs.copyFromLocalFile(False, False, PathClass(str(directory / 'cohort.csv')), PathClass(source_uri))
+  File "/opt/spark/python/lib/py4j-0.10.9.7-src.zip/py4j/java_gateway.py", line 1322, in __call__
+  File "/opt/spark/python/lib/pyspark.zip/pyspark/errors/exceptions/captured.py", line 179, in deco
+  File "/opt/spark/python/lib/py4j-0.10.9.7-src.zip/py4j/protocol.py", line 326, in get_return_value
+py4j.protocol.Py4JJavaError: An error occurred while calling o41.copyFromLocalFile.
+: org.apache.hadoop.fs.PathIOException: `Cannot get relative path for URI:file:///opt/app/benchmarks/results/e5-7441eedfa7234900896a097241fafe48/cohort.csv': Input/output error
+	at org.apache.hadoop.fs.s3a.impl.CopyFromLocalOperation.getFinalPath(CopyFromLocalOperation.java:360)
+	at org.apache.hadoop.fs.s3a.impl.CopyFromLocalOperation.uploadSourceFromFS(CopyFromLocalOperation.java:222)
+	at org.apache.hadoop.fs.s3a.impl.CopyFromLocalOperation.execute(CopyFromLocalOperation.java:169)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.lambda$copyFromLocalFile$25(S3AFileSystem.java:3920)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.lambda$trackDurationOfOperation$5(IOStatisticsBinding.java:499)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.trackDuration(IOStatisticsBinding.java:444)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2337)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2356)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.copyFromLocalFile(S3AFileSystem.java:3913)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:244)
+	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:374)
+	at py4j.Gateway.invoke(Gateway.java:282)
+	at py4j.commands.AbstractCommand.invokeMethod(AbstractCommand.java:132)
+	at py4j.commands.CallCommand.execute(CallCommand.java:79)
+	at py4j.ClientServerConnection.waitForCommands(ClientServerConnection.java:182)
+	at py4j.ClientServerConnection.run(ClientServerConnection.java:106)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+

@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "variants": 8,
+  "trials": 72,
+  "queries": 3,
+  "rows": 100000,
+  "all_query_results_matched": true,
+  "all_typed_multisets_matched": true,
+  "partitioned_trials_verified": 36,
+  "deletion_performed": false
+}

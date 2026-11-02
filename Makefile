@@ -89,5 +89,9 @@ bench-e3:  ## E3 thật:6 cấu hình × ít nhất3 lần, giữ toàn bộ art
 bench-e4b: ## E4b: kill owned Spark driver, restart unchanged checkpoint, reconcile both days
 	bash benchmarks/e4_failover.sh
 
+.PHONY: bench-e5
+bench-e5: ## E5:100k real rows, eight format/layout variants and72 measured queries
+	bash benchmarks/e5_storage.sh
+
 test:
 	python -m pytest -q

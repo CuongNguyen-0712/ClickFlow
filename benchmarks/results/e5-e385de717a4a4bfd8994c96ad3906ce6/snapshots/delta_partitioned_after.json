@@ -1,0 +1,109 @@
+{
+  "version": 3,
+  "active_files": [
+    {
+      "path": "event_date=2019-11-02/part-00000-9b120237-b1cb-42fd-8bf3-b5c9e3bad049.c000.snappy.parquet",
+      "size": 1203027,
+      "partitionValues": {
+        "event_date": "2019-11-02"
+      }
+    },
+    {
+      "path": "event_date=2019-11-01/part-00000-e230a32b-ad90-4da9-a4c2-b05a164f176c.c000.snappy.parquet",
+      "size": 1264957,
+      "partitionValues": {
+        "event_date": "2019-11-01"
+      }
+    }
+  ],
+  "physical_files": [
+    {
+      "path": "_delta_log/00000000000000000000.json",
+      "size": 1670
+    },
+    {
+      "path": "_delta_log/00000000000000000001.json",
+      "size": 16535
+    },
+    {
+      "path": "_delta_log/00000000000000000002.json",
+      "size": 3949
+    },
+    {
+      "path": "_delta_log/00000000000000000003.json",
+      "size": 3950
+    },
+    {
+      "path": "event_date=2019-11-01/part-00000-5e5487e0-6ff6-4182-ae8e-d9329e310368.c000.snappy.parquet",
+      "size": 264944
+    },
+    {
+      "path": "event_date=2019-11-01/part-00000-e230a32b-ad90-4da9-a4c2-b05a164f176c.c000.snappy.parquet",
+      "size": 1264957
+    },
+    {
+      "path": "event_date=2019-11-01/part-00001-d65196ae-631b-44c1-9861-6fa0405c2a52.c000.snappy.parquet",
+      "size": 261344
+    },
+    {
+      "path": "event_date=2019-11-01/part-00002-f737720a-35e7-4679-baaa-296ce79c13b8.c000.snappy.parquet",
+      "size": 265314
+    },
+    {
+      "path": "event_date=2019-11-01/part-00003-97a9deab-fba6-4ba7-943e-e1d22c8a81f3.c000.snappy.parquet",
+      "size": 260782
+    },
+    {
+      "path": "event_date=2019-11-01/part-00004-4fb89975-56d2-456d-a4d9-7d622507cc8c.c000.snappy.parquet",
+      "size": 261924
+    },
+    {
+      "path": "event_date=2019-11-01/part-00005-0bd962a9-1643-4566-9389-de0ac509cc9a.c000.snappy.parquet",
+      "size": 263471
+    },
+    {
+      "path": "event_date=2019-11-01/part-00006-bde1f53d-39bb-4b01-a88b-166dec21f017.c000.snappy.parquet",
+      "size": 254060
+    },
+    {
+      "path": "event_date=2019-11-01/part-00007-1a50392c-2d1f-4288-b785-7bc2060433be.c000.snappy.parquet",
+      "size": 261939
+    },
+    {
+      "path": "event_date=2019-11-02/part-00000-9b120237-b1cb-42fd-8bf3-b5c9e3bad049.c000.snappy.parquet",
+      "size": 1203027
+    },
+    {
+      "path": "event_date=2019-11-02/part-00000-d5fe3c05-e8f4-47da-93b3-bd739e5fdd60.c000.snappy.parquet",
+      "size": 254333
+    },
+    {
+      "path": "event_date=2019-11-02/part-00001-ffeec86f-77a4-4d2d-aea1-13f2566fa237.c000.snappy.parquet",
+      "size": 253368
+    },
+    {
+      "path": "event_date=2019-11-02/part-00002-5790f0f0-ec30-4f2c-b67e-192d970541f0.c000.snappy.parquet",
+      "size": 254457
+    },
+    {
+      "path": "event_date=2019-11-02/part-00003-74918ccf-3a7d-4ee2-a071-292659345d76.c000.snappy.parquet",
+      "size": 252244
+    },
+    {
+      "path": "event_date=2019-11-02/part-00004-7d62b187-6df8-4b75-8061-0aa1194f5217.c000.snappy.parquet",
+      "size": 252967
+    },
+    {
+      "path": "event_date=2019-11-02/part-00005-74ea2e87-738f-479a-8662-221b2b231111.c000.snappy.parquet",
+      "size": 254430
+    },
+    {
+      "path": "event_date=2019-11-02/part-00006-16179b4d-47f1-4151-9796-b6c08e5745b2.c000.snappy.parquet",
+      "size": 256167
+    },
+    {
+      "path": "event_date=2019-11-02/part-00007-c0ea4a47-f3d2-4556-b59c-2a7a507ebe5a.c000.snappy.parquet",
+      "size": 256979
+    }
+  ]
+}

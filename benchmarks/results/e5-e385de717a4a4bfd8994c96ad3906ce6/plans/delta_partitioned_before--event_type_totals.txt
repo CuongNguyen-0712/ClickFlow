@@ -1,0 +1,72 @@
+== Physical Plan ==
+* Sort (11)
++- Exchange (10)
+   +- * HashAggregate (9)
+      +- Exchange (8)
+         +- * HashAggregate (7)
+            +- * HashAggregate (6)
+               +- Exchange (5)
+                  +- * HashAggregate (4)
+                     +- * Project (3)
+                        +- * ColumnarToRow (2)
+                           +- Scan parquet  (1)
+
+
+(1) Scan parquet 
+Output [3]: [event_type#16272, user_id#16278L, event_date#16280]
+Batched: true
+Location: PreparedDeltaFileIndex [s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned]
+PartitionFilters: [isnotnull(event_date#16280), (event_date#16280 = 2019-11-01)]
+ReadSchema: struct<event_type:string,user_id:bigint>
+
+(2) ColumnarToRow [codegen id : 1]
+Input [3]: [event_type#16272, user_id#16278L, event_date#16280]
+
+(3) Project [codegen id : 1]
+Output [2]: [event_type#16272, user_id#16278L]
+Input [3]: [event_type#16272, user_id#16278L, event_date#16280]
+
+(4) HashAggregate [codegen id : 1]
+Input [2]: [event_type#16272, user_id#16278L]
+Keys [2]: [event_type#16272, user_id#16278L]
+Functions [1]: [partial_count(1)]
+Aggregate Attributes [1]: [count(1)#16293L]
+Results [3]: [event_type#16272, user_id#16278L, count#16716L]
+
+(5) Exchange
+Input [3]: [event_type#16272, user_id#16278L, count#16716L]
+Arguments: hashpartitioning(event_type#16272, user_id#16278L, 8), ENSURE_REQUIREMENTS, [plan_id=5190]
+
+(6) HashAggregate [codegen id : 2]
+Input [3]: [event_type#16272, user_id#16278L, count#16716L]
+Keys [2]: [event_type#16272, user_id#16278L]
+Functions [1]: [merge_count(1)]
+Aggregate Attributes [1]: [count(1)#16293L]
+Results [3]: [event_type#16272, user_id#16278L, count#16716L]
+
+(7) HashAggregate [codegen id : 2]
+Input [3]: [event_type#16272, user_id#16278L, count#16716L]
+Keys [1]: [event_type#16272]
+Functions [2]: [merge_count(1), partial_count(distinct user_id#16278L)]
+Aggregate Attributes [2]: [count(1)#16293L, count(user_id#16278L)#16294L]
+Results [3]: [event_type#16272, count#16716L, count#16719L]
+
+(8) Exchange
+Input [3]: [event_type#16272, count#16716L, count#16719L]
+Arguments: hashpartitioning(event_type#16272, 8), ENSURE_REQUIREMENTS, [plan_id=5195]
+
+(9) HashAggregate [codegen id : 3]
+Input [3]: [event_type#16272, count#16716L, count#16719L]
+Keys [1]: [event_type#16272]
+Functions [2]: [count(1), count(distinct user_id#16278L)]
+Aggregate Attributes [2]: [count(1)#16293L, count(user_id#16278L)#16294L]
+Results [3]: [event_type#16272, count(1)#16293L AS rows#16291L, count(user_id#16278L)#16294L AS users#16292L]
+
+(10) Exchange
+Input [3]: [event_type#16272, rows#16291L, users#16292L]
+Arguments: rangepartitioning(event_type#16272 ASC NULLS FIRST, 8), ENSURE_REQUIREMENTS, [plan_id=5199]
+
+(11) Sort [codegen id : 4]
+Input [3]: [event_type#16272, rows#16291L, users#16292L]
+Arguments: [event_type#16272 ASC NULLS FIRST], true, 0
+

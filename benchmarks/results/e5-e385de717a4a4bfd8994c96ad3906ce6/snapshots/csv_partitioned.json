@@ -1,0 +1,139 @@
+{
+  "version": null,
+  "active_files": [
+    {
+      "path": "event_date=2019-11-01/part-00000-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 846460
+    },
+    {
+      "path": "event_date=2019-11-01/part-00001-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 830793
+    },
+    {
+      "path": "event_date=2019-11-01/part-00002-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 843005
+    },
+    {
+      "path": "event_date=2019-11-01/part-00003-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 825295
+    },
+    {
+      "path": "event_date=2019-11-01/part-00004-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 827695
+    },
+    {
+      "path": "event_date=2019-11-01/part-00005-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 839464
+    },
+    {
+      "path": "event_date=2019-11-01/part-00006-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 799724
+    },
+    {
+      "path": "event_date=2019-11-01/part-00007-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 830051
+    },
+    {
+      "path": "event_date=2019-11-02/part-00000-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 828575
+    },
+    {
+      "path": "event_date=2019-11-02/part-00001-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 828806
+    },
+    {
+      "path": "event_date=2019-11-02/part-00002-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 835286
+    },
+    {
+      "path": "event_date=2019-11-02/part-00003-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 814034
+    },
+    {
+      "path": "event_date=2019-11-02/part-00004-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 816872
+    },
+    {
+      "path": "event_date=2019-11-02/part-00005-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 822664
+    },
+    {
+      "path": "event_date=2019-11-02/part-00006-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 839098
+    },
+    {
+      "path": "event_date=2019-11-02/part-00007-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 844326
+    }
+  ],
+  "physical_files": [
+    {
+      "path": "_SUCCESS",
+      "size": 0
+    },
+    {
+      "path": "event_date=2019-11-01/part-00000-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 846460
+    },
+    {
+      "path": "event_date=2019-11-01/part-00001-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 830793
+    },
+    {
+      "path": "event_date=2019-11-01/part-00002-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 843005
+    },
+    {
+      "path": "event_date=2019-11-01/part-00003-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 825295
+    },
+    {
+      "path": "event_date=2019-11-01/part-00004-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 827695
+    },
+    {
+      "path": "event_date=2019-11-01/part-00005-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 839464
+    },
+    {
+      "path": "event_date=2019-11-01/part-00006-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 799724
+    },
+    {
+      "path": "event_date=2019-11-01/part-00007-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 830051
+    },
+    {
+      "path": "event_date=2019-11-02/part-00000-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 828575
+    },
+    {
+      "path": "event_date=2019-11-02/part-00001-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 828806
+    },
+    {
+      "path": "event_date=2019-11-02/part-00002-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 835286
+    },
+    {
+      "path": "event_date=2019-11-02/part-00003-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 814034
+    },
+    {
+      "path": "event_date=2019-11-02/part-00004-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 816872
+    },
+    {
+      "path": "event_date=2019-11-02/part-00005-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 822664
+    },
+    {
+      "path": "event_date=2019-11-02/part-00006-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 839098
+    },
+    {
+      "path": "event_date=2019-11-02/part-00007-8ce1cd88-829c-4a23-a7dc-8c32f5f83853.c000.csv",
+      "size": 844326
+    }
+  ]
+}
