@@ -1,0 +1,27 @@
+== Physical Plan ==
+* Sort (4)
++- Exchange (3)
+   +- * Filter (2)
+      +- Scan csv  (1)
+
+
+(1) Scan csv 
+Output [10]: [event_time#14212, event_type#14213, product_id#14214L, category_id#14215L, category_code#14216, brand#14217, price#14218, user_id#14219L, user_session#14220, event_date#14221]
+Batched: false
+Location: InMemoryFileIndex [s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/csv_partitioned]
+PartitionFilters: [isnotnull(event_date#14221), (event_date#14221 = 2019-11-01)]
+PushedFilters: [IsNotNull(user_id), IsNotNull(product_id), EqualTo(user_id,557746614), EqualTo(product_id,1801881)]
+ReadSchema: struct<event_time:timestamp,event_type:string,product_id:bigint,category_id:bigint,category_code:string,brand:string,price:double,user_id:bigint,user_session:string>
+
+(2) Filter [codegen id : 1]
+Input [10]: [event_time#14212, event_type#14213, product_id#14214L, category_id#14215L, category_code#14216, brand#14217, price#14218, user_id#14219L, user_session#14220, event_date#14221]
+Condition : (((isnotnull(user_id#14219L) AND isnotnull(product_id#14214L)) AND (user_id#14219L = 557746614)) AND (product_id#14214L = 1801881))
+
+(3) Exchange
+Input [10]: [event_time#14212, event_type#14213, product_id#14214L, category_id#14215L, category_code#14216, brand#14217, price#14218, user_id#14219L, user_session#14220, event_date#14221]
+Arguments: rangepartitioning(event_time#14212 ASC NULLS FIRST, event_type#14213 ASC NULLS FIRST, product_id#14214L ASC NULLS FIRST, category_id#14215L ASC NULLS FIRST, category_code#14216 ASC NULLS FIRST, brand#14217 ASC NULLS FIRST, price#14218 ASC NULLS FIRST, user_id#14219L ASC NULLS FIRST, user_session#14220 ASC NULLS FIRST, event_date#14221 ASC NULLS FIRST, 8), ENSURE_REQUIREMENTS, [plan_id=3981]
+
+(4) Sort [codegen id : 2]
+Input [10]: [event_time#14212, event_type#14213, product_id#14214L, category_id#14215L, category_code#14216, brand#14217, price#14218, user_id#14219L, user_session#14220, event_date#14221]
+Arguments: [event_time#14212 ASC NULLS FIRST, event_type#14213 ASC NULLS FIRST, product_id#14214L ASC NULLS FIRST, category_id#14215L ASC NULLS FIRST, category_code#14216 ASC NULLS FIRST, brand#14217 ASC NULLS FIRST, price#14218 ASC NULLS FIRST, user_id#14219L ASC NULLS FIRST, user_session#14220 ASC NULLS FIRST, event_date#14221 ASC NULLS FIRST], true, 0
+

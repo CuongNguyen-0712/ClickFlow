@@ -1,0 +1,142 @@
+[
+  {
+    "product_id": 1004856,
+    "views": 471,
+    "carts": 26,
+    "purchases": 24,
+    "revenue": "3082.08"
+  },
+  {
+    "product_id": 4804056,
+    "views": 225,
+    "carts": 19,
+    "purchases": 17,
+    "revenue": "2729.69"
+  },
+  {
+    "product_id": 1004767,
+    "views": 439,
+    "carts": 14,
+    "purchases": 13,
+    "revenue": "3154.19"
+  },
+  {
+    "product_id": 1005115,
+    "views": 380,
+    "carts": 21,
+    "purchases": 13,
+    "revenue": "12343.11"
+  },
+  {
+    "product_id": 1005105,
+    "views": 277,
+    "carts": 7,
+    "purchases": 11,
+    "revenue": "14834.71"
+  },
+  {
+    "product_id": 1801881,
+    "views": 79,
+    "carts": 15,
+    "purchases": 11,
+    "revenue": "5376.80"
+  },
+  {
+    "product_id": 1002544,
+    "views": 204,
+    "carts": 7,
+    "purchases": 9,
+    "revenue": "4124.52"
+  },
+  {
+    "product_id": 1004739,
+    "views": 99,
+    "carts": 5,
+    "purchases": 9,
+    "revenue": "1827.81"
+  },
+  {
+    "product_id": 1004870,
+    "views": 206,
+    "carts": 12,
+    "purchases": 8,
+    "revenue": "2202.00"
+  },
+  {
+    "product_id": 1004249,
+    "views": 222,
+    "carts": 10,
+    "purchases": 7,
+    "revenue": "5056.80"
+  },
+  {
+    "product_id": 1004833,
+    "views": 230,
+    "carts": 12,
+    "purchases": 7,
+    "revenue": "1205.61"
+  },
+  {
+    "product_id": 1004741,
+    "views": 157,
+    "carts": 5,
+    "purchases": 6,
+    "revenue": "1139.82"
+  },
+  {
+    "product_id": 1004836,
+    "views": 165,
+    "carts": 8,
+    "purchases": 6,
+    "revenue": "1379.40"
+  },
+  {
+    "product_id": 4804295,
+    "views": 127,
+    "carts": 10,
+    "purchases": 6,
+    "revenue": "136.80"
+  },
+  {
+    "product_id": 4804607,
+    "views": 9,
+    "carts": 0,
+    "purchases": 6,
+    "revenue": "369.90"
+  },
+  {
+    "product_id": 1005100,
+    "views": 109,
+    "carts": 3,
+    "purchases": 5,
+    "revenue": "698.40"
+  },
+  {
+    "product_id": 1005160,
+    "views": 223,
+    "carts": 9,
+    "purchases": 5,
+    "revenue": "1060.40"
+  },
+  {
+    "product_id": 5100816,
+    "views": 160,
+    "carts": 13,
+    "purchases": 5,
+    "revenue": "147.90"
+  },
+  {
+    "product_id": 1004750,
+    "views": 92,
+    "carts": 2,
+    "purchases": 4,
+    "revenue": "780.24"
+  },
+  {
+    "product_id": 1004838,
+    "views": 123,
+    "carts": 2,
+    "purchases": 4,
+    "revenue": "715.48"
+  }
+]

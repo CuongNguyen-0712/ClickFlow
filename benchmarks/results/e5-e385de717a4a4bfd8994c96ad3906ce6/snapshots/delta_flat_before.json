@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "active_files": [
+    {
+      "path": "part-00005-9843dff1-953a-4ab9-ba81-bdbc63ba8a4f-c000.snappy.parquet",
+      "size": 508930,
+      "partitionValues": {}
+    },
+    {
+      "path": "part-00003-3491fa0b-1a3c-4751-bdfb-72957518b6c4-c000.snappy.parquet",
+      "size": 503994,
+      "partitionValues": {}
+    },
+    {
+      "path": "part-00007-e6be5165-ffec-4625-b029-b7f234aeca73-c000.snappy.parquet",
+      "size": 509238,
+      "partitionValues": {}
+    },
+    {
+      "path": "part-00000-0cb39036-3cb9-445b-ad38-a164d068039a-c000.snappy.parquet",
+      "size": 511260,
+      "partitionValues": {}
+    },
+    {
+      "path": "part-00004-7a0fec07-f3b5-4c05-8220-9aad4cd4a9b6-c000.snappy.parquet",
+      "size": 505715,
+      "partitionValues": {}
+    },
+    {
+      "path": "part-00006-c1ea5c7f-12fc-4f84-9826-f42427b175f3-c000.snappy.parquet",
+      "size": 501624,
+      "partitionValues": {}
+    },
+    {
+      "path": "part-00001-5d147143-7871-43e2-aaf9-420d67560073-c000.snappy.parquet",
+      "size": 505757,
+      "partitionValues": {}
+    },
+    {
+      "path": "part-00002-285de8bf-e103-4414-89e0-98276ead4a2c-c000.snappy.parquet",
+      "size": 510879,
+      "partitionValues": {}
+    }
+  ],
+  "physical_files": [
+    {
+      "path": "_delta_log/00000000000000000000.json",
+      "size": 1644
+    },
+    {
+      "path": "_delta_log/00000000000000000001.json",
+      "size": 8723
+    },
+    {
+      "path": "_delta_log/00000000000000000002.json",
+      "size": 3584
+    },
+    {
+      "path": "part-00000-0cb39036-3cb9-445b-ad38-a164d068039a-c000.snappy.parquet",
+      "size": 511260
+    },
+    {
+      "path": "part-00000-9c4865ed-5667-4f56-bf0a-42144bd59596-c000.snappy.parquet",
+      "size": 2462647
+    },
+    {
+      "path": "part-00001-5d147143-7871-43e2-aaf9-420d67560073-c000.snappy.parquet",
+      "size": 505757
+    },
+    {
+      "path": "part-00002-285de8bf-e103-4414-89e0-98276ead4a2c-c000.snappy.parquet",
+      "size": 510879
+    },
+    {
+      "path": "part-00003-3491fa0b-1a3c-4751-bdfb-72957518b6c4-c000.snappy.parquet",
+      "size": 503994
+    },
+    {
+      "path": "part-00004-7a0fec07-f3b5-4c05-8220-9aad4cd4a9b6-c000.snappy.parquet",
+      "size": 505715
+    },
+    {
+      "path": "part-00005-9843dff1-953a-4ab9-ba81-bdbc63ba8a4f-c000.snappy.parquet",
+      "size": 508930
+    },
+    {
+      "path": "part-00006-c1ea5c7f-12fc-4f84-9826-f42427b175f3-c000.snappy.parquet",
+      "size": 501624
+    },
+    {
+      "path": "part-00007-e6be5165-ffec-4625-b029-b7f234aeca73-c000.snappy.parquet",
+      "size": 509238
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# E4b native checkpoint observer and a portable FFmpeg binary for the terminal video.
+minio==7.2.10
+imageio-ffmpeg==0.5.1

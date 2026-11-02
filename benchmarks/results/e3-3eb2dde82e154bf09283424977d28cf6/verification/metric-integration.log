@@ -1,0 +1,70 @@
+docker : 26/11/01 15:02:56 INFO SparkContext: Running Spark version 3.5.3
+At line:2 char:1
++ docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (26/11/01 15:02:...k version 3.5.3:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+26/11/01 15:02:56 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+26/11/01 15:02:56 INFO SparkContext: Java version 17.0.12
+26/11/01 15:02:56 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java 
+classes where applicable
+26/11/01 15:02:56 INFO ResourceUtils: ==============================================================
+26/11/01 15:02:56 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/11/01 15:02:56 INFO ResourceUtils: ==============================================================
+26/11/01 15:02:56 INFO SparkContext: Submitted application: latency-metric-checks
+26/11/01 15:02:56 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, 
+amount: 2, script: , vendor: , memory -> name: memory, amount: 1500, script: , vendor: , offHeap -> name: offHeap, 
+amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/11/01 15:02:56 INFO ResourceProfile: Limiting resource is cpus at 2 tasks per executor
+26/11/01 15:02:56 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/11/01 15:02:57 INFO SecurityManager: Changing view acls to: spark
+26/11/01 15:02:57 INFO SecurityManager: Changing modify acls to: spark
+26/11/01 15:02:57 INFO SecurityManager: Changing view acls groups to: 
+26/11/01 15:02:57 INFO SecurityManager: Changing modify acls groups to: 
+26/11/01 15:02:57 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view 
+permissions: spark; groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify 
+permissions: EMPTY
+26/11/01 15:02:57 INFO Utils: Successfully started service 'sparkDriver' on port 36719.
+26/11/01 15:02:57 INFO SparkEnv: Registering MapOutputTracker
+26/11/01 15:02:57 INFO SparkEnv: Registering BlockManagerMaster
+26/11/01 15:02:57 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting 
+topology information
+26/11/01 15:02:57 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/11/01 15:02:57 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/11/01 15:02:57 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-40abd05b-5c9b-4192-a54f-d61238f3ec50
+26/11/01 15:02:57 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+26/11/01 15:02:57 INFO SparkEnv: Registering OutputCommitCoordinator
+26/11/01 15:02:57 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/11/01 15:02:57 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/11/01 15:02:57 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/11/01 15:02:57 INFO TransportClientFactory: Successfully created connection to spark-master/172.23.0.3:7077 after 
+20 ms (0 ms spent in bootstraps)
+26/11/01 15:02:57 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20261101150257-0035
+26/11/01 15:02:57 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101150257-0035/0 on 
+worker-20261101111639-172.23.0.4-37435 (172.23.0.4:37435) with 2 core(s)
+26/11/01 15:02:57 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101150257-0035/0 on hostPort 
+172.23.0.4:37435 with 2 core(s), 1500.0 MiB RAM
+26/11/01 15:02:57 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101150257-0035/1 on 
+worker-20261101111639-172.23.0.5-36921 (172.23.0.5:36921) with 2 core(s)
+26/11/01 15:02:57 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101150257-0035/1 on hostPort 
+172.23.0.5:36921 with 2 core(s), 1500.0 MiB RAM
+26/11/01 15:02:57 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' 
+on port 38865.
+26/11/01 15:02:57 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:38865
+26/11/01 15:02:57 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication 
+policy
+26/11/01 15:02:57 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 38865, None)
+26/11/01 15:02:57 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:38865 with 434.4 MiB RAM, 
+BlockManagerId(driver, spark-master, 38865, None)
+26/11/01 15:02:57 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 38865, None)
+26/11/01 15:02:57 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 38865, None)
+26/11/01 15:02:58 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261101150257-0035/1 is now RUNNING
+26/11/01 15:02:58 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261101150257-0035/0 is now RUNNING
+26/11/01 15:02:58 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached 
+minRegisteredResourcesRatio: 0.0
+26/11/01 15:03:01 WARN MetricsConfig: Cannot locate configuration: tried 
+hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+26/11/01 15:03:10 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This 
+behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+{"event": "latency_metrics_verified", "path": "s3a://lake/_checkpoints/latency-metrics-104fd939ef4c4013850fc8a64ba8cd26", "latency": {"rows": 6, "unique_event_ids": 6, "measured_pairs": 4, "produced_at_null_rows": 1, "ingested_at_null_rows": 1, "negative_latency_rows": 1, "min_latency_ms": -1.0, "max_latency_ms": 4.0, "p50_latency_ms": 1.5, "p95_latency_ms": 3.6999999999999993, "delta_version": 1, "latency_definition": "signed batch-start ingested_at minus produced_at; milliseconds"}, "files": {"active_files_after": 2, "active_bytes_after": 2220, "file_snapshot_version": 1, "small_file_threshold_bytes": 16777216, "files_created": 1, "bytes_created": 1123, "small_files_created": 1}, "empty": {"rows": 0, "unique_event_ids": 0, "measured_pairs": 0, "produced_at_null_rows": 0, "ingested_at_null_rows": 0, "negative_latency_rows": 0, "min_latency_ms": null, "max_latency_ms": null, "p50_latency_ms": null, "p95_latency_ms": null, "delta_version": 1, "latency_definition": "signed batch-start ingested_at minus produced_at; milliseconds"}, "artifacts_retained": true, "report": "/opt/app/data/raw/e3-latency-metrics-104fd939ef4c4013850fc8a64ba8cd26.json"}

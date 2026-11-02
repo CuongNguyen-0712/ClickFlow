@@ -1,0 +1,79 @@
+# HELP clickflow_stream_sink_rows_total Rows actually inserted into a Delta sink
+# TYPE clickflow_stream_sink_rows_total counter
+clickflow_stream_sink_rows_total{destination="bronze"} 14000.0
+clickflow_stream_sink_rows_total{destination="quarantine"} 0.0
+# HELP clickflow_stream_sink_rows_created Rows actually inserted into a Delta sink
+# TYPE clickflow_stream_sink_rows_created gauge
+clickflow_stream_sink_rows_created{destination="bronze"} 1.7935518847016304e+09
+clickflow_stream_sink_rows_created{destination="quarantine"} 1.793551886841039e+09
+# HELP clickflow_stream_quarantine_errors_total Inserted quarantine rows by error reason
+# TYPE clickflow_stream_quarantine_errors_total counter
+# HELP clickflow_stream_quality_rule_violations_total Inserted quarantine rows by first-matching rule
+# TYPE clickflow_stream_quality_rule_violations_total counter
+clickflow_stream_quality_rule_violations_total{rule="1"} 0.0
+clickflow_stream_quality_rule_violations_total{rule="2"} 0.0
+clickflow_stream_quality_rule_violations_total{rule="3"} 0.0
+clickflow_stream_quality_rule_violations_total{rule="4"} 0.0
+# HELP clickflow_stream_quality_rule_violations_created Inserted quarantine rows by first-matching rule
+# TYPE clickflow_stream_quality_rule_violations_created gauge
+clickflow_stream_quality_rule_violations_created{rule="1"} 1.7935518731889803e+09
+clickflow_stream_quality_rule_violations_created{rule="2"} 1.793551873188988e+09
+clickflow_stream_quality_rule_violations_created{rule="3"} 1.793551873188992e+09
+clickflow_stream_quality_rule_violations_created{rule="4"} 1.793551873188998e+09
+# HELP clickflow_stream_duplicates_ignored_total Attempted duplicate rows ignored in handled batches
+# TYPE clickflow_stream_duplicates_ignored_total counter
+clickflow_stream_duplicates_ignored_total 5000.0
+# HELP clickflow_stream_duplicates_ignored_created Attempted duplicate rows ignored in handled batches
+# TYPE clickflow_stream_duplicates_ignored_created gauge
+clickflow_stream_duplicates_ignored_created 1.7935518731890008e+09
+# HELP clickflow_stream_duplicates_dropped_total Rows dropped by Spark stateful deduplication
+# TYPE clickflow_stream_duplicates_dropped_total counter
+clickflow_stream_duplicates_dropped_total 0.0
+# HELP clickflow_stream_duplicates_dropped_created Rows dropped by Spark stateful deduplication
+# TYPE clickflow_stream_duplicates_dropped_created gauge
+clickflow_stream_duplicates_dropped_created 1.7935518731890087e+09
+# HELP clickflow_stream_late_records_dropped_total Rows dropped by Spark stateful operators after the watermark
+# TYPE clickflow_stream_late_records_dropped_total counter
+clickflow_stream_late_records_dropped_total 0.0
+# HELP clickflow_stream_late_records_dropped_created Rows dropped by Spark stateful operators after the watermark
+# TYPE clickflow_stream_late_records_dropped_created gauge
+clickflow_stream_late_records_dropped_created 1.793551873189014e+09
+# HELP clickflow_stream_conflicting_event_ids_total Conflicting event IDs observed in handled batches
+# TYPE clickflow_stream_conflicting_event_ids_total counter
+clickflow_stream_conflicting_event_ids_total 0.0
+# HELP clickflow_stream_conflicting_event_ids_created Conflicting event IDs observed in handled batches
+# TYPE clickflow_stream_conflicting_event_ids_created gauge
+clickflow_stream_conflicting_event_ids_created 1.7935518731890206e+09
+# HELP clickflow_stream_batches_total Spark progress events observed
+# TYPE clickflow_stream_batches_total counter
+clickflow_stream_batches_total 4.0
+# HELP clickflow_stream_batches_created Spark progress events observed
+# TYPE clickflow_stream_batches_created gauge
+clickflow_stream_batches_created 1.7935518731890266e+09
+# HELP clickflow_stream_failures_total Query terminations with an exception
+# TYPE clickflow_stream_failures_total counter
+clickflow_stream_failures_total 0.0
+# HELP clickflow_stream_failures_created Query terminations with an exception
+# TYPE clickflow_stream_failures_created gauge
+clickflow_stream_failures_created 1.793551873189033e+09
+# HELP clickflow_stream_running Whether the query is running
+# TYPE clickflow_stream_running gauge
+clickflow_stream_running 1.0
+# HELP clickflow_stream_input_rows_per_second Spark-reported source input rows per second
+# TYPE clickflow_stream_input_rows_per_second gauge
+clickflow_stream_input_rows_per_second 1239.0968141045469
+# HELP clickflow_stream_processed_rows_per_second Spark-reported processing rows per second
+# TYPE clickflow_stream_processed_rows_per_second gauge
+clickflow_stream_processed_rows_per_second 1209.3584905660377
+# HELP clickflow_stream_batch_id Latest observed Spark batch ID
+# TYPE clickflow_stream_batch_id gauge
+clickflow_stream_batch_id 6.0
+# HELP clickflow_stream_batch_duration_milliseconds Latest Spark triggerExecution duration in milliseconds
+# TYPE clickflow_stream_batch_duration_milliseconds gauge
+clickflow_stream_batch_duration_milliseconds 6625.0
+# HELP clickflow_stream_input_rows Latest Spark-reported input rows, which may include repeated scans
+# TYPE clickflow_stream_input_rows gauge
+clickflow_stream_input_rows 8012.0
+# HELP clickflow_stream_event_watermark_seconds Latest available event-time watermark as Unix seconds
+# TYPE clickflow_stream_event_watermark_seconds gauge
+clickflow_stream_event_watermark_seconds 1.572649486e+09

@@ -16,6 +16,11 @@ Mỗi chương một file `report/chNN_*.md`, hình vào `report/figures/`, số
 | Phụ lục | Cấu hình Kafka (TV2), schema C1–C5 (TV3), `contribution.md`, `ai_usage.md` | TV2, TV3, TV4 | `configs/`, `contracts/`, `docs/` | BIG-58, BIG-59 |
 
 Quy ước:
+
+Phần TV3 đã có bản viết: [chương2](ch02_data_lake_delta.md),
+[chương4 Storage](ch04_storage.md), [nguồn tham khảo](references_storage.md)
+và [hướng dẫn ghép](README.md). Các mục này ghép với phần Kafka/kiến trúc của TV2.
+
 - Hình: `report/figures/<chương>_<tên>.png`, kèm chú thích và nguồn số liệu.
 - Số liệu trong báo cáo phải có file gốc trong `benchmarks/results/` hoặc output notebook.
 - Viết song song với thực nghiệm từ tuần 5; tuần 6 chỉ ghép, review chéo, xuất PDF.

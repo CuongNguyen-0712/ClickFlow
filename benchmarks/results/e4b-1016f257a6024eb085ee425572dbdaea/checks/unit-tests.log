@@ -1,0 +1,138 @@
+﻿Python 3.11.18
+Requirement already satisfied: pandas==2.2.3 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (2.2.3)
+Requirement already satisfied: pyarrow==17.0.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (17.0.0)
+Requirement already satisfied: confluent-kafka==2.6.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (2.6.0)
+Requirement already satisfied: aiokafka==0.12.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (0.12.0)
+Requirement already satisfied: fastapi==0.115.4 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (0.115.4)
+Requirement already satisfied: uvicorn==0.32.0 in /usr/local/lib/python3.11/site-packages (from uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (0.32.0)
+Requirement already satisfied: pydantic==2.9.2 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 7)) (2.9.2)
+Requirement already satisfied: httpx==0.27.2 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 8)) (0.27.2)
+Requirement already satisfied: pyyaml==6.0.2 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 9)) (6.0.2)
+Requirement already satisfied: prometheus-client==0.21.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 10)) (0.21.0)
+Requirement already satisfied: jsonschema==4.23.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 11)) (4.23.0)
+Requirement already satisfied: s3fs==2024.10.0 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 12)) (2024.10.0)
+Requirement already satisfied: pytest==8.3.3 in /usr/local/lib/python3.11/site-packages (from -r requirements.txt (line 13)) (8.3.3)
+Requirement already satisfied: pyspark==3.5.3 in /usr/local/lib/python3.11/site-packages (from -r requirements-dev.txt (line 3)) (3.5.3)
+Requirement already satisfied: matplotlib==3.9.2 in /usr/local/lib/python3.11/site-packages (from -r benchmarks/requirements.txt (line 2)) (3.9.2)
+Requirement already satisfied: minio==7.2.10 in /usr/local/lib/python3.11/site-packages (from -r benchmarks/e4b-requirements.txt (line 2)) (7.2.10)
+Requirement already satisfied: imageio-ffmpeg==0.5.1 in /usr/local/lib/python3.11/site-packages (from -r benchmarks/e4b-requirements.txt (line 3)) (0.5.1)
+Requirement already satisfied: numpy>=1.23.2 in /usr/local/lib/python3.11/site-packages (from pandas==2.2.3->-r requirements.txt (line 1)) (2.4.6)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.11/site-packages (from pandas==2.2.3->-r requirements.txt (line 1)) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.11/site-packages (from pandas==2.2.3->-r requirements.txt (line 1)) (2026.6)
+Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.11/site-packages (from pandas==2.2.3->-r requirements.txt (line 1)) (2026.6)
+Requirement already satisfied: async-timeout in /usr/local/lib/python3.11/site-packages (from aiokafka==0.12.0->-r requirements.txt (line 4)) (5.0.1)
+Requirement already satisfied: packaging in /usr/local/lib/python3.11/site-packages (from aiokafka==0.12.0->-r requirements.txt (line 4)) (26.3)
+Requirement already satisfied: typing-extensions>=4.10.0 in /usr/local/lib/python3.11/site-packages (from aiokafka==0.12.0->-r requirements.txt (line 4)) (4.16.0)
+Requirement already satisfied: starlette<0.42.0,>=0.40.0 in /usr/local/lib/python3.11/site-packages (from fastapi==0.115.4->-r requirements.txt (line 5)) (0.41.3)
+Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.11/site-packages (from uvicorn==0.32.0->uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (8.5.0)
+Requirement already satisfied: h11>=0.8 in /usr/local/lib/python3.11/site-packages (from uvicorn==0.32.0->uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (0.16.0)
+Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.11/site-packages (from pydantic==2.9.2->-r requirements.txt (line 7)) (0.8.0)
+Requirement already satisfied: pydantic-core==2.23.4 in /usr/local/lib/python3.11/site-packages (from pydantic==2.9.2->-r requirements.txt (line 7)) (2.23.4)
+Requirement already satisfied: anyio in /usr/local/lib/python3.11/site-packages (from httpx==0.27.2->-r requirements.txt (line 8)) (4.16.0)
+Requirement already satisfied: certifi in /usr/local/lib/python3.11/site-packages (from httpx==0.27.2->-r requirements.txt (line 8)) (2026.10.23)
+Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.11/site-packages (from httpx==0.27.2->-r requirements.txt (line 8)) (1.0.9)
+Requirement already satisfied: idna in /usr/local/lib/python3.11/site-packages (from httpx==0.27.2->-r requirements.txt (line 8)) (3.20)
+Requirement already satisfied: sniffio in /usr/local/lib/python3.11/site-packages (from httpx==0.27.2->-r requirements.txt (line 8)) (1.3.1)
+Requirement already satisfied: attrs>=22.2.0 in /usr/local/lib/python3.11/site-packages (from jsonschema==4.23.0->-r requirements.txt (line 11)) (26.1.0)
+Requirement already satisfied: jsonschema-specifications>=2023.03.6 in /usr/local/lib/python3.11/site-packages (from jsonschema==4.23.0->-r requirements.txt (line 11)) (2025.9.1)
+Requirement already satisfied: referencing>=0.28.4 in /usr/local/lib/python3.11/site-packages (from jsonschema==4.23.0->-r requirements.txt (line 11)) (0.37.0)
+Requirement already satisfied: rpds-py>=0.7.1 in /usr/local/lib/python3.11/site-packages (from jsonschema==4.23.0->-r requirements.txt (line 11)) (2026.9.1)
+Requirement already satisfied: aiobotocore<3.0.0,>=2.5.4 in /usr/local/lib/python3.11/site-packages (from s3fs==2024.10.0->-r requirements.txt (line 12)) (2.26.0)
+Requirement already satisfied: fsspec==2024.10.0.* in /usr/local/lib/python3.11/site-packages (from s3fs==2024.10.0->-r requirements.txt (line 12)) (2024.10.0)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in /usr/local/lib/python3.11/site-packages (from s3fs==2024.10.0->-r requirements.txt (line 12)) (3.14.5)
+Requirement already satisfied: iniconfig in /usr/local/lib/python3.11/site-packages (from pytest==8.3.3->-r requirements.txt (line 13)) (2.3.1)
+Requirement already satisfied: pluggy<2,>=1.5 in /usr/local/lib/python3.11/site-packages (from pytest==8.3.3->-r requirements.txt (line 13)) (1.7.0)
+Requirement already satisfied: py4j==0.10.9.7 in /usr/local/lib/python3.11/site-packages (from pyspark==3.5.3->-r requirements-dev.txt (line 3)) (0.10.9.7)
+Requirement already satisfied: contourpy>=1.0.1 in /usr/local/lib/python3.11/site-packages (from matplotlib==3.9.2->-r benchmarks/requirements.txt (line 2)) (1.3.3)
+Requirement already satisfied: cycler>=0.10 in /usr/local/lib/python3.11/site-packages (from matplotlib==3.9.2->-r benchmarks/requirements.txt (line 2)) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in /usr/local/lib/python3.11/site-packages (from matplotlib==3.9.2->-r benchmarks/requirements.txt (line 2)) (4.68.0)
+Requirement already satisfied: kiwisolver>=1.3.1 in /usr/local/lib/python3.11/site-packages (from matplotlib==3.9.2->-r benchmarks/requirements.txt (line 2)) (1.5.1)
+Requirement already satisfied: pillow>=8 in /usr/local/lib/python3.11/site-packages (from matplotlib==3.9.2->-r benchmarks/requirements.txt (line 2)) (13.0.0)
+Requirement already satisfied: pyparsing>=2.3.1 in /usr/local/lib/python3.11/site-packages (from matplotlib==3.9.2->-r benchmarks/requirements.txt (line 2)) (3.3.3)
+Requirement already satisfied: urllib3 in /usr/local/lib/python3.11/site-packages (from minio==7.2.10->-r benchmarks/e4b-requirements.txt (line 2)) (2.8.0)
+Requirement already satisfied: argon2-cffi in /usr/local/lib/python3.11/site-packages (from minio==7.2.10->-r benchmarks/e4b-requirements.txt (line 2)) (25.1.0)
+Requirement already satisfied: pycryptodome in /usr/local/lib/python3.11/site-packages (from minio==7.2.10->-r benchmarks/e4b-requirements.txt (line 2)) (4.2.0)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.11/site-packages (from imageio-ffmpeg==0.5.1->-r benchmarks/e4b-requirements.txt (line 3)) (79.0.1)
+Requirement already satisfied: httptools>=0.5.0 in /usr/local/lib/python3.11/site-packages (from uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (0.9.0)
+Requirement already satisfied: python-dotenv>=0.13 in /usr/local/lib/python3.11/site-packages (from uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (1.2.4)
+Requirement already satisfied: uvloop!=0.15.0,!=0.15.1,>=0.14.0 in /usr/local/lib/python3.11/site-packages (from uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (0.23.0)
+Requirement already satisfied: watchfiles>=0.13 in /usr/local/lib/python3.11/site-packages (from uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (1.3.0)
+Requirement already satisfied: websockets>=10.4 in /usr/local/lib/python3.11/site-packages (from uvicorn[standard]==0.32.0->-r requirements.txt (line 6)) (17.4)
+Requirement already satisfied: aioitertools<1.0.0,>=0.5.1 in /usr/local/lib/python3.11/site-packages (from aiobotocore<3.0.0,>=2.5.4->s3fs==2024.10.0->-r requirements.txt (line 12)) (0.13.0)
+Requirement already satisfied: botocore<1.41.6,>=1.41.0 in /usr/local/lib/python3.11/site-packages (from aiobotocore<3.0.0,>=2.5.4->s3fs==2024.10.0->-r requirements.txt (line 12)) (1.41.5)
+Requirement already satisfied: jmespath<2.0.0,>=0.7.1 in /usr/local/lib/python3.11/site-packages (from aiobotocore<3.0.0,>=2.5.4->s3fs==2024.10.0->-r requirements.txt (line 12)) (1.1.0)
+Requirement already satisfied: multidict<7.0.0,>=6.0.0 in /usr/local/lib/python3.11/site-packages (from aiobotocore<3.0.0,>=2.5.4->s3fs==2024.10.0->-r requirements.txt (line 12)) (6.9.1)
+Requirement already satisfied: wrapt<2.0.0,>=1.10.10 in /usr/local/lib/python3.11/site-packages (from aiobotocore<3.0.0,>=2.5.4->s3fs==2024.10.0->-r requirements.txt (line 12)) (1.17.3)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /usr/local/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->s3fs==2024.10.0->-r requirements.txt (line 12)) (2.7.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /usr/local/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->s3fs==2024.10.0->-r requirements.txt (line 12)) (1.4.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->s3fs==2024.10.0->-r requirements.txt (line 12)) (1.8.0)
+Requirement already satisfied: propcache>=0.2.0 in /usr/local/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->s3fs==2024.10.0->-r requirements.txt (line 12)) (0.5.4)
+Requirement already satisfied: yarl<2.0,>=1.25.1 in /usr/local/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->s3fs==2024.10.0->-r requirements.txt (line 12)) (1.25.1)
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.11/site-packages (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements.txt (line 1)) (1.17.0)
+Requirement already satisfied: argon2-cffi-bindings in /usr/local/lib/python3.11/site-packages (from argon2-cffi->minio==7.2.10->-r benchmarks/e4b-requirements.txt (line 2)) (26.1.0)
+Requirement already satisfied: cffi>=1.0.1 in /usr/local/lib/python3.11/site-packages (from argon2-cffi-bindings->argon2-cffi->minio==7.2.10->-r benchmarks/e4b-requirements.txt (line 2)) (2.1.1)
+Requirement already satisfied: pycparser in /usr/local/lib/python3.11/site-packages (from cffi>=1.0.1->argon2-cffi-bindings->argon2-cffi->minio==7.2.10->-r benchmarks/e4b-requirements.txt (line 2)) (3.12)
+Name: pyspark
+Version: 3.5.3
+Summary: Apache Spark Python API
+Home-page: https://github.com/apache/spark/tree/master/python
+Author: Spark Developers
+Author-email: dev@spark.apache.org
+License: http://www.apache.org/licenses/LICENSE-2.0
+Location: /usr/local/lib/python3.11/site-packages
+Requires: py4j
+Required-by: 
+---
+Name: py4j
+Version: 0.10.9.7
+Summary: Enables Python programs to dynamically access arbitrary Java objects
+Home-page: https://www.py4j.org/
+Author: Barthelemy Dagenais
+Author-email: barthelemy@infobart.com
+License: BSD License
+Location: /usr/local/lib/python3.11/site-packages
+Requires: 
+Required-by: pyspark
+No broken requirements found.
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 54%]
+........................................................................ [ 72%]
+........................................................................ [ 90%]
+.......................................                                  [100%]
+=============================== warnings summary ===============================
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+  /usr/local/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+  /usr/local/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+  /usr/local/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_e3_latency.py::test_derived_reports_rebuild_after_interruption_preserving_raw_trial
+  /usr/local/lib/python3.11/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+docker : WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+At line:2 char:262
++ ... artedAt}}'; docker logs --since $e4UnitStarted clickflow-pyspark-ci-2 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (WARNING: Runnin...o/warnings/venv:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+399 passed, 14 warnings in 2.85s

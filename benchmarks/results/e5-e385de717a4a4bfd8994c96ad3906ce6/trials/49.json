@@ -1,0 +1,31 @@
+{
+  "variant_id": "csv_flat",
+  "query": "event_type_totals",
+  "repetition": 3,
+  "trial_number": 49,
+  "elapsed_ms": 249.8021899999685,
+  "result_sha256": "baa8f55d14ebda8d63f86199527d40e5e9217832e41e2dda86897a51b9f326d3",
+  "expected_sha256": "baa8f55d14ebda8d63f86199527d40e5e9217832e41e2dda86897a51b9f326d3",
+  "result_rows": 3,
+  "scans": [
+    {
+      "numOutputRows": 50000,
+      "numFiles": 8,
+      "metadataTime": 0,
+      "filesSize": 14371500,
+      "partition_filters": "[]",
+      "data_filters": "[isnotnull(event_date#26111), (event_date#26111 = 2019-11-01)]",
+      "format": "CSV"
+    }
+  ],
+  "pruning": {
+    "verified": false,
+    "total_active_files": 8,
+    "selected_files": 8,
+    "partition_filters_present": false,
+    "selected_file_bytes": 14371500,
+    "bytes_definition": "Full sizes of selected files; not actual IO bytes"
+  },
+  "verified": true,
+  "timing": "Driver wall clock: build reader/view, plan, execute and collect; excludes checks/metrics"
+}

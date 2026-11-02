@@ -1,0 +1,108 @@
+{
+  "case_id": "e5-e385de717a4a4bfd8994c96ad3906ce6",
+  "workload": {
+    "source": "/opt/app/data/raw/2019-Nov.csv",
+    "source_bytes": 9006762395,
+    "source_scanned_prefix_sha256": "84967fb1bc25b6b0fb4f6f33f88e720157f9915ce31b8e178fa4de7ed6782ef5",
+    "scanned_rows": 1495360,
+    "rows": 100000,
+    "rows_by_day": {
+      "2019-11-01": 50000,
+      "2019-11-02": 50000
+    },
+    "time_bounds": {
+      "2019-11-01": [
+        "2019-11-01 00:00:00 UTC",
+        "2019-11-01 02:48:26 UTC"
+      ],
+      "2019-11-02": [
+        "2019-11-02 00:00:00 UTC",
+        "2019-11-02 02:32:33 UTC"
+      ]
+    },
+    "cohort_sha256": "816dd83c34a7f19fc1f6b4d51514e30398e88b4a0559b2b85d3be72193fe8e5e",
+    "selection": "First N source CSV records per date; timestamps and duplicates preserved"
+  },
+  "source_uri": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/input/cohort.csv",
+  "queries": {
+    "event_type_totals": "SELECT event_type, COUNT(*) AS rows, COUNT(DISTINCT user_id) AS users\nFROM e5_events WHERE event_date = DATE '2019-11-01' GROUP BY event_type ORDER BY event_type",
+    "product_activity": "SELECT product_id,\nSUM(CASE WHEN event_type = 'view' THEN 1 ELSE 0 END) AS views,\nSUM(CASE WHEN event_type = 'cart' THEN 1 ELSE 0 END) AS carts,\nSUM(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) AS purchases,\nSUM(CASE WHEN event_type = 'purchase' THEN CAST(price AS DECIMAL(20,2)) ELSE CAST(0 AS DECIMAL(20,2)) END) AS revenue\nFROM e5_events WHERE event_date = DATE '2019-11-01' GROUP BY product_id ORDER BY purchases DESC, product_id LIMIT 20",
+    "user_product_lookup": "SELECT * FROM e5_events WHERE event_date = DATE '2019-11-01'\nAND user_id = 557746614 AND product_id = 1801881\nORDER BY event_time, event_type, product_id, category_id, category_code, brand, price, user_id, user_session, event_date"
+  },
+  "query_day": "2019-11-01",
+  "lookup_pair": {
+    "user_id": 557746614,
+    "product_id": 1801881,
+    "count": 25
+  },
+  "seed": 42,
+  "repetitions": 3,
+  "write_partitions": 8,
+  "settings": {
+    "spark.sql.adaptive.enabled": "false",
+    "spark.sql.parquet.compression.codec": "snappy",
+    "spark.databricks.delta.optimize.maxFileSize": "134217728",
+    "spark.databricks.delta.autoCompact.enabled": "false",
+    "spark.databricks.delta.optimizeWrite.enabled": "false"
+  },
+  "cache_policy": "Warm JVM/OS/MinIO; no Spark DataFrame/result cache; per-cell untimed warmup",
+  "schema": [
+    [
+      "event_time",
+      "timestamp"
+    ],
+    [
+      "event_type",
+      "string"
+    ],
+    [
+      "product_id",
+      "bigint"
+    ],
+    [
+      "category_id",
+      "bigint"
+    ],
+    [
+      "category_code",
+      "string"
+    ],
+    [
+      "brand",
+      "string"
+    ],
+    [
+      "price",
+      "double"
+    ],
+    [
+      "user_id",
+      "bigint"
+    ],
+    [
+      "user_session",
+      "string"
+    ],
+    [
+      "event_date",
+      "date"
+    ]
+  ],
+  "delta_retention_days": 30,
+  "spark_version": "3.5.3",
+  "master": "spark://spark-master:7077",
+  "started_at_utc": "2026-11-02T01:04:50.888622+00:00",
+  "expected_result_hashes": {
+    "event_type_totals": "baa8f55d14ebda8d63f86199527d40e5e9217832e41e2dda86897a51b9f326d3",
+    "product_activity": "47f9617878f36a3bb6708bec082e52c292345834ad3ffec186962ed36b98cc7a",
+    "user_product_lookup": "67f0d07d8ef011d95091db79fa6388fa4edf8dc03741fd98b1fccb65a23d2344"
+  },
+  "implementation_sha256": {
+    "src/monitoring/e5_storage.py": "48b62935885d770ba7b3122a3c7f0a5414362a80f65d129c9a5dfa6d61e0657e",
+    "src/monitoring/e5_report.py": "733727ee7a3394960bd3b25f35bb6b0be2ff46bd7570c5c492b9187bf69fbf68",
+    "src/common/schemas.py": "e9972042b5adc668395c5738af2074d3bfbbcafda73db0579a5991f7ea76b301",
+    "src/common/spark_csv.py": "34229960504559f97b46f7659c40c916773056d7e9a79cf050a28a658b23ba6e",
+    "configs/spark-defaults.conf": "25975696ed058a2781b713af96354e58d54345ac64d1dade8ba18657480da3fe",
+    "contracts/source_csv.yaml": "57277158cb4fa9b6d9b4632c4a39288ce9c548a103138d1df74ecccd2d94423d"
+  }
+}

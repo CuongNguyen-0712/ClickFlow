@@ -1,0 +1,139 @@
+{
+  "version": null,
+  "active_files": [
+    {
+      "path": "event_date=2019-11-01/part-00000-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235083
+    },
+    {
+      "path": "event_date=2019-11-01/part-00001-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 232148
+    },
+    {
+      "path": "event_date=2019-11-01/part-00002-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235304
+    },
+    {
+      "path": "event_date=2019-11-01/part-00003-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 230396
+    },
+    {
+      "path": "event_date=2019-11-01/part-00004-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 231596
+    },
+    {
+      "path": "event_date=2019-11-01/part-00005-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 233872
+    },
+    {
+      "path": "event_date=2019-11-01/part-00006-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 224807
+    },
+    {
+      "path": "event_date=2019-11-01/part-00007-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235051
+    },
+    {
+      "path": "event_date=2019-11-02/part-00000-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 230735
+    },
+    {
+      "path": "event_date=2019-11-02/part-00001-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 231656
+    },
+    {
+      "path": "event_date=2019-11-02/part-00002-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 232243
+    },
+    {
+      "path": "event_date=2019-11-02/part-00003-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 229318
+    },
+    {
+      "path": "event_date=2019-11-02/part-00004-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 228812
+    },
+    {
+      "path": "event_date=2019-11-02/part-00005-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 230182
+    },
+    {
+      "path": "event_date=2019-11-02/part-00006-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 233622
+    },
+    {
+      "path": "event_date=2019-11-02/part-00007-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235908
+    }
+  ],
+  "physical_files": [
+    {
+      "path": "_SUCCESS",
+      "size": 0
+    },
+    {
+      "path": "event_date=2019-11-01/part-00000-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235083
+    },
+    {
+      "path": "event_date=2019-11-01/part-00001-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 232148
+    },
+    {
+      "path": "event_date=2019-11-01/part-00002-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235304
+    },
+    {
+      "path": "event_date=2019-11-01/part-00003-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 230396
+    },
+    {
+      "path": "event_date=2019-11-01/part-00004-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 231596
+    },
+    {
+      "path": "event_date=2019-11-01/part-00005-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 233872
+    },
+    {
+      "path": "event_date=2019-11-01/part-00006-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 224807
+    },
+    {
+      "path": "event_date=2019-11-01/part-00007-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235051
+    },
+    {
+      "path": "event_date=2019-11-02/part-00000-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 230735
+    },
+    {
+      "path": "event_date=2019-11-02/part-00001-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 231656
+    },
+    {
+      "path": "event_date=2019-11-02/part-00002-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 232243
+    },
+    {
+      "path": "event_date=2019-11-02/part-00003-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 229318
+    },
+    {
+      "path": "event_date=2019-11-02/part-00004-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 228812
+    },
+    {
+      "path": "event_date=2019-11-02/part-00005-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 230182
+    },
+    {
+      "path": "event_date=2019-11-02/part-00006-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 233622
+    },
+    {
+      "path": "event_date=2019-11-02/part-00007-eb1bd46f-1804-4bc4-bf01-8e13276a757e.c000.json.gz",
+      "size": 235908
+    }
+  ]
+}

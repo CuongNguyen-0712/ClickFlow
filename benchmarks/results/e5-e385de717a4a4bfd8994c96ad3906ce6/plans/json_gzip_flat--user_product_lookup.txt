@@ -1,0 +1,26 @@
+== Physical Plan ==
+* Sort (4)
++- Exchange (3)
+   +- * Filter (2)
+      +- Scan json  (1)
+
+
+(1) Scan json 
+Output [10]: [event_time#14343, event_type#14344, product_id#14345L, category_id#14346L, category_code#14347, brand#14348, price#14349, user_id#14350L, user_session#14351, event_date#14352]
+Batched: false
+Location: InMemoryFileIndex [s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/json_gzip_flat]
+PushedFilters: [IsNotNull(event_date), IsNotNull(user_id), IsNotNull(product_id), EqualTo(event_date,2019-11-01), EqualTo(user_id,557746614), EqualTo(product_id,1801881)]
+ReadSchema: struct<event_time:timestamp,event_type:string,product_id:bigint,category_id:bigint,category_code:string,brand:string,price:double,user_id:bigint,user_session:string,event_date:date>
+
+(2) Filter [codegen id : 1]
+Input [10]: [event_time#14343, event_type#14344, product_id#14345L, category_id#14346L, category_code#14347, brand#14348, price#14349, user_id#14350L, user_session#14351, event_date#14352]
+Condition : (((((isnotnull(event_date#14352) AND isnotnull(user_id#14350L)) AND isnotnull(product_id#14345L)) AND (event_date#14352 = 2019-11-01)) AND (user_id#14350L = 557746614)) AND (product_id#14345L = 1801881))
+
+(3) Exchange
+Input [10]: [event_time#14343, event_type#14344, product_id#14345L, category_id#14346L, category_code#14347, brand#14348, price#14349, user_id#14350L, user_session#14351, event_date#14352]
+Arguments: rangepartitioning(event_time#14343 ASC NULLS FIRST, event_type#14344 ASC NULLS FIRST, product_id#14345L ASC NULLS FIRST, category_id#14346L ASC NULLS FIRST, category_code#14347 ASC NULLS FIRST, brand#14348 ASC NULLS FIRST, price#14349 ASC NULLS FIRST, user_id#14350L ASC NULLS FIRST, user_session#14351 ASC NULLS FIRST, event_date#14352 ASC NULLS FIRST, 8), ENSURE_REQUIREMENTS, [plan_id=4135]
+
+(4) Sort [codegen id : 2]
+Input [10]: [event_time#14343, event_type#14344, product_id#14345L, category_id#14346L, category_code#14347, brand#14348, price#14349, user_id#14350L, user_session#14351, event_date#14352]
+Arguments: [event_time#14343 ASC NULLS FIRST, event_type#14344 ASC NULLS FIRST, product_id#14345L ASC NULLS FIRST, category_id#14346L ASC NULLS FIRST, category_code#14347 ASC NULLS FIRST, brand#14348 ASC NULLS FIRST, price#14349 ASC NULLS FIRST, user_id#14350L ASC NULLS FIRST, user_session#14351 ASC NULLS FIRST, event_date#14352 ASC NULLS FIRST], true, 0
+

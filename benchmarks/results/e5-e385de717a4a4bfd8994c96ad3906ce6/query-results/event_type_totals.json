@@ -1,0 +1,17 @@
+[
+  {
+    "event_type": "cart",
+    "rows": 468,
+    "users": 299
+  },
+  {
+    "event_type": "purchase",
+    "rows": 568,
+    "users": 459
+  },
+  {
+    "event_type": "view",
+    "rows": 48964,
+    "users": 10536
+  }
+]

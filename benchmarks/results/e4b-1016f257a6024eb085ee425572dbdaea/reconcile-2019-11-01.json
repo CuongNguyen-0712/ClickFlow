@@ -1,0 +1,720 @@
+{
+  "event": "processing_verification",
+  "parameters": {
+    "day": "2019-11-01",
+    "bronze_path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/bronze/events",
+    "bronze_version": 5
+  },
+  "source_path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/input/source.csv",
+  "quarantine_path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/quarantine/events",
+  "quarantine_version": 0,
+  "sample": false,
+  "ingest_from": null,
+  "ingest_to": null,
+  "audit_evidence": "manifest",
+  "results": {
+    "reconciliation": [
+      {
+        "event_date": "2019-11-01",
+        "rows_source": 10027,
+        "rows_bronze": 10027,
+        "rows_quarantine": 0,
+        "duplicates_dropped": 0,
+        "match": true
+      }
+    ],
+    "accounting_diagnostics": [
+      {
+        "event_date": "2019-11-01",
+        "evidence_complete": true,
+        "duplicates_dropped": 0,
+        "late_records_dropped": 0,
+        "durable_duplicates_ignored": 0,
+        "rows_source_unassigned": 0,
+        "rows_quarantine_unassigned": 0
+      }
+    ],
+    "null_rates": [
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "brand",
+        "rows_total": 10027,
+        "null_count": 1438,
+        "null_ratio": 0.14341278547920613
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "category_code",
+        "rows_total": 10027,
+        "null_count": 3030,
+        "null_ratio": 0.3021841029221103
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "category_id",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "event_date",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "event_id",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "event_time",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "event_type",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "ingested_at",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "kafka_offset",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "kafka_partition",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "price",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "produced_at",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "product_id",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "user_id",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "bronze",
+        "column_name": "user_session",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "quarantine",
+        "column_name": "error_reason",
+        "rows_total": 0,
+        "null_count": 0,
+        "null_ratio": null
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "quarantine",
+        "column_name": "ingest_date",
+        "rows_total": 0,
+        "null_count": 0,
+        "null_ratio": null
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "quarantine",
+        "column_name": "ingested_at",
+        "rows_total": 0,
+        "null_count": 0,
+        "null_ratio": null
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "quarantine",
+        "column_name": "kafka_offset",
+        "rows_total": 0,
+        "null_count": 0,
+        "null_ratio": null
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "quarantine",
+        "column_name": "kafka_partition",
+        "rows_total": 0,
+        "null_count": 0,
+        "null_ratio": null
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "quarantine",
+        "column_name": "payload",
+        "rows_total": 0,
+        "null_count": 0,
+        "null_ratio": null
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "brand",
+        "rows_total": 10027,
+        "null_count": 1438,
+        "null_ratio": 0.14341278547920613
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "category_code",
+        "rows_total": 10027,
+        "null_count": 3030,
+        "null_ratio": 0.3021841029221103
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "category_id",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "event_time",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "event_type",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "price",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "product_id",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "user_id",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      },
+      {
+        "event_date": "2019-11-01",
+        "dataset": "source",
+        "column_name": "user_session",
+        "rows_total": 10027,
+        "null_count": 0,
+        "null_ratio": 0.0
+      }
+    ],
+    "duplicate_event_ids": [],
+    "events_for_day": [
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:05",
+        "event_type": "view",
+        "product_id": 4100219,
+        "category_id": 2053013561218695907,
+        "price": 476.18,
+        "user_id": 512849413,
+        "event_id": "165ab9008d0121fbc6689552608b27da4d921472bd2f3e508503872b3d4c0395",
+        "produced_at": "2026-11-01 16:50:14.213713",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:05",
+        "event_type": "view",
+        "product_id": 1004836,
+        "category_id": 2053013555631882655,
+        "price": 229.9,
+        "user_id": 532284031,
+        "event_id": "4844e6fd75affce18ea1a16451846942ccfc290a4d6b2f0b5f7998f7634affa5",
+        "produced_at": "2026-11-01 16:50:14.213504",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:05",
+        "event_type": "view",
+        "product_id": 3600591,
+        "category_id": 2053013563810775923,
+        "price": 82.11,
+        "user_id": 515143696,
+        "event_id": "49ef136c035ab4648d4b60af0b25f00a909a8353720eff7702eaf45c9487271a",
+        "produced_at": "2026-11-01 16:50:14.213684",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 42000012,
+        "category_id": 2102307650380235197,
+        "price": 193.06,
+        "user_id": 512595157,
+        "event_id": "15d2515239553ad362cf40761cbd10155d1abd1520d7389a324862951c0d7e21",
+        "produced_at": "2026-11-01 16:50:14.214050",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 15100371,
+        "category_id": 2053013557024391671,
+        "price": 308.63,
+        "user_id": 541396370,
+        "event_id": "1f0a2021eeeb4ec8027e800d8965978461349fefec1501ba1465dbec30c77add",
+        "produced_at": "2026-11-01 16:50:14.213990",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 1004945,
+        "category_id": 2053013555631882655,
+        "price": 952.15,
+        "user_id": 566506567,
+        "event_id": "232cfa8c5d119b7c78b567328bd7efb1581678255485ab0cb11d9de9351ea098",
+        "produced_at": "2026-11-01 16:50:14.213834",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 5100576,
+        "category_id": 2053013553341792533,
+        "price": 415.94,
+        "user_id": 512446972,
+        "event_id": "24d3a9b282e17e203b69dec42f495285316724d2c4c0ec610ddb60a4c9da2a93",
+        "produced_at": "2026-11-01 16:50:14.213923",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 15800123,
+        "category_id": 2053013560144954031,
+        "price": 258.46,
+        "user_id": 513645191,
+        "event_id": "38ef98b0375573689ac67482f3730a025fbdac50c0cfc236e783387e7f15c3a8",
+        "produced_at": "2026-11-01 16:50:14.214000",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 29502791,
+        "category_id": 2053013566478352393,
+        "price": 3.09,
+        "user_id": 564272768,
+        "event_id": "454d3c97f8eab6130d03ac881b712d3b3e60926f5e0cf02018fd4195fe601d6a",
+        "produced_at": "2026-11-01 16:50:14.214030",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 1002524,
+        "category_id": 2053013555631882655,
+        "price": 531.26,
+        "user_id": 514976826,
+        "event_id": "4617dd21ff5a1d449a650cfe4129d9cb178abe52e6e39648a426744c1debcdcf",
+        "produced_at": "2026-11-01 16:50:14.213750",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 3701134,
+        "category_id": 2053013565983425517,
+        "price": 105.51,
+        "user_id": 516427973,
+        "event_id": "4d5a2e81af25aee22343cf7c308a1faa333b081970328d4b0e2bcafb08e5a2cd",
+        "produced_at": "2026-11-01 16:50:14.213882",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 1004884,
+        "category_id": 2053013555631882655,
+        "price": 228.41,
+        "user_id": 528226469,
+        "event_id": "57c39a874d5561b4dea49f12b3794175eddd7de9f6b44d1fdf34a49d5ad5a0ea",
+        "produced_at": "2026-11-01 16:50:14.213824",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 26403354,
+        "category_id": 2053013563651392361,
+        "price": 105.79,
+        "user_id": 552446758,
+        "event_id": "59168e84af526474d75cf9105dd4d7934780c760be7f72a186150257b4b8868b",
+        "produced_at": "2026-11-01 16:50:14.214020",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 32403770,
+        "category_id": 2053013566562238479,
+        "price": 9.27,
+        "user_id": 518449281,
+        "event_id": "607540b778fb1389dd73b81238fcc93afabde630bc51f4fed36a223f1bbcb2e8",
+        "produced_at": "2026-11-01 16:50:14.214040",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 1004748,
+        "category_id": 2053013555631882655,
+        "price": 127.33,
+        "user_id": 541317566,
+        "event_id": "6320d1b80db8907d657ca8af613ff66040e521313a88d4d30cb3a88ee655e6d9",
+        "produced_at": "2026-11-01 16:50:14.213789",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 1004767,
+        "category_id": 2053013555631882655,
+        "price": 242.16,
+        "user_id": 534552905,
+        "event_id": "700759ccc132997b982d4170d4eff02786b24de6f69f5918e3084787209ed29b",
+        "produced_at": "2026-11-01 16:50:14.213811",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 49400022,
+        "category_id": 2134905045613805589,
+        "price": 151.87,
+        "user_id": 530487602,
+        "event_id": "76c27111deeca957b2cf07515fb9c75a2d58f21d04e811a58fa6f86b66a5b870",
+        "produced_at": "2026-11-01 16:50:14.214060",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 50600006,
+        "category_id": 2134905044833666047,
+        "price": 229.32,
+        "user_id": 550687548,
+        "event_id": "7c9b73a888322f86ec52d3b589a8273dae263c69a9c6979ae9a1db606ef56f28",
+        "produced_at": "2026-11-01 16:50:14.214069",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 10201901,
+        "category_id": 2053013553224352013,
+        "price": 21.75,
+        "user_id": 563377415,
+        "event_id": "897be18c2cc903ba7dd9b5c18b8399fc6686fb472f64fe8e037eb24bde58b53b",
+        "produced_at": "2026-11-01 16:50:14.213967",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_time": "2019-11-01 23:54:06",
+        "event_type": "view",
+        "product_id": 1005003,
+        "category_id": 2053013555631882655,
+        "price": 230.75,
+        "user_id": 530811887,
+        "event_id": "93e0889a744b8347956f6f67c71c7ea84bfe9b911d589111dd24617cdd83bebf",
+        "produced_at": "2026-11-01 16:50:14.213845",
+        "ingested_at": "2026-11-01 16:50:16.505000"
+      }
+    ],
+    "event_type_totals": [
+      {
+        "event_date": "2019-11-01",
+        "event_type": "cart",
+        "rows": 121,
+        "users": 86
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_type": "purchase",
+        "rows": 125,
+        "users": 113
+      },
+      {
+        "event_date": "2019-11-01",
+        "event_type": "view",
+        "rows": 9781,
+        "users": 3248
+      }
+    ],
+    "product_activity": [
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004856,
+        "views": 90,
+        "carts": 6,
+        "purchases": 6,
+        "revenue": 769.08
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004870,
+        "views": 38,
+        "carts": 1,
+        "purchases": 4,
+        "revenue": 1089.16
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1005115,
+        "views": 78,
+        "carts": 1,
+        "purchases": 4,
+        "revenue": 3770.72
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004249,
+        "views": 45,
+        "carts": 6,
+        "purchases": 3,
+        "revenue": 2173.02
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004767,
+        "views": 77,
+        "carts": 4,
+        "purchases": 3,
+        "revenue": 726.48
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004833,
+        "views": 58,
+        "carts": 4,
+        "purchases": 3,
+        "revenue": 510.42
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1003306,
+        "views": 32,
+        "carts": 1,
+        "purchases": 2,
+        "revenue": 1154.6
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004258,
+        "views": 33,
+        "carts": 1,
+        "purchases": 2,
+        "revenue": 1464.14
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004566,
+        "views": 7,
+        "carts": 3,
+        "purchases": 2,
+        "revenue": 329.6
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004683,
+        "views": 5,
+        "carts": 0,
+        "purchases": 2,
+        "revenue": 80.26
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004785,
+        "views": 31,
+        "carts": 4,
+        "purchases": 2,
+        "revenue": 531.7
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1004858,
+        "views": 16,
+        "carts": 0,
+        "purchases": 2,
+        "revenue": 256.32
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1005161,
+        "views": 17,
+        "carts": 1,
+        "purchases": 2,
+        "revenue": 422.64
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 2700239,
+        "views": 2,
+        "carts": 0,
+        "purchases": 2,
+        "revenue": 566.24
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 4804056,
+        "views": 43,
+        "carts": 5,
+        "purchases": 2,
+        "revenue": 320.12
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 4804295,
+        "views": 16,
+        "carts": 0,
+        "purchases": 2,
+        "revenue": 45.54
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 26404232,
+        "views": 4,
+        "carts": 0,
+        "purchases": 2,
+        "revenue": 690.64
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 27201675,
+        "views": 4,
+        "carts": 0,
+        "purchases": 2,
+        "revenue": 1126.92
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1002524,
+        "views": 29,
+        "carts": 1,
+        "purchases": 1,
+        "revenue": 531.26
+      },
+      {
+        "event_date": "2019-11-01",
+        "product_id": 1002544,
+        "views": 46,
+        "carts": 6,
+        "purchases": 1,
+        "revenue": 458.25
+      }
+    ],
+    "ingestion_latency": [
+      {
+        "event_date": "2019-11-01",
+        "rows_with_produced_at": 10027,
+        "latency_seconds_p50_p95": [
+          "17.671000",
+          "44.565000"
+        ]
+      }
+    ],
+    "partition_pruning": [
+      {
+        "plan": "== Physical Plan ==\n* Project (3)\n+- * ColumnarToRow (2)\n   +- Scan parquet  (1)\n\n\n(1) Scan parquet \nOutput [4]: [product_id#11496L, user_id#11501L, event_id#11503, event_date#11508]\nBatched: true\nLocation: PreparedDeltaFileIndex [s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/bronze/events]\nPartitionFilters: [isnotnull(event_date#11508), (event_date#11508 = 2019-11-01)]\nReadSchema: struct<product_id:bigint,user_id:bigint,event_id:string>\n\n(2) ColumnarToRow [codegen id : 1]\nInput [4]: [product_id#11496L, user_id#11501L, event_id#11503, event_date#11508]\n\n(3) Project [codegen id : 1]\nOutput [3]: [event_id#11503, user_id#11501L, product_id#11496L]\nInput [4]: [product_id#11496L, user_id#11501L, event_id#11503, event_date#11508]\n\n"
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "Actual stdout terminal capture replay",
+  "source": "session.cast",
+  "speed": 8,
+  "fps": 4,
+  "source_duration_seconds": 32.1500183950011,
+  "video_duration_seconds": 7.018752299375137,
+  "video": "failover.mp4",
+  "recording_started_at": "2026-11-01T16:44:37+00:00"
+}

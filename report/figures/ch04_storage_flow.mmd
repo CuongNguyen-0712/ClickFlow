@@ -1,0 +1,16 @@
+flowchart LR
+    csv[Raw CSV C1<br/>raw/csv/] -->|Simulator, C3| kafka[Kafka<br/>ecom.events.raw]
+    kafka --> quality[Spark: kiểm tra C3<br/>luật 1–4]
+    quality -->|hợp lệ| state[watermark 1 giờ<br/>dedup event_id]
+    state -->|còn lại| bronze[C4 Delta<br/>bronze/events<br/>partition event_date]
+    quality -->|lỗi, bypass state| quarantine[C5 Delta<br/>quarantine/events<br/>partition ingest_date]
+    kafka -.-> connect[Kafka Connect<br/>nhánh có cấu hình]
+    connect -.-> raw[Raw JSON gzip<br/>dt/hour UTC Wallclock]
+    quality -. offsets/state .-> checkpoint[Checkpoint<br/>cùng query/nguồn/đích]
+    state -. state .-> checkpoint
+    bronze -. callback hoàn tất cả hai sink .-> checkpoint
+    quarantine -. callback hoàn tất cả hai sink .-> checkpoint
+    subgraph callback[foreachBatch: MERGE C4 rồi C5 — hai transaction độc lập]
+        bronze
+        quarantine
+    end

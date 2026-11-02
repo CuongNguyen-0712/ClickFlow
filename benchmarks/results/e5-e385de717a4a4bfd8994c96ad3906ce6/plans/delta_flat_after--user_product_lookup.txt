@@ -1,0 +1,30 @@
+== Physical Plan ==
+* Sort (5)
++- Exchange (4)
+   +- * Filter (3)
+      +- * ColumnarToRow (2)
+         +- Scan parquet  (1)
+
+
+(1) Scan parquet 
+Output [10]: [event_time#16134, event_type#16135, product_id#16136L, category_id#16137L, category_code#16138, brand#16139, price#16140, user_id#16141L, user_session#16142, event_date#16143]
+Batched: true
+Location: PreparedDeltaFileIndex [s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_flat]
+PushedFilters: [IsNotNull(event_date), IsNotNull(user_id), IsNotNull(product_id), EqualTo(event_date,2019-11-01), EqualTo(user_id,557746614), EqualTo(product_id,1801881)]
+ReadSchema: struct<event_time:timestamp,event_type:string,product_id:bigint,category_id:bigint,category_code:string,brand:string,price:double,user_id:bigint,user_session:string,event_date:date>
+
+(2) ColumnarToRow [codegen id : 1]
+Input [10]: [event_time#16134, event_type#16135, product_id#16136L, category_id#16137L, category_code#16138, brand#16139, price#16140, user_id#16141L, user_session#16142, event_date#16143]
+
+(3) Filter [codegen id : 1]
+Input [10]: [event_time#16134, event_type#16135, product_id#16136L, category_id#16137L, category_code#16138, brand#16139, price#16140, user_id#16141L, user_session#16142, event_date#16143]
+Condition : (((((isnotnull(event_date#16143) AND isnotnull(user_id#16141L)) AND isnotnull(product_id#16136L)) AND (event_date#16143 = 2019-11-01)) AND (user_id#16141L = 557746614)) AND (product_id#16136L = 1801881))
+
+(4) Exchange
+Input [10]: [event_time#16134, event_type#16135, product_id#16136L, category_id#16137L, category_code#16138, brand#16139, price#16140, user_id#16141L, user_session#16142, event_date#16143]
+Arguments: rangepartitioning(event_time#16134 ASC NULLS FIRST, event_type#16135 ASC NULLS FIRST, product_id#16136L ASC NULLS FIRST, category_id#16137L ASC NULLS FIRST, category_code#16138 ASC NULLS FIRST, brand#16139 ASC NULLS FIRST, price#16140 ASC NULLS FIRST, user_id#16141L ASC NULLS FIRST, user_session#16142 ASC NULLS FIRST, event_date#16143 ASC NULLS FIRST, 8), ENSURE_REQUIREMENTS, [plan_id=5010]
+
+(5) Sort [codegen id : 2]
+Input [10]: [event_time#16134, event_type#16135, product_id#16136L, category_id#16137L, category_code#16138, brand#16139, price#16140, user_id#16141L, user_session#16142, event_date#16143]
+Arguments: [event_time#16134 ASC NULLS FIRST, event_type#16135 ASC NULLS FIRST, product_id#16136L ASC NULLS FIRST, category_id#16137L ASC NULLS FIRST, category_code#16138 ASC NULLS FIRST, brand#16139 ASC NULLS FIRST, price#16140 ASC NULLS FIRST, user_id#16141L ASC NULLS FIRST, user_session#16142 ASC NULLS FIRST, event_date#16143 ASC NULLS FIRST], true, 0
+

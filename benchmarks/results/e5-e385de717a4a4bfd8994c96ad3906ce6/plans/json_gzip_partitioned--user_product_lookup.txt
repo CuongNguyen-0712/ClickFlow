@@ -1,0 +1,27 @@
+== Physical Plan ==
+* Sort (4)
++- Exchange (3)
+   +- * Filter (2)
+      +- Scan json  (1)
+
+
+(1) Scan json 
+Output [10]: [event_time#14474, event_type#14475, product_id#14476L, category_id#14477L, category_code#14478, brand#14479, price#14480, user_id#14481L, user_session#14482, event_date#14483]
+Batched: false
+Location: InMemoryFileIndex [s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/json_gzip_partitioned]
+PartitionFilters: [isnotnull(event_date#14483), (event_date#14483 = 2019-11-01)]
+PushedFilters: [IsNotNull(user_id), IsNotNull(product_id), EqualTo(user_id,557746614), EqualTo(product_id,1801881)]
+ReadSchema: struct<event_time:timestamp,event_type:string,product_id:bigint,category_id:bigint,category_code:string,brand:string,price:double,user_id:bigint,user_session:string>
+
+(2) Filter [codegen id : 1]
+Input [10]: [event_time#14474, event_type#14475, product_id#14476L, category_id#14477L, category_code#14478, brand#14479, price#14480, user_id#14481L, user_session#14482, event_date#14483]
+Condition : (((isnotnull(user_id#14481L) AND isnotnull(product_id#14476L)) AND (user_id#14481L = 557746614)) AND (product_id#14476L = 1801881))
+
+(3) Exchange
+Input [10]: [event_time#14474, event_type#14475, product_id#14476L, category_id#14477L, category_code#14478, brand#14479, price#14480, user_id#14481L, user_session#14482, event_date#14483]
+Arguments: rangepartitioning(event_time#14474 ASC NULLS FIRST, event_type#14475 ASC NULLS FIRST, product_id#14476L ASC NULLS FIRST, category_id#14477L ASC NULLS FIRST, category_code#14478 ASC NULLS FIRST, brand#14479 ASC NULLS FIRST, price#14480 ASC NULLS FIRST, user_id#14481L ASC NULLS FIRST, user_session#14482 ASC NULLS FIRST, event_date#14483 ASC NULLS FIRST, 8), ENSURE_REQUIREMENTS, [plan_id=4279]
+
+(4) Sort [codegen id : 2]
+Input [10]: [event_time#14474, event_type#14475, product_id#14476L, category_id#14477L, category_code#14478, brand#14479, price#14480, user_id#14481L, user_session#14482, event_date#14483]
+Arguments: [event_time#14474 ASC NULLS FIRST, event_type#14475 ASC NULLS FIRST, product_id#14476L ASC NULLS FIRST, category_id#14477L ASC NULLS FIRST, category_code#14478 ASC NULLS FIRST, brand#14479 ASC NULLS FIRST, price#14480 ASC NULLS FIRST, user_id#14481L ASC NULLS FIRST, user_session#14482 ASC NULLS FIRST, event_date#14483 ASC NULLS FIRST], true, 0
+
