@@ -1,17 +1,35 @@
-# C4 — Bảng bronze/events: Spark -> nhóm Processing. Trạng thái: DRAFT.
-# Kiểm tra: đối soát số dòng với nguồn theo ngày (make verify), không trùng event_id.
+# C4 — Bảng bronze/events: Storage -> Processing. Bản 1.0.0 chờ nhóm duyệt.
+contract_id: C4
+version: 1.0.0
+status: review_ready
+review_date: '2026-11-01'
+approval:
+  status: pending
+  required_roles: [Sources, Ingestion, Storage, Infra, Processing]
+  approvals: []
 format: delta
 path: s3a://lake/bronze/events/
-partition_by: [event_date]          # = to_date(event_time), ~61 partition cho 2 tháng
+producer: Storage
+consumer: Processing
+timezone: UTC
+data_column_count: 14
+physical_column_count: 15
+partition_by: [event_date]
+partition_columns:
+  - name: event_date
+    type: date
+    nullable: true                  # giữ schema Delta hiện có; invariant yêu cầu giá trị không null
+    derived_from: to_date(event_time)
+    timezone: UTC
 unique_key: event_id
-columns:                            # 14 cột + cột phân vùng event_date
+columns:                            # 9 cột C1 + 5 metadata, không gồm event_date
   - {name: event_time,      type: timestamp, nullable: false}
-  - {name: event_type,      type: string,    nullable: false}
+  - {name: event_type,      type: string,    nullable: false, allowed: [view, cart, purchase]}
   - {name: product_id,      type: bigint,    nullable: false}
   - {name: category_id,     type: bigint,    nullable: false}
   - {name: category_code,   type: string,    nullable: true}
   - {name: brand,           type: string,    nullable: true}
-  - {name: price,           type: double,    nullable: false}
+  - {name: price,           type: double,    nullable: false, minimum: 0}
   - {name: user_id,         type: bigint,    nullable: false}
   - {name: user_session,    type: string,    nullable: true}
   - {name: event_id,        type: string,    nullable: false}
@@ -19,4 +37,36 @@ columns:                            # 14 cột + cột phân vùng event_date
   - {name: kafka_offset,    type: bigint,    nullable: false}
   - {name: produced_at,     type: timestamp, nullable: true}
   - {name: ingested_at,     type: timestamp, nullable: false}
+semantics:
+  event_id: "Giữ nguyên ID ổn định từ C3; retry/replay cùng sự kiện phải dùng cùng ID. C4 không tạo ID mới."
+  event_time: "Thời điểm sự kiện theo UTC; dùng tính event_date."
+  produced_at: "Thời điểm producer gửi theo UTC; có thể null, khi đó không tính latency từ trường này."
+  ingested_at: "Thời điểm Storage ghi sự kiện hợp lệ lần đầu theo UTC; retry không sửa giá trị đã ghi."
+  kafka_partition: "Partition gốc của message C3, >= 0 trong bảng chính."
+  kafka_offset: "Offset gốc của message C3, >= 0 trong bảng chính."
+  source_file: "Chỉ có trong C3, không nằm trong 14 cột C4."
+deduplication:
+  key: event_id
+  scope: table
+  watermark: 1 hour
+  watermark_alone_enforces_uniqueness: false
+  existing_event_id: ignore
+  conflicting_existing_event_id: keep_first_and_alert
+  conflict_columns: [event_time, event_type, product_id, category_id, category_code, brand, price, user_id, user_session]
+  comparison: null_safe_typed_values
+  ignored_for_conflict: [kafka_partition, kafka_offset, produced_at, ingested_at]
+  enforcement: pipeline_and_reconciliation
+  native_delta_unique_constraint: false
+  sink_requirement: "Chống replay cả ngoài watermark bằng khóa bền/idempotent sink; không blind append event_id đã có."
+invariants:
+  - "event_type thuộc {view, cart, purchase}; price >= 0; các cột nullable=false không được null."
+  - "event_date = to_date(event_time) theo UTC và không có giá trị null."
+  - "Không có hai dòng cùng event_id, kể cả khi retry/replay sau cửa sổ watermark."
+sample_mode:
+  path_config: stream.sample_bronze_path
+  event_id: "SHA-256 của Spark to_json(struct(9 cột C1 theo thứ tự), ignoreNullFields=false), session timezone UTC."
+  kafka_partition: -1
+  kafka_offset: -1
+  produced_at: null
+  note: "Ngoại lệ chỉ cho bảng thử riêng; không ghi metadata giả lập vào bronze/events chính."
 maintenance: "OPTIMIZE ... ZORDER BY (user_id, product_id) hằng ngày cho partition đã đóng; VACUUM sau OPTIMIZE"
