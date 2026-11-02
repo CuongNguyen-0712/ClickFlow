@@ -1,0 +1,317 @@
+[
+  {
+    "variant_id": "csv_flat",
+    "format": "csv",
+    "partitioned": false,
+    "stage": "original",
+    "dataset": "csv_flat",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/csv_flat",
+    "version": null,
+    "write_ms": 2099.1220460000477,
+    "active_data_files": 8,
+    "active_data_bytes": 14371500,
+    "physical_total_files": 9,
+    "physical_total_bytes": 14371500,
+    "snapshot_evidence": "snapshots/csv_flat.json",
+    "multiset_verified": true
+  },
+  {
+    "variant_id": "csv_partitioned",
+    "format": "csv",
+    "partitioned": true,
+    "stage": "original",
+    "dataset": "csv_partitioned",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/csv_partitioned",
+    "version": null,
+    "write_ms": 2657.034512999985,
+    "active_data_files": 16,
+    "active_data_bytes": 13272148,
+    "physical_total_files": 17,
+    "physical_total_bytes": 13272148,
+    "snapshot_evidence": "snapshots/csv_partitioned.json",
+    "multiset_verified": true
+  },
+  {
+    "variant_id": "json_gzip_flat",
+    "format": "json_gzip",
+    "partitioned": false,
+    "stage": "original",
+    "dataset": "json_gzip_flat",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/json_gzip_flat",
+    "version": null,
+    "write_ms": 970.7185390000177,
+    "active_data_files": 8,
+    "active_data_bytes": 3785615,
+    "physical_total_files": 9,
+    "physical_total_bytes": 3785615,
+    "snapshot_evidence": "snapshots/json_gzip_flat.json",
+    "multiset_verified": true
+  },
+  {
+    "variant_id": "json_gzip_partitioned",
+    "format": "json_gzip",
+    "partitioned": true,
+    "stage": "original",
+    "dataset": "json_gzip_partitioned",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/json_gzip_partitioned",
+    "version": null,
+    "write_ms": 1278.1685999999581,
+    "active_data_files": 16,
+    "active_data_bytes": 3710733,
+    "physical_total_files": 17,
+    "physical_total_bytes": 3710733,
+    "snapshot_evidence": "snapshots/json_gzip_partitioned.json",
+    "multiset_verified": true
+  },
+  {
+    "variant_id": "delta_flat_before",
+    "format": "delta",
+    "partitioned": false,
+    "stage": "before",
+    "dataset": "delta_flat",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_flat",
+    "version": 1,
+    "write_ms": 8842.569994999962,
+    "active_data_files": 8,
+    "active_data_bytes": 4057397,
+    "physical_total_files": 12,
+    "physical_total_bytes": 6533995,
+    "snapshot_evidence": "snapshots/delta_flat_before.json",
+    "multiset_verified": true
+  },
+  {
+    "variant_id": "delta_flat_after",
+    "format": "delta",
+    "partitioned": false,
+    "stage": "after",
+    "dataset": "delta_flat",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_flat",
+    "version": 2,
+    "write_ms": 8842.569994999962,
+    "optimize": [
+      {
+        "sql": "OPTIMIZE delta.`s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_flat` ZORDER BY (user_id, product_id)",
+        "elapsed_ms": 4161.356598999987,
+        "metrics": [
+          {
+            "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_flat",
+            "metrics": {
+              "numFilesAdded": 1,
+              "numFilesRemoved": 8,
+              "filesAdded": {
+                "min": 2462647,
+                "max": 2462647,
+                "avg": 2462647.0,
+                "totalFiles": 1,
+                "totalSize": 2462647
+              },
+              "filesRemoved": {
+                "min": 501624,
+                "max": 511260,
+                "avg": 507174.625,
+                "totalFiles": 8,
+                "totalSize": 4057397
+              },
+              "partitionsOptimized": 1,
+              "zOrderStats": {
+                "strategyName": "all",
+                "inputCubeFiles": {
+                  "num": 0,
+                  "size": 0
+                },
+                "inputOtherFiles": {
+                  "num": 8,
+                  "size": 4057397
+                },
+                "inputNumCubes": 0,
+                "mergedFiles": {
+                  "num": 8,
+                  "size": 4057397
+                },
+                "numOutputCubes": 1,
+                "mergedNumCubes": null
+              },
+              "clusteringStats": null,
+              "numBatches": 1,
+              "totalConsideredFiles": 8,
+              "totalFilesSkipped": 0,
+              "preserveInsertionOrder": false,
+              "numFilesSkippedToReduceWriteAmplification": 0,
+              "numBytesSkippedToReduceWriteAmplification": 0,
+              "startTimeMs": 1793581510975,
+              "endTimeMs": 0,
+              "totalClusterParallelism": 4,
+              "totalScheduledTasks": 0,
+              "autoCompactParallelismStats": null,
+              "deletionVectorStats": null,
+              "numTableColumns": 10,
+              "numTableColumnsWithStats": 10
+            }
+          }
+        ]
+      }
+    ],
+    "active_data_files": 1,
+    "active_data_bytes": 2462647,
+    "physical_total_files": 12,
+    "physical_total_bytes": 6533995,
+    "snapshot_evidence": "snapshots/delta_flat_after.json",
+    "multiset_verified": true
+  },
+  {
+    "variant_id": "delta_partitioned_before",
+    "format": "delta",
+    "partitioned": true,
+    "stage": "before",
+    "dataset": "delta_partitioned",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned",
+    "version": 1,
+    "write_ms": 2399.682625999958,
+    "active_data_files": 16,
+    "active_data_bytes": 4128723,
+    "physical_total_files": 22,
+    "physical_total_bytes": 6622811,
+    "snapshot_evidence": "snapshots/delta_partitioned_before.json",
+    "multiset_verified": true
+  },
+  {
+    "variant_id": "delta_partitioned_after",
+    "format": "delta",
+    "partitioned": true,
+    "stage": "after",
+    "dataset": "delta_partitioned",
+    "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned",
+    "version": 3,
+    "write_ms": 2399.682625999958,
+    "optimize": [
+      {
+        "sql": "OPTIMIZE delta.`s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned` WHERE event_date = DATE '2019-11-01' ZORDER BY (user_id, product_id)",
+        "elapsed_ms": 2158.6012120000078,
+        "metrics": [
+          {
+            "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned",
+            "metrics": {
+              "numFilesAdded": 1,
+              "numFilesRemoved": 8,
+              "filesAdded": {
+                "min": 1264957,
+                "max": 1264957,
+                "avg": 1264957.0,
+                "totalFiles": 1,
+                "totalSize": 1264957
+              },
+              "filesRemoved": {
+                "min": 254060,
+                "max": 265314,
+                "avg": 261722.25,
+                "totalFiles": 8,
+                "totalSize": 2093778
+              },
+              "partitionsOptimized": 1,
+              "zOrderStats": {
+                "strategyName": "all",
+                "inputCubeFiles": {
+                  "num": 0,
+                  "size": 0
+                },
+                "inputOtherFiles": {
+                  "num": 8,
+                  "size": 2093778
+                },
+                "inputNumCubes": 0,
+                "mergedFiles": {
+                  "num": 8,
+                  "size": 2093778
+                },
+                "numOutputCubes": 1,
+                "mergedNumCubes": null
+              },
+              "clusteringStats": null,
+              "numBatches": 1,
+              "totalConsideredFiles": 8,
+              "totalFilesSkipped": 0,
+              "preserveInsertionOrder": false,
+              "numFilesSkippedToReduceWriteAmplification": 0,
+              "numBytesSkippedToReduceWriteAmplification": 0,
+              "startTimeMs": 1793581516782,
+              "endTimeMs": 0,
+              "totalClusterParallelism": 4,
+              "totalScheduledTasks": 0,
+              "autoCompactParallelismStats": null,
+              "deletionVectorStats": null,
+              "numTableColumns": 10,
+              "numTableColumnsWithStats": 10
+            }
+          }
+        ]
+      },
+      {
+        "sql": "OPTIMIZE delta.`s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned` WHERE event_date = DATE '2019-11-02' ZORDER BY (user_id, product_id)",
+        "elapsed_ms": 2997.8976429999875,
+        "metrics": [
+          {
+            "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned",
+            "metrics": {
+              "numFilesAdded": 1,
+              "numFilesRemoved": 8,
+              "filesAdded": {
+                "min": 1203027,
+                "max": 1203027,
+                "avg": 1203027.0,
+                "totalFiles": 1,
+                "totalSize": 1203027
+              },
+              "filesRemoved": {
+                "min": 252244,
+                "max": 256979,
+                "avg": 254368.125,
+                "totalFiles": 8,
+                "totalSize": 2034945
+              },
+              "partitionsOptimized": 1,
+              "zOrderStats": {
+                "strategyName": "all",
+                "inputCubeFiles": {
+                  "num": 0,
+                  "size": 0
+                },
+                "inputOtherFiles": {
+                  "num": 8,
+                  "size": 2034945
+                },
+                "inputNumCubes": 0,
+                "mergedFiles": {
+                  "num": 8,
+                  "size": 2034945
+                },
+                "numOutputCubes": 1,
+                "mergedNumCubes": null
+              },
+              "clusteringStats": null,
+              "numBatches": 1,
+              "totalConsideredFiles": 8,
+              "totalFilesSkipped": 0,
+              "preserveInsertionOrder": false,
+              "numFilesSkippedToReduceWriteAmplification": 0,
+              "numBytesSkippedToReduceWriteAmplification": 0,
+              "startTimeMs": 1793581519774,
+              "endTimeMs": 0,
+              "totalClusterParallelism": 4,
+              "totalScheduledTasks": 0,
+              "autoCompactParallelismStats": null,
+              "deletionVectorStats": null,
+              "numTableColumns": 10,
+              "numTableColumnsWithStats": 10
+            }
+          }
+        ]
+      }
+    ],
+    "active_data_files": 2,
+    "active_data_bytes": 2467984,
+    "physical_total_files": 22,
+    "physical_total_bytes": 6622811,
+    "snapshot_evidence": "snapshots/delta_partitioned_after.json",
+    "multiset_verified": true
+  }
+]

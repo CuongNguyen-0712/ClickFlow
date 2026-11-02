@@ -1,0 +1,24 @@
+{
+  "source_path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/input/source.csv",
+  "bronze_path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/bronze/events",
+  "quarantine_path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/quarantine/events",
+  "days": [
+    {
+      "event_date": "2019-11-01",
+      "duplicates_dropped": 0,
+      "late_records_dropped": 0,
+      "durable_duplicates_ignored": 0
+    },
+    {
+      "event_date": "2019-11-02",
+      "duplicates_dropped": 0,
+      "late_records_dropped": 0,
+      "durable_duplicates_ignored": 0
+    }
+  ],
+  "evidence": {
+    "unique_source_receipts": 20000,
+    "exact_source_c4_comparison": true,
+    "replay_attempt_metrics": "recovery-metrics.prom"
+  }
+}

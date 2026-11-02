@@ -1,0 +1,211 @@
+Collecting confluent-kafka==2.6.0
+  Downloading confluent_kafka-2.6.0-cp310-cp310-manylinux_2_28_x86_64.whl (3.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 1.1 MB/s eta 0:00:00
+Collecting matplotlib==3.9.2
+  Downloading matplotlib-3.9.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (8.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 1.3 MB/s eta 0:00:00
+Collecting kiwisolver>=1.3.1
+  Downloading kiwisolver-1.5.1-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 2.9 MB/s eta 0:00:00
+Collecting pillow>=8
+  Downloading pillow-12.3.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.9/6.9 MB 3.6 MB/s eta 0:00:00
+Collecting packaging>=20.0
+  Downloading packaging-26.3-py3-none-any.whl (129 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 KB 5.5 MB/s eta 0:00:00
+Collecting numpy>=1.23
+  Downloading numpy-2.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.8/16.8 MB 6.0 MB/s eta 0:00:00
+Collecting cycler>=0.10
+  Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Collecting pyparsing>=2.3.1
+  Downloading pyparsing-3.3.3-py3-none-any.whl (126 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.4/126.4 KB 9.5 MB/s eta 0:00:00
+Collecting contourpy>=1.0.1
+  Downloading contourpy-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (325 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 325.0/325.0 KB 7.0 MB/s eta 0:00:00
+Collecting python-dateutil>=2.7
+  Downloading python_dateutil-3.0.0-py2.py3-none-any.whl (94 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 94.7/94.7 KB 5.2 MB/s eta 0:00:00
+Collecting fonttools>=4.22.0
+  Downloading fonttools-4.65.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.3/5.3 MB 6.9 MB/s eta 0:00:00
+Collecting tzdata
+  Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 348.2/348.2 KB 8.5 MB/s eta 0:00:00
+Collecting six>=1.6
+  Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Installing collected packages: confluent-kafka, tzdata, six, pyparsing, pillow, packaging, numpy, kiwisolver, fonttools, cycler, python-dateutil, contourpy, matplotlib
+Successfully installed confluent-kafka-2.6.0 contourpy-1.3.2 cycler-0.12.1 fonttools-4.65.0 kiwisolver-1.5.1 matplotlib-3.9.2 numpy-2.2.6 packaging-26.3 pillow-12.3.0 pyparsing-3.3.3 python-dateutil-3.0.0 six-1.17.0 tzdata-2026.6
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+26/11/02 01:04:30 INFO SparkContext: Running Spark version 3.5.3
+26/11/02 01:04:30 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+26/11/02 01:04:30 INFO SparkContext: Java version 17.0.12
+26/11/02 01:04:30 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/11/02 01:04:30 INFO ResourceUtils: ==============================================================
+26/11/02 01:04:30 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/11/02 01:04:30 INFO ResourceUtils: ==============================================================
+26/11/02 01:04:30 INFO SparkContext: Submitted application: e5-storage-benchmark
+26/11/02 01:04:30 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 2, script: , vendor: , memory -> name: memory, amount: 1500, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/11/02 01:04:30 INFO ResourceProfile: Limiting resource is cpus at 2 tasks per executor
+26/11/02 01:04:30 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/11/02 01:04:30 INFO SecurityManager: Changing view acls to: root
+26/11/02 01:04:30 INFO SecurityManager: Changing modify acls to: root
+26/11/02 01:04:30 INFO SecurityManager: Changing view acls groups to: 
+26/11/02 01:04:30 INFO SecurityManager: Changing modify acls groups to: 
+26/11/02 01:04:30 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/11/02 01:04:30 INFO Utils: Successfully started service 'sparkDriver' on port 45983.
+26/11/02 01:04:30 INFO SparkEnv: Registering MapOutputTracker
+26/11/02 01:04:30 INFO SparkEnv: Registering BlockManagerMaster
+26/11/02 01:04:30 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/11/02 01:04:30 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/11/02 01:04:30 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/11/02 01:04:30 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-ab56659a-2d43-48d6-a22a-c2f207f33325
+26/11/02 01:04:30 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+26/11/02 01:04:30 INFO SparkEnv: Registering OutputCommitCoordinator
+26/11/02 01:04:30 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/11/02 01:04:30 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/11/02 01:04:30 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/11/02 01:04:30 INFO TransportClientFactory: Successfully created connection to spark-master/172.23.0.6:7077 after 15 ms (0 ms spent in bootstraps)
+26/11/02 01:04:30 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20261102010430-0001
+26/11/02 01:04:30 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261102010430-0001/0 on worker-20261102005545-172.23.0.8-37799 (172.23.0.8:37799) with 2 core(s)
+26/11/02 01:04:30 INFO StandaloneSchedulerBackend: Granted executor ID app-20261102010430-0001/0 on hostPort 172.23.0.8:37799 with 2 core(s), 1500.0 MiB RAM
+26/11/02 01:04:30 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261102010430-0001/1 on worker-20261102005545-172.23.0.7-43103 (172.23.0.7:43103) with 2 core(s)
+26/11/02 01:04:30 INFO StandaloneSchedulerBackend: Granted executor ID app-20261102010430-0001/1 on hostPort 172.23.0.7:43103 with 2 core(s), 1500.0 MiB RAM
+26/11/02 01:04:30 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 40473.
+26/11/02 01:04:30 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:40473
+26/11/02 01:04:30 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/11/02 01:04:30 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 40473, None)
+26/11/02 01:04:30 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:40473 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 40473, None)
+26/11/02 01:04:30 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 40473, None)
+26/11/02 01:04:30 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 40473, None)
+26/11/02 01:04:30 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261102010430-0001/0 is now RUNNING
+26/11/02 01:04:30 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261102010430-0001/1 is now RUNNING
+26/11/02 01:04:31 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+26/11/02 01:04:39 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+{"event": "e5_case", "at": "2026-11-02T01:04:50.916805+00:00", "case_id": "e5-e385de717a4a4bfd8994c96ad3906ce6", "workload": {"source": "/opt/app/data/raw/2019-Nov.csv", "source_bytes": 9006762395, "source_scanned_prefix_sha256": "84967fb1bc25b6b0fb4f6f33f88e720157f9915ce31b8e178fa4de7ed6782ef5", "scanned_rows": 1495360, "rows": 100000, "rows_by_day": {"2019-11-01": 50000, "2019-11-02": 50000}, "time_bounds": {"2019-11-01": ["2019-11-01 00:00:00 UTC", "2019-11-01 02:48:26 UTC"], "2019-11-02": ["2019-11-02 00:00:00 UTC", "2019-11-02 02:32:33 UTC"]}, "cohort_sha256": "816dd83c34a7f19fc1f6b4d51514e30398e88b4a0559b2b85d3be72193fe8e5e", "selection": "First N source CSV records per date; timestamps and duplicates preserved"}, "query_pair": {"user_id": 557746614, "product_id": 1801881, "count": 25}}
+{"event": "e5_write_start", "at": "2026-11-02T01:04:50.922820+00:00", "dataset": "csv_flat", "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/csv_flat"}
+26/11/02 01:04:50 WARN AbstractS3ACommitterFactory: Using standard FileOutputCommitter to commit work. This is slow and potentially unsafe.
+{"event": "e5_write_complete", "at": "2026-11-02T01:04:53.055924+00:00", "dataset": "csv_flat", "physical_files": 9}
+{"event": "e5_write_start", "at": "2026-11-02T01:04:53.056089+00:00", "dataset": "csv_partitioned", "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/csv_partitioned"}
+26/11/02 01:04:53 WARN AbstractS3ACommitterFactory: Using standard FileOutputCommitter to commit work. This is slow and potentially unsafe.
+{"event": "e5_write_complete", "at": "2026-11-02T01:04:55.727167+00:00", "dataset": "csv_partitioned", "physical_files": 17}
+{"event": "e5_write_start", "at": "2026-11-02T01:04:55.727228+00:00", "dataset": "json_gzip_flat", "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/json_gzip_flat"}
+26/11/02 01:04:55 WARN AbstractS3ACommitterFactory: Using standard FileOutputCommitter to commit work. This is slow and potentially unsafe.
+{"event": "e5_write_complete", "at": "2026-11-02T01:04:56.706179+00:00", "dataset": "json_gzip_flat", "physical_files": 9}
+{"event": "e5_write_start", "at": "2026-11-02T01:04:56.706235+00:00", "dataset": "json_gzip_partitioned", "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/json_gzip_partitioned"}
+26/11/02 01:04:56 WARN AbstractS3ACommitterFactory: Using standard FileOutputCommitter to commit work. This is slow and potentially unsafe.
+{"event": "e5_write_complete", "at": "2026-11-02T01:04:57.995008+00:00", "dataset": "json_gzip_partitioned", "physical_files": 17}
+{"event": "e5_write_start", "at": "2026-11-02T01:04:57.995070+00:00", "dataset": "delta_flat", "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_flat"}
+26/11/02 01:05:04 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+{"event": "e5_optimize_start", "at": "2026-11-02T01:05:06.837669+00:00", "sql": "OPTIMIZE delta.`s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_flat` ZORDER BY (user_id, product_id)"}
+{"event": "e5_write_complete", "at": "2026-11-02T01:05:12.237530+00:00", "dataset": "delta_flat", "physical_files": 12}
+{"event": "e5_write_start", "at": "2026-11-02T01:05:12.237590+00:00", "dataset": "delta_partitioned", "path": "s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned"}
+{"event": "e5_optimize_start", "at": "2026-11-02T01:05:14.637298+00:00", "sql": "OPTIMIZE delta.`s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned` WHERE event_date = DATE '2019-11-01' ZORDER BY (user_id, product_id)"}
+{"event": "e5_optimize_start", "at": "2026-11-02T01:05:16.795983+00:00", "sql": "OPTIMIZE delta.`s3a://lake/_checkpoints/e5/e5-e385de717a4a4bfd8994c96ad3906ce6/delta_partitioned` WHERE event_date = DATE '2019-11-02' ZORDER BY (user_id, product_id)"}
+{"event": "e5_write_complete", "at": "2026-11-02T01:05:20.704096+00:00", "dataset": "delta_partitioned", "physical_files": 22}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:22.349683+00:00", "variant": "csv_flat", "version": null}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:23.370364+00:00", "variant": "csv_partitioned", "version": null}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:25.202291+00:00", "variant": "json_gzip_flat", "version": null}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:26.170333+00:00", "variant": "json_gzip_partitioned", "version": null}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:28.591646+00:00", "variant": "delta_flat_before", "version": 1}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:30.188573+00:00", "variant": "delta_flat_after", "version": 2}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:33.057106+00:00", "variant": "delta_partitioned_before", "version": 1}
+{"event": "e5_multiset_verified", "at": "2026-11-02T01:05:34.596386+00:00", "variant": "delta_partitioned_after", "version": 3}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:35.121573+00:00", "variant": "csv_flat", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:35.522079+00:00", "variant": "csv_flat", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:35.905410+00:00", "variant": "csv_flat", "query": "user_product_lookup"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:36.336925+00:00", "variant": "csv_partitioned", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:36.631852+00:00", "variant": "csv_partitioned", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:36.972460+00:00", "variant": "csv_partitioned", "query": "user_product_lookup"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:37.440542+00:00", "variant": "json_gzip_flat", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:37.831605+00:00", "variant": "json_gzip_flat", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:38.112354+00:00", "variant": "json_gzip_flat", "query": "user_product_lookup"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:38.433846+00:00", "variant": "json_gzip_partitioned", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:38.689886+00:00", "variant": "json_gzip_partitioned", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:38.928455+00:00", "variant": "json_gzip_partitioned", "query": "user_product_lookup"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:40.178248+00:00", "variant": "delta_flat_before", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:41.155374+00:00", "variant": "delta_flat_before", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:42.360580+00:00", "variant": "delta_flat_before", "query": "user_product_lookup"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:43.210394+00:00", "variant": "delta_flat_after", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:44.068807+00:00", "variant": "delta_flat_after", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:44.681168+00:00", "variant": "delta_flat_after", "query": "user_product_lookup"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:46.123596+00:00", "variant": "delta_partitioned_before", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:47.316180+00:00", "variant": "delta_partitioned_before", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:48.849431+00:00", "variant": "delta_partitioned_before", "query": "user_product_lookup"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:49.378529+00:00", "variant": "delta_partitioned_after", "query": "event_type_totals"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:49.734900+00:00", "variant": "delta_partitioned_after", "query": "product_activity"}
+{"event": "e5_warmup", "at": "2026-11-02T01:05:50.235955+00:00", "variant": "delta_partitioned_after", "query": "user_product_lookup"}
+{"event": "e5_trial", "at": "2026-11-02T01:05:50.650875+00:00", "variant_id": "delta_flat_after", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 385.34, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:05:50.887795+00:00", "variant_id": "csv_partitioned", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 225.59, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:51.966101+00:00", "variant_id": "delta_partitioned_before", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 1051.03, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:52.322370+00:00", "variant_id": "delta_partitioned_after", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 335.3, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:05:53.383891+00:00", "variant_id": "delta_flat_before", "query": "product_activity", "repetition": 1, "elapsed_ms": 1044.33, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:53.683896+00:00", "variant_id": "json_gzip_partitioned", "query": "product_activity", "repetition": 1, "elapsed_ms": 271.01, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:54.139333+00:00", "variant_id": "delta_flat_after", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 443.89, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:05:54.396215+00:00", "variant_id": "json_gzip_partitioned", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 243.51, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:55.346256+00:00", "variant_id": "delta_flat_before", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 923.89, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:55.856654+00:00", "variant_id": "delta_flat_after", "query": "product_activity", "repetition": 1, "elapsed_ms": 480.85, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:05:56.174856+00:00", "variant_id": "csv_flat", "query": "product_activity", "repetition": 1, "elapsed_ms": 290.07, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:57.257552+00:00", "variant_id": "delta_flat_before", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 1067.06, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:57.669784+00:00", "variant_id": "delta_partitioned_after", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 394.84, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:05:57.976171+00:00", "variant_id": "json_gzip_flat", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 290.56, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:58.302701+00:00", "variant_id": "json_gzip_partitioned", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 306.12, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:58.626961+00:00", "variant_id": "csv_flat", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 311.34, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:05:58.966968+00:00", "variant_id": "delta_partitioned_after", "query": "product_activity", "repetition": 1, "elapsed_ms": 317.96, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:05:59.163990+00:00", "variant_id": "csv_partitioned", "query": "product_activity", "repetition": 1, "elapsed_ms": 181.51, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:00.306253+00:00", "variant_id": "delta_partitioned_before", "query": "product_activity", "repetition": 1, "elapsed_ms": 1117.79, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:00.640098+00:00", "variant_id": "json_gzip_flat", "query": "product_activity", "repetition": 1, "elapsed_ms": 312.76, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:01.015713+00:00", "variant_id": "json_gzip_flat", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 356.18, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:01.376934+00:00", "variant_id": "csv_flat", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 340.03, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:01.616858+00:00", "variant_id": "csv_partitioned", "query": "event_type_totals", "repetition": 1, "elapsed_ms": 222.79, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:02.489505+00:00", "variant_id": "delta_partitioned_before", "query": "user_product_lookup", "repetition": 1, "elapsed_ms": 860.53, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:02.750808+00:00", "variant_id": "json_gzip_partitioned", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 243.9, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:03.159790+00:00", "variant_id": "delta_partitioned_after", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 394.0, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:03.470806+00:00", "variant_id": "json_gzip_flat", "query": "product_activity", "repetition": 2, "elapsed_ms": 279.2, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:03.854431+00:00", "variant_id": "csv_partitioned", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 365.68, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:04.288041+00:00", "variant_id": "delta_partitioned_after", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 414.73, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:04.557064+00:00", "variant_id": "csv_flat", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 252.81, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:04.884253+00:00", "variant_id": "delta_flat_after", "query": "product_activity", "repetition": 2, "elapsed_ms": 314.93, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:05.292567+00:00", "variant_id": "delta_flat_after", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 396.13, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:06.350636+00:00", "variant_id": "delta_partitioned_before", "query": "product_activity", "repetition": 2, "elapsed_ms": 1043.47, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:06.589084+00:00", "variant_id": "json_gzip_partitioned", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 217.49, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:06.982437+00:00", "variant_id": "delta_flat_after", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 371.03, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:08.150679+00:00", "variant_id": "delta_flat_before", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 1142.37, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:08.445148+00:00", "variant_id": "csv_flat", "query": "product_activity", "repetition": 2, "elapsed_ms": 249.15, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:09.611331+00:00", "variant_id": "delta_partitioned_before", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 1152.77, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:10.622455+00:00", "variant_id": "delta_flat_before", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 994.44, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:10.963649+00:00", "variant_id": "json_gzip_flat", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 324.29, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:11.138520+00:00", "variant_id": "csv_partitioned", "query": "product_activity", "repetition": 2, "elapsed_ms": 159.88, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:11.466029+00:00", "variant_id": "delta_partitioned_after", "query": "product_activity", "repetition": 2, "elapsed_ms": 312.77, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:11.628521+00:00", "variant_id": "json_gzip_partitioned", "query": "product_activity", "repetition": 2, "elapsed_ms": 150.31, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:12.558863+00:00", "variant_id": "delta_flat_before", "query": "product_activity", "repetition": 2, "elapsed_ms": 905.91, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:12.786182+00:00", "variant_id": "csv_partitioned", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 211.57, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:13.046630+00:00", "variant_id": "csv_flat", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 242.99, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:13.355579+00:00", "variant_id": "json_gzip_flat", "query": "user_product_lookup", "repetition": 2, "elapsed_ms": 297.75, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:14.646698+00:00", "variant_id": "delta_partitioned_before", "query": "event_type_totals", "repetition": 2, "elapsed_ms": 1273.87, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:14.918747+00:00", "variant_id": "csv_flat", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 249.8, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:16.001720+00:00", "variant_id": "delta_partitioned_before", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 1067.58, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:16.198590+00:00", "variant_id": "csv_partitioned", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 185.35, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:16.494107+00:00", "variant_id": "json_gzip_flat", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 284.75, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:16.700760+00:00", "variant_id": "json_gzip_flat", "query": "product_activity", "repetition": 3, "elapsed_ms": 193.05, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:17.547229+00:00", "variant_id": "delta_partitioned_before", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 833.69, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:17.857773+00:00", "variant_id": "delta_flat_after", "query": "product_activity", "repetition": 3, "elapsed_ms": 294.9, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:18.278315+00:00", "variant_id": "delta_partitioned_after", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 403.21, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:19.316110+00:00", "variant_id": "delta_flat_before", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 1021.87, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:20.385386+00:00", "variant_id": "delta_flat_before", "query": "product_activity", "repetition": 3, "elapsed_ms": 1043.96, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:20.960183+00:00", "variant_id": "delta_flat_after", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 529.46, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:21.138194+00:00", "variant_id": "csv_partitioned", "query": "product_activity", "repetition": 3, "elapsed_ms": 162.47, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:21.503916+00:00", "variant_id": "delta_partitioned_after", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 341.8, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:21.758483+00:00", "variant_id": "csv_partitioned", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 239.29, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:21.923981+00:00", "variant_id": "json_gzip_partitioned", "query": "product_activity", "repetition": 3, "elapsed_ms": 149.84, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:22.113596+00:00", "variant_id": "csv_flat", "query": "product_activity", "repetition": 3, "elapsed_ms": 171.0, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:22.409193+00:00", "variant_id": "delta_partitioned_after", "query": "product_activity", "repetition": 3, "elapsed_ms": 279.17, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:22.670695+00:00", "variant_id": "json_gzip_flat", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 243.96, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:22.886569+00:00", "variant_id": "json_gzip_partitioned", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 202.1, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:24.114610+00:00", "variant_id": "delta_partitioned_before", "query": "product_activity", "repetition": 3, "elapsed_ms": 1204.49, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:24.495724+00:00", "variant_id": "json_gzip_partitioned", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 352.81, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:24.916633+00:00", "variant_id": "delta_flat_after", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 407.68, "selected_files": 1}
+{"event": "e5_trial", "at": "2026-11-02T01:06:25.272223+00:00", "variant_id": "csv_flat", "query": "user_product_lookup", "repetition": 3, "elapsed_ms": 332.4, "selected_files": 8}
+{"event": "e5_trial", "at": "2026-11-02T01:06:26.138220+00:00", "variant_id": "delta_flat_before", "query": "event_type_totals", "repetition": 3, "elapsed_ms": 848.39, "selected_files": 8}
+{"event": "E5_PASS", "at": "2026-11-02T01:06:27.672934+00:00", "passed": true, "variants": 8, "trials": 72, "queries": 3, "rows": 100000, "all_query_results_matched": true, "all_typed_multisets_matched": true, "partitioned_trials_verified": 36, "deletion_performed": false}

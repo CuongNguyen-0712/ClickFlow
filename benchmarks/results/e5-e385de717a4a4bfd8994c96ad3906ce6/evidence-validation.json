@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "raw_measurements_unchanged": true,
+  "cohort_counts": {
+    "2019-11-01": 50000,
+    "2019-11-02": 50000
+  },
+  "code_fingerprints_match": true,
+  "trial_matrix_complete": true,
+  "recomputed_pruning_matches": true,
+  "partitioned_trials_verified": 36,
+  "plans": 24,
+  "snapshots": 8,
+  "query_result_hashes_match": true,
+  "cached_or_metadata_only_plans": 0,
+  "publication_report": "publication/README.md"
+}

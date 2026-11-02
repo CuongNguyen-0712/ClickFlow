@@ -1,0 +1,64 @@
+26/11/01 16:50:49 INFO SparkContext: Running Spark version 3.5.3
+26/11/01 16:50:49 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+26/11/01 16:50:49 INFO SparkContext: Java version 17.0.12
+26/11/01 16:50:49 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/11/01 16:50:49 INFO ResourceUtils: ==============================================================
+26/11/01 16:50:49 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/11/01 16:50:49 INFO ResourceUtils: ==============================================================
+26/11/01 16:50:49 INFO SparkContext: Submitted application: stream-to-bronze-kafka
+26/11/01 16:50:49 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 2, script: , vendor: , memory -> name: memory, amount: 1500, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/11/01 16:50:49 INFO ResourceProfile: Limiting resource is cpus at 2 tasks per executor
+26/11/01 16:50:49 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/11/01 16:50:49 INFO SecurityManager: Changing view acls to: root
+26/11/01 16:50:49 INFO SecurityManager: Changing modify acls to: root
+26/11/01 16:50:49 INFO SecurityManager: Changing view acls groups to: 
+26/11/01 16:50:49 INFO SecurityManager: Changing modify acls groups to: 
+26/11/01 16:50:49 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/11/01 16:50:49 INFO Utils: Successfully started service 'sparkDriver' on port 35101.
+26/11/01 16:50:49 INFO SparkEnv: Registering MapOutputTracker
+26/11/01 16:50:49 INFO SparkEnv: Registering BlockManagerMaster
+26/11/01 16:50:49 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/11/01 16:50:49 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/11/01 16:50:49 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/11/01 16:50:49 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-1f497c7c-ef43-4e92-ae91-ab654e90ac1f
+26/11/01 16:50:50 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+26/11/01 16:50:50 INFO SparkEnv: Registering OutputCommitCoordinator
+26/11/01 16:50:50 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/11/01 16:50:50 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/11/01 16:50:50 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/11/01 16:50:50 INFO TransportClientFactory: Successfully created connection to spark-master/172.23.0.3:7077 after 27 ms (0 ms spent in bootstraps)
+26/11/01 16:50:50 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20261101165050-0043
+26/11/01 16:50:50 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101165050-0043/0 on worker-20261101111639-172.23.0.4-37435 (172.23.0.4:37435) with 2 core(s)
+26/11/01 16:50:50 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101165050-0043/0 on hostPort 172.23.0.4:37435 with 2 core(s), 1500.0 MiB RAM
+26/11/01 16:50:50 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101165050-0043/1 on worker-20261101111639-172.23.0.5-36921 (172.23.0.5:36921) with 2 core(s)
+26/11/01 16:50:50 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101165050-0043/1 on hostPort 172.23.0.5:36921 with 2 core(s), 1500.0 MiB RAM
+26/11/01 16:50:50 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 36699.
+26/11/01 16:50:50 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:36699
+26/11/01 16:50:50 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/11/01 16:50:50 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 36699, None)
+26/11/01 16:50:50 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:36699 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 36699, None)
+26/11/01 16:50:50 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 36699, None)
+26/11/01 16:50:50 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 36699, None)
+26/11/01 16:50:50 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261101165050-0043/0 is now RUNNING
+26/11/01 16:50:50 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261101165050-0043/1 is now RUNNING
+26/11/01 16:50:50 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+26/11/01 16:50:52 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+26/11/01 16:51:02 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+{"event": "lake_table_ready", "table": "bronze", "path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/bronze/events"}
+{"event": "lake_table_ready", "table": "quarantine", "path": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/quarantine/events"}
+26/11/01 16:51:13 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.
+{"event": "kafka_stream_started", "topic": "e4b-1016f257a6024eb085ee425572dbdaea", "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/checkpoint", "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14", "run_id": "3bbcac0a-634c-4ed2-915f-ab3cf2bdb838", "driver_pid": 608, "metrics_port": 45343}
+{"event": "stream_batch_committed", "batch_id": 3, "input_rows": 5000, "bronze_inserted": 0, "quarantine_inserted": 0, "duplicates_ignored": 5000, "conflicting_event_ids": 0, "errors": {}}
+26/11/01 16:51:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 5000 milliseconds, but spent 13555 milliseconds
+26/11/01 16:51:27 WARN AdminClientConfig: These configurations '[key.deserializer, value.deserializer, enable.auto.commit, max.poll.records, auto.offset.reset]' were supplied but are not used yet.
+{"event": "dedup_progress", "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14", "run_id": "3bbcac0a-634c-4ed2-915f-ab3cf2bdb838", "batch_id": 3, "duplicates_dropped": 0, "late_records_dropped": 0}
+{"event": "stream_batch_committed", "batch_id": 4, "input_rows": 4997, "bronze_inserted": 4997, "quarantine_inserted": 0, "duplicates_ignored": 0, "conflicting_event_ids": 0, "errors": {}}
+26/11/01 16:51:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 5000 milliseconds, but spent 6212 milliseconds
+{"event": "dedup_progress", "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14", "run_id": "3bbcac0a-634c-4ed2-915f-ab3cf2bdb838", "batch_id": 4, "duplicates_dropped": 0, "late_records_dropped": 0}
+{"event": "stream_batch_committed", "batch_id": 5, "input_rows": 4997, "bronze_inserted": 4997, "quarantine_inserted": 0, "duplicates_ignored": 0, "conflicting_event_ids": 0, "errors": {}}
+26/11/01 16:51:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 5000 milliseconds, but spent 6466 milliseconds
+{"event": "dedup_progress", "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14", "run_id": "3bbcac0a-634c-4ed2-915f-ab3cf2bdb838", "batch_id": 5, "duplicates_dropped": 0, "late_records_dropped": 0}
+{"event": "stream_batch_committed", "batch_id": 6, "input_rows": 4006, "bronze_inserted": 4006, "quarantine_inserted": 0, "duplicates_ignored": 0, "conflicting_event_ids": 0, "errors": {}}
+26/11/01 16:51:46 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 5000 milliseconds, but spent 6626 milliseconds
+{"event": "dedup_progress", "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14", "run_id": "3bbcac0a-634c-4ed2-915f-ab3cf2bdb838", "batch_id": 6, "duplicates_dropped": 0, "late_records_dropped": 0}
+{"event": "dedup_progress", "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14", "run_id": "3bbcac0a-634c-4ed2-915f-ab3cf2bdb838", "batch_id": 7, "duplicates_dropped": 0, "late_records_dropped": 0}

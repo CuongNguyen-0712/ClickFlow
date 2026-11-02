@@ -1,0 +1,55 @@
+26/11/01 16:44:41 INFO SparkContext: Running Spark version 3.5.3
+26/11/01 16:44:41 INFO SparkContext: OS info Linux, 6.6.87.2-microsoft-standard-WSL2, amd64
+26/11/01 16:44:41 INFO SparkContext: Java version 17.0.12
+26/11/01 16:44:41 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/11/01 16:44:41 INFO ResourceUtils: ==============================================================
+26/11/01 16:44:41 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/11/01 16:44:41 INFO ResourceUtils: ==============================================================
+26/11/01 16:44:41 INFO SparkContext: Submitted application: e4b-first-driver
+26/11/01 16:44:42 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 2, script: , vendor: , memory -> name: memory, amount: 1500, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/11/01 16:44:42 INFO ResourceProfile: Limiting resource is cpus at 2 tasks per executor
+26/11/01 16:44:42 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/11/01 16:44:42 INFO SecurityManager: Changing view acls to: root
+26/11/01 16:44:42 INFO SecurityManager: Changing modify acls to: root
+26/11/01 16:44:42 INFO SecurityManager: Changing view acls groups to: 
+26/11/01 16:44:42 INFO SecurityManager: Changing modify acls groups to: 
+26/11/01 16:44:42 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/11/01 16:44:42 INFO Utils: Successfully started service 'sparkDriver' on port 34703.
+26/11/01 16:44:42 INFO SparkEnv: Registering MapOutputTracker
+26/11/01 16:44:42 INFO SparkEnv: Registering BlockManagerMaster
+26/11/01 16:44:42 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/11/01 16:44:42 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/11/01 16:44:42 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/11/01 16:44:42 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-41f8434d-df92-4101-b5fb-f121b4afcb1a
+26/11/01 16:44:42 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+26/11/01 16:44:42 INFO SparkEnv: Registering OutputCommitCoordinator
+26/11/01 16:44:42 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/11/01 16:44:42 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/11/01 16:44:42 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...
+26/11/01 16:44:42 INFO TransportClientFactory: Successfully created connection to spark-master/172.23.0.3:7077 after 16 ms (0 ms spent in bootstraps)
+26/11/01 16:44:42 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20261101164442-0040
+26/11/01 16:44:42 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 46721.
+26/11/01 16:44:42 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:46721
+26/11/01 16:44:42 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/11/01 16:44:42 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 46721, None)
+26/11/01 16:44:42 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:46721 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 46721, None)
+26/11/01 16:44:42 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 46721, None)
+26/11/01 16:44:42 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 46721, None)
+26/11/01 16:44:42 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101164442-0040/0 on worker-20261101111639-172.23.0.4-37435 (172.23.0.4:37435) with 2 core(s)
+26/11/01 16:44:42 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101164442-0040/0 on hostPort 172.23.0.4:37435 with 2 core(s), 1500.0 MiB RAM
+26/11/01 16:44:42 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261101164442-0040/1 on worker-20261101111639-172.23.0.5-36921 (172.23.0.5:36921) with 2 core(s)
+26/11/01 16:44:42 INFO StandaloneSchedulerBackend: Granted executor ID app-20261101164442-0040/1 on hostPort 172.23.0.5:36921 with 2 core(s), 1500.0 MiB RAM
+26/11/01 16:44:42 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+26/11/01 16:44:42 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261101164442-0040/0 is now RUNNING
+26/11/01 16:44:42 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261101164442-0040/1 is now RUNNING
+26/11/01 16:44:44 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+26/11/01 16:44:54 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
+{"event": "lake_table_ready", "table": "bronze", "path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/bronze/events"}
+{"event": "lake_table_ready", "table": "quarantine", "path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/quarantine/events"}
+26/11/01 16:45:07 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.
+{"event": "kafka_stream_started", "topic": "e4b-8e36491b06624af09bed2fe42721a201", "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/checkpoint", "query_id": "b2fa67d5-be34-404b-ad52-1962a6bd819c", "run_id": "d14929fc-95ab-4351-82c4-c1759d020a8f", "driver_pid": 98, "metrics_port": 33655}
+26/11/01 16:45:07 WARN AdminClientConfig: These configurations '[key.deserializer, value.deserializer, enable.auto.commit, max.poll.records, auto.offset.reset]' were supplied but are not used yet.
+26/11/01 16:45:08 WARN TaskSetManager: Lost task 2.0 in stage 25.0 (TID 212) (172.23.0.4 executor 0): TaskKilled (Stage cancelled: Job 14 cancelled part of cancelled job group d14929fc-95ab-4351-82c4-c1759d020a8f)
+26/11/01 16:45:08 WARN TaskSetManager: Lost task 0.0 in stage 25.0 (TID 210) (172.23.0.4 executor 0): TaskKilled (Stage cancelled: Job 14 cancelled part of cancelled job group d14929fc-95ab-4351-82c4-c1759d020a8f)
+26/11/01 16:45:08 WARN TaskSetManager: Lost task 3.0 in stage 25.0 (TID 213) (172.23.0.5 executor 1): TaskKilled (Stage cancelled: Job 14 cancelled part of cancelled job group d14929fc-95ab-4351-82c4-c1759d020a8f)
+26/11/01 16:45:08 WARN TaskSetManager: Lost task 1.0 in stage 25.0 (TID 211) (172.23.0.5 executor 1): TaskKilled (Stage cancelled: Job 14 cancelled part of cancelled job group d14929fc-95ab-4351-82c4-c1759d020a8f)

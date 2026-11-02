@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "rows_source": 20000,
+  "rows_bronze": 20000,
+  "distinct_event_ids": 20000,
+  "duplicate_ids": 0,
+  "missing": 0,
+  "extra": 0,
+  "field_mismatches": 0,
+  "csv_mismatches": 0,
+  "quarantine": 0,
+  "prekill_version": 2,
+  "prekill_rows_unchanged": 6000,
+  "changed_preexisting_rows": 0,
+  "reconciliation": [
+    {
+      "event_date": "2019-11-01",
+      "rows_source": 10027,
+      "rows_bronze": 10027,
+      "rows_quarantine": 0,
+      "duplicates_dropped": 0,
+      "match": true
+    },
+    {
+      "event_date": "2019-11-02",
+      "rows_source": 9973,
+      "rows_bronze": 9973,
+      "rows_quarantine": 0,
+      "duplicates_dropped": 0,
+      "match": true
+    }
+  ],
+  "scope": "Controlled real 100k sample subset; timestamps shifted over two dates; no injected bad rows"
+}

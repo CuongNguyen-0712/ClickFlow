@@ -1,0 +1,15 @@
+{
+  "render_options": {
+    "xtick.labelsize": 7
+  },
+  "raw_manifest_sha256": "c5ddd89b0dec080f57c0dcb4ffb65cbcd212fb925aaff3d14a350818dbbb3514",
+  "code_fingerprints_match_measured_manifest": true,
+  "raw_trials": 72,
+  "purpose": "Same validated measurements; smaller tick labels for chapter-ready plots",
+  "versions": {
+    "matplotlib": "3.9.2",
+    "Pillow": "12.3.0",
+    "PyYAML": "6.0.2",
+    "delta-spark": "3.2.1"
+  }
+}

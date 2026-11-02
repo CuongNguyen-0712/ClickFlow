@@ -1,0 +1,9 @@
+variant_id,format,partitioned,stage,version,active_data_files,active_data_bytes,physical_total_files,physical_total_bytes
+csv_flat,csv,False,original,,8,14371500,9,14371500
+csv_partitioned,csv,True,original,,16,13272148,17,13272148
+json_gzip_flat,json_gzip,False,original,,8,3785615,9,3785615
+json_gzip_partitioned,json_gzip,True,original,,16,3710733,17,3710733
+delta_flat_before,delta,False,before,1,8,4057397,12,6533995
+delta_flat_after,delta,False,after,2,1,2462647,12,6533995
+delta_partitioned_before,delta,True,before,1,16,4128723,22,6622811
+delta_partitioned_after,delta,True,after,3,2,2467984,22,6622811

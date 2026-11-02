@@ -1,0 +1,19 @@
+{"at": "2026-11-01T16:44:39.210389+00:00", "event": "e4b_case", "case_id": "e4b-8e36491b06624af09bed2fe42721a201", "workload": {"path": "/opt/app/data/sample/events_sample_100k.csv", "sha256": "69c353e85ddf091515a223cac0f172653700b7e2dce28c97b7cd8407fccdff8c", "rows": 20000, "first_event_time": "2019-11-01T15:35:08+00:00", "last_event_time": "2019-11-01T15:46:58+00:00", "event_span_seconds": 710.0}, "rows": 20000, "source_path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/input/source.csv", "source_sha256": "d8ede99784455ada8b21767afa8e376607d599d2d4b431619af457097d0058d7", "bronze_path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/bronze/events", "quarantine_path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/quarantine/events", "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/checkpoint", "topic": "e4b-8e36491b06624af09bed2fe42721a201", "days": ["2019-11-01", "2019-11-02"], "fault_window": "Delta callback committed, Spark checkpoint batch not committed"}
+{"at": "2026-11-01T16:44:39.286498+00:00", "event": "waiting", "for_condition": "topic six partitions / three replicas / full ISR"}
+{"at": "2026-11-01T16:44:39.792530+00:00", "event": "start_driver", "command": ["/opt/spark/bin/spark-submit", "--master", "spark://spark-master:7077", "/opt/app/src/monitoring/e4b_driver.py", "--config", "/opt/app/benchmarks/results/e4b-8e36491b06624af09bed2fe42721a201/pipeline.yaml"], "log": "before-driver.log"}
+{"at": "2026-11-01T16:44:39.796603+00:00", "event": "waiting", "for_condition": "first query started"}
+{"at": "2026-11-01T16:44:54.975354+00:00", "event": "waiting", "for_condition": "first query started"}
+{"at": "2026-11-01T16:45:07.624215+00:00", "event": "signal_driver", "jvm_pid": 42, "pgid": 42, "group_members": [42, 98], "command": ["/opt/java/openjdk/bin/java", "-cp", "/opt/spark/conf/:/opt/spark/jars/*", "-Xmx1g", "-XX:+IgnoreUnrecognizedVMOptions", "--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED", "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED", "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.net=ALL-UNNAMED", "--add-opens=java.base/java.nio=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED", "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED", "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED", "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED", "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED", "--add-opens=java.base/sun.security.action=ALL-UNNAMED", "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED", "--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED", "-Djdk.reflect.useDirectMethodHandle=false", "org.apache.spark.deploy.SparkSubmit", "--master", "spark://spark-master:7077", "/opt/app/src/monitoring/e4b_driver.py", "--config", "/opt/app/benchmarks/results/e4b-8e36491b06624af09bed2fe42721a201/pipeline.yaml"], "signal": "SIGTERM"}
+{"at": "2026-11-01T16:45:09.548635+00:00", "event": "driver_exit", "log": "before-driver.log", "returncode": 0}
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 396, in <module>
+    main()
+  File "/opt/app/src/monitoring/e4b_failover.py", line 392, in main
+    run(args.directory, rows=args.rows)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 299, in run
+    emit('first_query', **before_identity)
+TypeError: emit() got multiple values for argument 'event'
