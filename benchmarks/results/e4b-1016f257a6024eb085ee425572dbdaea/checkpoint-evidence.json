@@ -1,0 +1,50 @@
+{
+  "observed_after_recovery": {
+    "batch_id": 7,
+    "offsets": {
+      "2": 3410,
+      "5": 3359,
+      "4": 3374,
+      "1": 3267,
+      "3": 3082,
+      "0": 3508
+    },
+    "consumed": 20000,
+    "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14",
+    "identity_sha256": "1611acef0034e953f9ce92bf2988658e44128bd8c7ce12ef47ea57f28bb4e526"
+  },
+  "metadata": {
+    "id": "381e0292-9b53-4008-9e1b-0278b7e06e14"
+  },
+  "binding": {
+    "bootstrap_servers": [
+      "kafka-1:9092",
+      "kafka-2:9092",
+      "kafka-3:9092"
+    ],
+    "bronze": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/bronze/events",
+    "c3_fingerprint": "2f68b06d017d42f38e88dc824e12ba49d53e500730452cc2d96de33a5b4da0f3",
+    "checkpoint_layout": {
+      "event_time": "event_time",
+      "keys": [
+        "event_id"
+      ],
+      "operator": "dropDuplicatesWithinWatermark",
+      "routing": "valid_union_invalid_v1",
+      "shuffle_partitions": 8,
+      "watermark": "1 hour"
+    },
+    "contracts": {
+      "bronze": "1.0.0",
+      "quarantine": "1.0.0"
+    },
+    "pipeline_format": 1,
+    "quarantine": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/quarantine/events",
+    "topic": "e4b-1016f257a6024eb085ee425572dbdaea"
+  },
+  "seed_commit_log": "v1\n{\"nextBatchWatermarkMs\":1572649217000}",
+  "gate_offset_log": "v1\n{\"batchWatermarkMs\":1572649217000,\"batchTimestampMs\":1793551830005,\"conf\":{\"spark.sql.streaming.stateStore.providerClass\":\"org.apache.spark.sql.execution.streaming.state.HDFSBackedStateStoreProvider\",\"spark.sql.streaming.join.stateFormatVersion\":\"2\",\"spark.sql.streaming.stateStore.compression.codec\":\"lz4\",\"spark.sql.streaming.stateStore.rocksdb.formatVersion\":\"5\",\"spark.sql.streaming.statefulOperator.useStrictDistribution\":\"true\",\"spark.sql.streaming.flatMapGroupsWithState.stateFormatVersion\":\"2\",\"spark.sql.streaming.multipleWatermarkPolicy\":\"min\",\"spark.sql.streaming.aggregation.stateFormatVersion\":\"2\",\"spark.sql.shuffle.partitions\":\"8\"}}\n{\"e4b-1016f257a6024eb085ee425572dbdaea\":{\"2\":999,\"5\":984,\"4\":978,\"1\":1012,\"3\":948,\"0\":1079}}\n{\"e4b-1016f257a6024eb085ee425572dbdaea\":{\"2\":999,\"5\":984,\"4\":978,\"1\":1012,\"3\":948,\"0\":1079}}",
+  "gate_commit_log_after_replay": "v1\n{\"nextBatchWatermarkMs\":1572649307000}",
+  "final_offset_log": "v1\n{\"batchWatermarkMs\":1572649555000,\"batchTimestampMs\":1793551906533,\"conf\":{\"spark.sql.streaming.stateStore.providerClass\":\"org.apache.spark.sql.execution.streaming.state.HDFSBackedStateStoreProvider\",\"spark.sql.streaming.join.stateFormatVersion\":\"2\",\"spark.sql.streaming.stateStore.compression.codec\":\"lz4\",\"spark.sql.streaming.stateStore.rocksdb.formatVersion\":\"5\",\"spark.sql.streaming.statefulOperator.useStrictDistribution\":\"true\",\"spark.sql.streaming.flatMapGroupsWithState.stateFormatVersion\":\"2\",\"spark.sql.streaming.multipleWatermarkPolicy\":\"min\",\"spark.sql.streaming.aggregation.stateFormatVersion\":\"2\",\"spark.sql.shuffle.partitions\":\"8\"}}\n{\"e4b-1016f257a6024eb085ee425572dbdaea\":{\"2\":3410,\"5\":3359,\"4\":3374,\"1\":3267,\"3\":3082,\"0\":3508}}\n{\"e4b-1016f257a6024eb085ee425572dbdaea\":{\"2\":3410,\"5\":3359,\"4\":3374,\"1\":3267,\"3\":3082,\"0\":3508}}",
+  "final_commit_log": "v1\n{\"nextBatchWatermarkMs\":1572649555000}"
+}

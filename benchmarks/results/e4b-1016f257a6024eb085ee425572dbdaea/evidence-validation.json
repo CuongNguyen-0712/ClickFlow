@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "evidence_checks": "SIGKILL/active publisher, unique receipts, checkpoint identity/replay, source hash, code fingerprints, historical C4, both daily matches, cast/stdout equality",
+  "replay_attempts_ignored": 5000,
+  "source_records": 20000,
+  "video": {
+    "decode_returncode": 0,
+    "frames": 100,
+    "fps": 4,
+    "actual_duration_seconds": 25.0,
+    "codec": "H.264",
+    "pixel_format": "yuv420p",
+    "size": [
+      1280,
+      720
+    ],
+    "playback_speed": 8
+  },
+  "validation_command": [
+    "/usr/local/lib/python3.11/site-packages/imageio_ffmpeg/binaries/ffmpeg-linux64-v4.2.2",
+    "-hide_banner",
+    "-i",
+    "/evidence/failover.mp4",
+    "-f",
+    "null",
+    "-"
+  ]
+}

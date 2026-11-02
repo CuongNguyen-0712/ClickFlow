@@ -1,0 +1,55 @@
+collector:
+  max_batch: 500
+  url: http://localhost:8000/events
+kafka:
+  bootstrap_servers: localhost:29092,localhost:29093,localhost:29094
+  bootstrap_servers_internal: kafka-1:9092,kafka-2:9092,kafka-3:9092
+  topic: e4b-d30b0b796616481f8a286feda5f11179
+lake:
+  bronze: s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/bronze/events
+  bucket: lake
+  checkpoints: s3a://lake/_checkpoints/
+  endpoint: http://minio:9000
+  endpoint_host: http://localhost:9002
+  quarantine: s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/quarantine/events
+  raw: s3a://lake/raw/ecom.events.raw/
+  raw_csv: s3a://lake/raw/csv/
+maintenance:
+  max_stream_lag_hours: 168
+  max_transaction_hours: 24
+  retention_hours: 720
+  small_file_size_bytes: 16777216
+  target_file_size_bytes: 134217728
+  time_travel_hours: 720
+producer:
+  acks: all
+  batch.size: 262144
+  compression.type: lz4
+  enable.idempotence: true
+  linger.ms: 20
+simulator:
+  chunk_size: 100000
+  fault_injection:
+    corrupt_ratio: 0.001
+    duplicate_ratio: 0.001
+    enabled: false
+    seed: 42
+  files:
+  - 2019-Nov.csv
+  max_rate: 50000
+  mode: producer
+  source: s3://lake/raw/csv/
+  speed: 100
+stream:
+  checkpoint_path: s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/checkpoint
+  max_offsets_per_trigger: 5000
+  metrics_port: 0
+  query_name: e4b-d30b0b796616481f8a286feda5f11179
+  sample_bronze_path: s3a://lake/bronze/sample_events/
+  sample_day: '2019-11-01'
+  sample_path: /opt/app/data/sample/events_sample_100k.csv
+  sample_rows: 100000
+  source: kafka
+  starting_offsets: earliest
+  trigger_seconds: 5
+  watermark: 1 hour

@@ -1,0 +1,681 @@
+{
+    "status":  "completed",
+    "authorization":  "User explicitly requested removal of unnecessary E3 files",
+    "timezone":  "Asia/Saigon",
+    "prepared_at":  "2026-11-01T23:06:54.0018687+07:00",
+    "workspace":  "D:\\ClickFlow",
+    "result_root":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6",
+    "targets":  [
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6",
+                        "directory":  true,
+                        "reason":  "redundant staging or development-only pilot"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-20261101",
+                        "directory":  true,
+                        "reason":  "redundant staging or development-only pilot"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101",
+                        "directory":  true,
+                        "reason":  "redundant staging or development-only pilot"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-full-driver-host.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-independent-audit.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-independent-audit.py",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-latency-metrics-104fd939ef4c4013850fc8a64ba8cd26.json",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-metric-integration.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-driver.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-driver.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-readiness-red.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-report-resume-red.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-resource-snapshot.txt",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-review-regressions-red.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-runtime-deps.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-final.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-green.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-red.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-verified.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\data\\raw\\e3-validation-red.log",
+                        "directory":  false,
+                        "reason":  "duplicate or intermediate E3 log/script; final evidence preserved"
+                    },
+                    {
+                        "path":  "D:\\ClickFlow\\docs\\superpowers\\plans\\2026-11-01-e3-latency.md",
+                        "directory":  false,
+                        "reason":  "completed internal execution ledger; public methodology retained"
+                    }
+                ],
+    "files":  [
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\completed.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\completed.json",
+                      "bytes":  4675,
+                      "sha256":  "D3A81435C021F3E671A6691394868D957257F034E202C5FAD93AD27565D58DD6"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\environment.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\environment.json",
+                      "bytes":  712,
+                      "sha256":  "59C7CC46704A456E0C982515C781009DAAEBDAAB26EBB35AD7C036A738322334"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\independent-audit.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\independent-audit.json",
+                      "bytes":  5238,
+                      "sha256":  "9C9FFA5DCF705BAC8D5BA3993277A610446CD66FDD55810BD39A49CF18DEDBF6"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\latency.png",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\latency.png",
+                      "bytes":  80816,
+                      "sha256":  "35FF4253D8546F5B69605BD3A0C5AB90A953847A078A68BF4E4FE85C92CF2726"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\latency.svg",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\latency.svg",
+                      "bytes":  63251,
+                      "sha256":  "0D9FC0565CF25BC1B3C78AC15915FB4F57355814F2DCE49D3E2A2DD2C9B2B8D2"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\manifest.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\manifest.json",
+                      "bytes":  4451,
+                      "sha256":  "7E0BCBAD018BB0FC427666B9315D38A6A03DA4181341819ECA9F49EC8875C3C0"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\README.md",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\README.md",
+                      "bytes":  971,
+                      "sha256":  "671DE11453D2CAAC31409705FC34D29FF02F7EC77C845434F8BE14CC579F9069"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\summary.csv",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\summary.csv",
+                      "bytes":  1289,
+                      "sha256":  "5BBF7E919F511226F8782A485C95D5B583635ABFA68BCC111A4EDBF4D9ADC797"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\tradeoff.png",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\tradeoff.png",
+                      "bytes":  85912,
+                      "sha256":  "20E904663F226792505B996565C39B514AADAFE91D9CA44288F1067B96835388"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\tradeoff.svg",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\tradeoff.svg",
+                      "bytes":  62124,
+                      "sha256":  "83AEB17818B42FB1D93F042F558225A97F532EDDEF2DC79A0B9B4052B2213562"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-01.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-01.json",
+                      "bytes":  17455,
+                      "sha256":  "88ACAFA5B52C110A90D65E7F3FABB9FAFFC0DDBF61D18D93F08AD34BFAA09D60"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-02.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-02.json",
+                      "bytes":  17478,
+                      "sha256":  "BC78FB32E1229A72C2B0921202F8F4D123F43B8F75B3B1FCC11524D1EADBA2F4"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-03.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-03.json",
+                      "bytes":  26147,
+                      "sha256":  "C95609B60C6B2656A64DFE420629020BC1FB36776D9358D603A937FD20925DC4"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-04.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-04.json",
+                      "bytes":  20412,
+                      "sha256":  "B821C3449AB985E52B7537EEF1CAD684874CEA07B3387AFFD1518159382DF23B"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-05.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-05.json",
+                      "bytes":  34906,
+                      "sha256":  "92A65C0D8A7904DA5A28A9C900D8B4B274323885552BD09107296DFD58329BCF"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-06.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-06.json",
+                      "bytes":  17487,
+                      "sha256":  "159DBF4046E98FE8CA5D7DBE973E840E8C651355FC41D27F4C439F3C68411BFB"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-07.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-07.json",
+                      "bytes":  17449,
+                      "sha256":  "D62696A3A0FEE12679B509D9282039CAD3D8028D3B6C6167B0B7AFAF6AEA96DB"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-08.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-08.json",
+                      "bytes":  31967,
+                      "sha256":  "3BDFF706FDE2754DEFFB0499DC12CA8F06821D06E7D850C8D7D4A2672B93BE43"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-09.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-09.json",
+                      "bytes":  20373,
+                      "sha256":  "4BCC1B2C94EE9853C20D41C67619F50E9308D6B131542800473EFA6682E216C9"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-10.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-10.json",
+                      "bytes":  20334,
+                      "sha256":  "65DEFC31958A57B078618E9BDE24E4BECF91137648C5A69938F6FDB00019D10B"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-11.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-11.json",
+                      "bytes":  17422,
+                      "sha256":  "EAD35449F2AD9FECB143FF8D3CD64429C3EFE5FD93A4B6500FEC0514B05D747E"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-12.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-12.json",
+                      "bytes":  20346,
+                      "sha256":  "60C9F25BC7B0751481F4B0DA712C3B018CC490FB55CE6D469573CF175FE3AECC"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-13.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-13.json",
+                      "bytes":  20332,
+                      "sha256":  "0E3EF0B785774BB8061B0A6B5530DD74C8A56AAFB680A63BB032049CE9474378"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-14.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-14.json",
+                      "bytes":  20384,
+                      "sha256":  "46F636988B3F41F2702E3CE6ACF9F328541F983F48F7F046B2F838428EAF95F3"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-15.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-15.json",
+                      "bytes":  23286,
+                      "sha256":  "67DDE359BBA7A0611437A33218A877B714A08DE0EF2B5072A869C0F06CEBEC7D"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-16.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-16.json",
+                      "bytes":  40539,
+                      "sha256":  "91A330385E53845DADF3FF8D1CC187B9E8A50CB11E59D7C8AB9C07F29D021CE8"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-17.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-17.json",
+                      "bytes":  20382,
+                      "sha256":  "D3531DC7B03D641117A1BD3A98F14EDB0DFBC86CA80C9485A31818FF3A55B67B"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-18.json",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-18.json",
+                      "bytes":  14816,
+                      "sha256":  "C3BAA04B922C25EC985DE0EFCD8F920D49360EE44C2D7FA982EA863A833DD406"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trials.csv",
+                      "relative_path":  "data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6\\trials.csv",
+                      "bytes":  9475,
+                      "sha256":  "2DE7A8011C75CC9FF7666876D006E4757849B506A4F3DA68B79327CCE37F5561"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-20261101\\failed-01-755174ed.json",
+                      "relative_path":  "data\\raw\\e3-pilot-20261101\\failed-01-755174ed.json",
+                      "bytes":  190,
+                      "sha256":  "FB2400CB97DEFF53ABCD68563F1329C9409C48567ADFE946250D1CFB9D3F589B"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-20261101\\manifest.json",
+                      "relative_path":  "data\\raw\\e3-pilot-20261101\\manifest.json",
+                      "bytes":  747,
+                      "sha256":  "9B842B3C781338F2F161B83CF002855D0605EDF7365B9DEC1E071F65626446F2"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\completed.json",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\completed.json",
+                      "bytes":  1455,
+                      "sha256":  "EEDC33586060C3B0DCD2B7641708D54D9505B39C8E7304787F7003C1639DFA13"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\environment.json",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\environment.json",
+                      "bytes":  712,
+                      "sha256":  "59C7CC46704A456E0C982515C781009DAAEBDAAB26EBB35AD7C036A738322334"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\latency.png",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\latency.png",
+                      "bytes":  65304,
+                      "sha256":  "FC40C2E77A0538149A302CE253C2EA62FA76D146F8108978E4FD2ADC61E220AE"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\latency.svg",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\latency.svg",
+                      "bytes":  47208,
+                      "sha256":  "05DD9F349F5BA9A39CB03EF04911A0C4FA8089E80C08EE903181D0DC2AF47924"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\manifest.json",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\manifest.json",
+                      "bytes":  1120,
+                      "sha256":  "2FF01CB0C7D2920444610D7D4711C80268EB42204B3260E416BF9876ED1EC56E"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\README.md",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\README.md",
+                      "bytes":  606,
+                      "sha256":  "6EA2A0644E37841EFE93136D0C9487F0FEE6675BE9FE36BEDE826B05421E04BB"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\summary.csv",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\summary.csv",
+                      "bytes":  374,
+                      "sha256":  "2BFB05C4542D595BD945DB1F330845A9BAE93E003B98D6CFCD1B0036E92FB729"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\tradeoff.png",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\tradeoff.png",
+                      "bytes":  70773,
+                      "sha256":  "B7CB8A69132A6DED167BF7B814C27D11E5F8D8AD7C9CEB773D21298835EE8B5B"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\tradeoff.svg",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\tradeoff.svg",
+                      "bytes":  44392,
+                      "sha256":  "BE82C8484FCC570774AA168B102856EAA670E97647A8B1BA7BCB968C2ACEB006"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\trial-01.json",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\trial-01.json",
+                      "bytes":  17193,
+                      "sha256":  "FBB1DBE57959DB9308DE864109BE41982EFA816B002C3BD77DB4016D771CCBE3"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101\\trials.csv",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-20261101\\trials.csv",
+                      "bytes":  1094,
+                      "sha256":  "C25CAD2CB5E9D8B7D7632A5B1171F000CE007A96EA1DB59B04DBB3CBD737457E"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-full-driver-host.log",
+                      "relative_path":  "data\\raw\\e3-full-driver-host.log",
+                      "bytes":  462842,
+                      "sha256":  "CE17E362926A2A7BB1535B7AEE43024C925EE4BA035757300C910057688D83D8"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-independent-audit.log",
+                      "relative_path":  "data\\raw\\e3-independent-audit.log",
+                      "bytes":  20526,
+                      "sha256":  "9E3A8E02921D5199BEFF3D9493BCD7428E61520AF5B7D2A2C10D8AF0A5C57DF4"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-independent-audit.py",
+                      "relative_path":  "data\\raw\\e3-independent-audit.py",
+                      "bytes":  4258,
+                      "sha256":  "D7D3B350579602F8D184A3D8A0F0EA67BE4D4FE1790FF0D3D4BAAF6709837B9B"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-latency-metrics-104fd939ef4c4013850fc8a64ba8cd26.json",
+                      "relative_path":  "data\\raw\\e3-latency-metrics-104fd939ef4c4013850fc8a64ba8cd26.json",
+                      "bytes":  1222,
+                      "sha256":  "AA86DA34D35095CFE0175012455C7D3256B5D3465F11F1E7F4B95A1D7B527C7E"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-metric-integration.log",
+                      "relative_path":  "data\\raw\\e3-metric-integration.log",
+                      "bytes":  13762,
+                      "sha256":  "F3FB17D84B9166ED9A92798D2A26595F92539BAB04D46BA99C787DB80EF40B32"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-driver.log",
+                      "relative_path":  "data\\raw\\e3-pilot-driver.log",
+                      "bytes":  11906,
+                      "sha256":  "080EE2E937AA6D4E1C3917BB0280210E45D891D000AEF17C4163AF87D3D9BFE9"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-driver.log",
+                      "relative_path":  "data\\raw\\e3-pilot-readiness-driver.log",
+                      "bytes":  34952,
+                      "sha256":  "D1AE610D035C5E61278A9C1421548C5706443CCC794593BF5A372994974B33E7"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-readiness-red.log",
+                      "relative_path":  "data\\raw\\e3-readiness-red.log",
+                      "bytes":  37580,
+                      "sha256":  "59F1E9EF451ABD78EE3CCC4F1D57CFEFE65787BAD33A13A14042C510EAC85CD3"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-report-resume-red.log",
+                      "relative_path":  "data\\raw\\e3-report-resume-red.log",
+                      "bytes":  48624,
+                      "sha256":  "40DD73457C1BF7CAD7AA72806BA24E839178E0007CED72C0F13C17B604B94E28"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-resource-snapshot.txt",
+                      "relative_path":  "data\\raw\\e3-resource-snapshot.txt",
+                      "bytes":  754,
+                      "sha256":  "AD4ECE6AC621C604DC0A295D947BDD08D082E86A8588DC689A59D7C1654EE14D"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-review-regressions-red.log",
+                      "relative_path":  "data\\raw\\e3-review-regressions-red.log",
+                      "bytes":  52870,
+                      "sha256":  "F1C1469D42EA69BF1EB10F2083922CACDD7B5653A48A5EDD145072AEDFC79743"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-runtime-deps.log",
+                      "relative_path":  "data\\raw\\e3-runtime-deps.log",
+                      "bytes":  6328,
+                      "sha256":  "D3934E359AD618F84F2CD4139348D45780AFA4FF82042E29965D3A3DFF1B382F"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-final.log",
+                      "relative_path":  "data\\raw\\e3-unit-final.log",
+                      "bytes":  28922,
+                      "sha256":  "51EB0D970C33B6A61B42BE99D94FE03E0F9E279ED637E38F5EA19F5BCD960959"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-green.log",
+                      "relative_path":  "data\\raw\\e3-unit-green.log",
+                      "bytes":  24136,
+                      "sha256":  "F13FBACDDF19DCD385EE11BFBAE6A3EE6BA131925D408D3D0769223A9002CBAA"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-red.log",
+                      "relative_path":  "data\\raw\\e3-unit-red.log",
+                      "bytes":  76036,
+                      "sha256":  "D62DD75A22E8B76D7D3F3A7EF5A3B3D6E039358AEBC6AAE7CF8CA22416E7F965"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-unit-verified.log",
+                      "relative_path":  "data\\raw\\e3-unit-verified.log",
+                      "bytes":  28922,
+                      "sha256":  "673E509267DB2F1B87B7318857A8ABE8C03981CA98D608D3B2FEDF3D32B4F4BC"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\data\\raw\\e3-validation-red.log",
+                      "relative_path":  "data\\raw\\e3-validation-red.log",
+                      "bytes":  51020,
+                      "sha256":  "A5AB687FEE63A91CAF42395C22EBAAD86AA1E41A6FDA85C4B8080478DA06AEC0"
+                  },
+                  {
+                      "path":  "D:\\ClickFlow\\docs\\superpowers\\plans\\2026-11-01-e3-latency.md",
+                      "relative_path":  "docs\\superpowers\\plans\\2026-11-01-e3-latency.md",
+                      "bytes":  7666,
+                      "sha256":  "224964AFB728A81325976CC24954537CBDBDA4BD7E34F808AFA50287FB97DEFE"
+                  }
+              ],
+    "protected_files":  [
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\ANALYSIS.md",
+                                "sha256":  "D9CD3232516698BD8500F475DA3405D0F88C89CBF2AFAF802EC73D937C06A01F",
+                                "bytes":  5002
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\completed.json",
+                                "sha256":  "D3A81435C021F3E671A6691394868D957257F034E202C5FAD93AD27565D58DD6",
+                                "bytes":  4675
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\driver.log",
+                                "sha256":  "4A433B56275864589452F3A4443872E61F836410D7FB16BF3A77B1999C601DD2",
+                                "bytes":  222312
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\environment.json",
+                                "sha256":  "59C7CC46704A456E0C982515C781009DAAEBDAAB26EBB35AD7C036A738322334",
+                                "bytes":  712
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\independent-audit.json",
+                                "sha256":  "9C9FFA5DCF705BAC8D5BA3993277A610446CD66FDD55810BD39A49CF18DEDBF6",
+                                "bytes":  5238
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\independent-audit.log",
+                                "sha256":  "02331B44371A332BE7007F167534BBB7E93B08421B8C34F80CB79F04DE80E904",
+                                "bytes":  10262
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\independent-audit.py",
+                                "sha256":  "D7D3B350579602F8D184A3D8A0F0EA67BE4D4FE1790FF0D3D4BAAF6709837B9B",
+                                "bytes":  4258
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\latency.png",
+                                "sha256":  "35FF4253D8546F5B69605BD3A0C5AB90A953847A078A68BF4E4FE85C92CF2726",
+                                "bytes":  80816
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\latency.svg",
+                                "sha256":  "0D9FC0565CF25BC1B3C78AC15915FB4F57355814F2DCE49D3E2A2DD2C9B2B8D2",
+                                "bytes":  63251
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\manifest.json",
+                                "sha256":  "7E0BCBAD018BB0FC427666B9315D38A6A03DA4181341819ECA9F49EC8875C3C0",
+                                "bytes":  4451
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\README.md",
+                                "sha256":  "C379056ED391B7D18F137BD32E93D809AE16AD06671045C253018E8A0716E821",
+                                "bytes":  1254
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\resource-context.txt",
+                                "sha256":  "52B45D39142F79FC014831D3122644365D6466C1D64BC4A2816F9E850D6715CC",
+                                "bytes":  50
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\resource-snapshot-after-trial09.txt",
+                                "sha256":  "2854984C1F20E8EDB57C3D874A644C06A1519E62FD144F5431F2AEB9CBF493C9",
+                                "bytes":  376
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\summary.csv",
+                                "sha256":  "5BBF7E919F511226F8782A485C95D5B583635ABFA68BCC111A4EDBF4D9ADC797",
+                                "bytes":  1289
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\tradeoff.png",
+                                "sha256":  "20E904663F226792505B996565C39B514AADAFE91D9CA44288F1067B96835388",
+                                "bytes":  85912
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\tradeoff.svg",
+                                "sha256":  "83AEB17818B42FB1D93F042F558225A97F532EDDEF2DC79A0B9B4052B2213562",
+                                "bytes":  62124
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-01.json",
+                                "sha256":  "88ACAFA5B52C110A90D65E7F3FABB9FAFFC0DDBF61D18D93F08AD34BFAA09D60",
+                                "bytes":  17455
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-02.json",
+                                "sha256":  "BC78FB32E1229A72C2B0921202F8F4D123F43B8F75B3B1FCC11524D1EADBA2F4",
+                                "bytes":  17478
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-03.json",
+                                "sha256":  "C95609B60C6B2656A64DFE420629020BC1FB36776D9358D603A937FD20925DC4",
+                                "bytes":  26147
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-04.json",
+                                "sha256":  "B821C3449AB985E52B7537EEF1CAD684874CEA07B3387AFFD1518159382DF23B",
+                                "bytes":  20412
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-05.json",
+                                "sha256":  "92A65C0D8A7904DA5A28A9C900D8B4B274323885552BD09107296DFD58329BCF",
+                                "bytes":  34906
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-06.json",
+                                "sha256":  "159DBF4046E98FE8CA5D7DBE973E840E8C651355FC41D27F4C439F3C68411BFB",
+                                "bytes":  17487
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-07.json",
+                                "sha256":  "D62696A3A0FEE12679B509D9282039CAD3D8028D3B6C6167B0B7AFAF6AEA96DB",
+                                "bytes":  17449
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-08.json",
+                                "sha256":  "3BDFF706FDE2754DEFFB0499DC12CA8F06821D06E7D850C8D7D4A2672B93BE43",
+                                "bytes":  31967
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-09.json",
+                                "sha256":  "4BCC1B2C94EE9853C20D41C67619F50E9308D6B131542800473EFA6682E216C9",
+                                "bytes":  20373
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-10.json",
+                                "sha256":  "65DEFC31958A57B078618E9BDE24E4BECF91137648C5A69938F6FDB00019D10B",
+                                "bytes":  20334
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-11.json",
+                                "sha256":  "EAD35449F2AD9FECB143FF8D3CD64429C3EFE5FD93A4B6500FEC0514B05D747E",
+                                "bytes":  17422
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-12.json",
+                                "sha256":  "60C9F25BC7B0751481F4B0DA712C3B018CC490FB55CE6D469573CF175FE3AECC",
+                                "bytes":  20346
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-13.json",
+                                "sha256":  "0E3EF0B785774BB8061B0A6B5530DD74C8A56AAFB680A63BB032049CE9474378",
+                                "bytes":  20332
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-14.json",
+                                "sha256":  "46F636988B3F41F2702E3CE6ACF9F328541F983F48F7F046B2F838428EAF95F3",
+                                "bytes":  20384
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-15.json",
+                                "sha256":  "67DDE359BBA7A0611437A33218A877B714A08DE0EF2B5072A869C0F06CEBEC7D",
+                                "bytes":  23286
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-16.json",
+                                "sha256":  "91A330385E53845DADF3FF8D1CC187B9E8A50CB11E59D7C8AB9C07F29D021CE8",
+                                "bytes":  40539
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-17.json",
+                                "sha256":  "D3531DC7B03D641117A1BD3A98F14EDB0DFBC86CA80C9485A31818FF3A55B67B",
+                                "bytes":  20382
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trial-18.json",
+                                "sha256":  "C3BAA04B922C25EC985DE0EFCD8F920D49360EE44C2D7FA982EA863A833DD406",
+                                "bytes":  14816
+                            },
+                            {
+                                "path":  "D:\\ClickFlow\\benchmarks\\results\\e3-3eb2dde82e154bf09283424977d28cf6\\trials.csv",
+                                "sha256":  "2DE7A8011C75CC9FF7666876D006E4757849B506A4F3DA68B79327CCE37F5561",
+                                "bytes":  9475
+                            }
+                        ],
+    "preserved_verification":  [
+                                   {
+                                       "destination":  "unit-final.log",
+                                       "source":  "e3-unit-final.log",
+                                       "text":  true
+                                   },
+                                   {
+                                       "destination":  "metric-integration.log",
+                                       "source":  "e3-metric-integration.log",
+                                       "text":  true
+                                   },
+                                   {
+                                       "destination":  "metric-integration.json",
+                                       "source":  "e3-latency-metrics-104fd939ef4c4013850fc8a64ba8cd26.json",
+                                       "text":  false
+                                   }
+                               ],
+    "file_count":  60,
+    "bytes":  1883923,
+    "scope":  "local E3 staging/pilots/intermediate logs/internal plan only; no datasets, Docker, Kafka or MinIO deletion",
+    "deleted_files":  60,
+    "removed_directories":  [
+                                "D:\\ClickFlow\\data\\raw\\e3-3eb2dde82e154bf09283424977d28cf6",
+                                "D:\\ClickFlow\\data\\raw\\e3-pilot-20261101",
+                                "D:\\ClickFlow\\data\\raw\\e3-pilot-readiness-20261101"
+                            ],
+    "finished_at":  "2026-11-01T23:08:58.5973919+07:00"
+}
