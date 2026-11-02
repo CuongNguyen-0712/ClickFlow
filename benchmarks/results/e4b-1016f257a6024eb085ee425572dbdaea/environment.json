@@ -1,0 +1,32 @@
+{
+  "python": "3.10.12",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "versions": {
+    "delta-spark": "3.2.1",
+    "confluent-kafka": "2.6.0",
+    "minio": "7.2.10",
+    "imageio-ffmpeg": "0.5.1",
+    "matplotlib": "3.9.2",
+    "Pillow": "12.3.0",
+    "PyYAML": "6.0.2"
+  },
+  "implementation_sha256": {
+    "src/monitoring/e4b_failover.py": "e425343d4618df29fd03197e33f19698e6731902c79f1a0ee82626661663250e",
+    "src/monitoring/e4b_driver.py": "d42d5cb90a0227882c804d68d764d782180973e48a053a8f5d71624fd5377a5e",
+    "src/monitoring/e4b_verify.py": "dcb7372fd39d6c0a9a202980bd0ee1704ce06d8ee9aa57dca5de85ef164a9bfc",
+    "src/monitoring/terminal_recording.py": "e4f19bd6dddaa27faaef7b42aa25d1a85df3f89e0c990808ec3bffb8328ae5ba",
+    "src/storage/stream_to_bronze.py": "21402fa7dd9eada476453d41767a9c04569ad0a291cbaa422515cdaca974d684",
+    "src/storage/stream_sink.py": "2b57b317db4c835653a60f322cb06f164841c4822dc7fe319bd92378b0972aac",
+    "src/storage/quality_rules.py": "d261f647bbd9a80757bba318456819f07a294db5740d8106ef26c8bcd762e5b7",
+    "src/storage/deduplication.py": "63bc2a9c3b5c129213104d2f543c0b22e283a33cc0b99e1bf429bd6230a36bfe",
+    "src/monitoring/reconcile.py": "46a3392e5d950f51db501ad61ce02d6a17d422c09f7b45cf2431f678a02fbd17",
+    "src/common/schemas.py": "e9972042b5adc668395c5738af2074d3bfbbcafda73db0579a5991f7ea76b301",
+    "src/common/metrics.py": "77ec6530d1f4cab2aff6821505ce0415105f75f4657db7def2775da0632b03be",
+    "configs/spark-defaults.conf": "25975696ed058a2781b713af96354e58d54345ac64d1dade8ba18657480da3fe",
+    "contracts/event.schema.json": "10fbda5e4331c3bccb082bef08cb090c5ab51976c020026c0f311b12248d9305",
+    "contracts/bronze_events.yaml": "b60717484bfc99b91a0b00879bce6bd5d4f792064591c9d03a67437a67f88243",
+    "contracts/quarantine_events.yaml": "b924096d4314237aab2d2a9c6b6735e1d393536896c5f5db2fc81b11c4ec0420",
+    "queries/verify.sql": "0777135a1bbfd8463e4225e393508b2319b1d8dc3f0044f228e508dacc6176a9",
+    "queries/sample_queries.sql": "afb73bd387201057ef30d172f049154e5d9dfb0a89153f2f8e07be762d82a1cd"
+  }
+}

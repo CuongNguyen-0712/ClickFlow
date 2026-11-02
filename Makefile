@@ -2,6 +2,7 @@ COMPOSE      := docker compose
 DAY          ?= 2019-11-01
 CLOSED_BEFORE ?=
 SPEED        ?= 100
+STREAM_CONFIG ?=
 SPARK_SUBMIT = $(COMPOSE) exec -T spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077
 
 .PHONY: up up-core up-storage up-stream init-lake smoke-storage smoke-storage-real test-storage test-sample-bronze test-checkpoint-binding test-maintenance test-processing-queries maintenance down topics upload sample replay stream stream-sample stream-drain sink verify verify-sample bench bench-e3 test
@@ -52,7 +53,7 @@ replay:    ## make replay DAY=2019-11-01 SPEED=100
 	python -m src.sources.simulator --day $(DAY) --speed $(SPEED)
 
 stream:    ## chạy nguồn được cấu hình trong stream.source
-	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py
+	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py $(if $(STREAM_CONFIG),--config "$(STREAM_CONFIG)")
 
 stream-drain: ## xử lý offsets hiện có rồi thoát; giữ checkpoint để resume
 	$(SPARK_SUBMIT) /opt/app/src/storage/stream_to_bronze.py --source kafka --available-now
@@ -83,6 +84,10 @@ bench:     ## chạy E1..E5, kết quả vào benchmarks/results/
 
 bench-e3:  ## E3 thật:6 cấu hình × ít nhất3 lần, giữ toàn bộ artifact
 	bash benchmarks/e3_latency.sh
+
+.PHONY: bench-e4b
+bench-e4b: ## E4b: kill owned Spark driver, restart unchanged checkpoint, reconcile both days
+	bash benchmarks/e4_failover.sh
 
 test:
 	python -m pytest -q

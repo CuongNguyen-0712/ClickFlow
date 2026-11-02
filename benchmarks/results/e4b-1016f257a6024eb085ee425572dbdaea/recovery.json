@@ -1,0 +1,36 @@
+{
+  "before_query": {
+    "event": "kafka_stream_started",
+    "topic": "e4b-1016f257a6024eb085ee425572dbdaea",
+    "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/checkpoint",
+    "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14",
+    "run_id": "ed88ecb2-b556-4cdd-94a5-ed7ed1fc8265",
+    "driver_pid": 97,
+    "metrics_port": 40689
+  },
+  "after_query": {
+    "event": "kafka_stream_started",
+    "topic": "e4b-1016f257a6024eb085ee425572dbdaea",
+    "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-1016f257a6024eb085ee425572dbdaea/checkpoint",
+    "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14",
+    "run_id": "3bbcac0a-634c-4ed2-915f-ab3cf2bdb838",
+    "driver_pid": 608,
+    "metrics_port": 45343
+  },
+  "checkpoint": {
+    "batch_id": 6,
+    "offsets": {
+      "2": 3410,
+      "5": 3359,
+      "4": 3374,
+      "1": 3267,
+      "3": 3082,
+      "0": 3508
+    },
+    "consumed": 20000,
+    "query_id": "381e0292-9b53-4008-9e1b-0278b7e06e14",
+    "identity_sha256": "1611acef0034e953f9ce92bf2988658e44128bd8c7ce12ef47ea57f28bb4e526"
+  },
+  "acknowledged": 20000,
+  "same_checkpoint_identity": true
+}

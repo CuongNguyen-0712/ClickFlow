@@ -1,0 +1,23 @@
+{
+  "case_id": "e4b-8e36491b06624af09bed2fe42721a201",
+  "workload": {
+    "path": "/opt/app/data/sample/events_sample_100k.csv",
+    "sha256": "69c353e85ddf091515a223cac0f172653700b7e2dce28c97b7cd8407fccdff8c",
+    "rows": 20000,
+    "first_event_time": "2019-11-01T15:35:08+00:00",
+    "last_event_time": "2019-11-01T15:46:58+00:00",
+    "event_span_seconds": 710.0
+  },
+  "rows": 20000,
+  "source_path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/input/source.csv",
+  "source_sha256": "d8ede99784455ada8b21767afa8e376607d599d2d4b431619af457097d0058d7",
+  "bronze_path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/bronze/events",
+  "quarantine_path": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/quarantine/events",
+  "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-8e36491b06624af09bed2fe42721a201/checkpoint",
+  "topic": "e4b-8e36491b06624af09bed2fe42721a201",
+  "days": [
+    "2019-11-01",
+    "2019-11-02"
+  ],
+  "fault_window": "Delta callback committed, Spark checkpoint batch not committed"
+}

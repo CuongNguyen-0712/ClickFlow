@@ -1,0 +1,31 @@
+{"at": "2026-11-01T16:46:55.495678+00:00", "event": "e4b_case", "case_id": "e4b-d30b0b796616481f8a286feda5f11179", "workload": {"path": "/opt/app/data/sample/events_sample_100k.csv", "sha256": "69c353e85ddf091515a223cac0f172653700b7e2dce28c97b7cd8407fccdff8c", "rows": 20000, "first_event_time": "2019-11-01T15:35:08+00:00", "last_event_time": "2019-11-01T15:46:58+00:00", "event_span_seconds": 710.0}, "rows": 20000, "source_path": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/input/source.csv", "source_sha256": "d8ede99784455ada8b21767afa8e376607d599d2d4b431619af457097d0058d7", "bronze_path": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/bronze/events", "quarantine_path": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/quarantine/events", "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/checkpoint", "topic": "e4b-d30b0b796616481f8a286feda5f11179", "days": ["2019-11-01", "2019-11-02"], "fault_window": "Delta callback committed, Spark checkpoint batch not committed"}
+{"at": "2026-11-01T16:46:55.550930+00:00", "event": "start_driver", "command": ["/opt/spark/bin/spark-submit", "--master", "spark://spark-master:7077", "/opt/app/src/monitoring/e4b_driver.py", "--config", "/opt/app/benchmarks/results/e4b-d30b0b796616481f8a286feda5f11179/pipeline.yaml"], "log": "before-driver.log"}
+{"at": "2026-11-01T16:46:55.554071+00:00", "event": "waiting", "for_condition": "first query started"}
+{"at": "2026-11-01T16:47:10.665528+00:00", "event": "waiting", "for_condition": "first query started"}
+{"at": "2026-11-01T16:47:22.293356+00:00", "event": "first_query", "topic": "e4b-d30b0b796616481f8a286feda5f11179", "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/checkpoint", "query_id": "651235cf-898b-418d-9bcc-6da919ff6c11", "run_id": "9d422d9e-68a6-4613-a5e7-a979a94caf6a", "driver_pid": 97, "metrics_port": 39519, "source_event": "kafka_stream_started"}
+{"at": "2026-11-01T16:47:22.805459+00:00", "event": "producer_wave_acknowledged", "start": 0, "stop": 1000, "total_acknowledged": 1000}
+{"at": "2026-11-01T16:47:22.816177+00:00", "event": "waiting", "for_condition": "seed checkpoint committed:1000"}
+{"at": "2026-11-01T16:47:24.866262+00:00", "event": "signal_driver", "jvm_pid": 42, "pgid": 42, "group_members": [42, 97], "command": ["/opt/java/openjdk/bin/java", "-cp", "/opt/spark/conf/:/opt/spark/jars/*", "-Xmx1g", "-XX:+IgnoreUnrecognizedVMOptions", "--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED", "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED", "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.net=ALL-UNNAMED", "--add-opens=java.base/java.nio=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED", "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED", "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED", "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED", "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED", "--add-opens=java.base/sun.security.action=ALL-UNNAMED", "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED", "--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED", "-Djdk.reflect.useDirectMethodHandle=false", "org.apache.spark.deploy.SparkSubmit", "--master", "spark://spark-master:7077", "/opt/app/src/monitoring/e4b_driver.py", "--config", "/opt/app/benchmarks/results/e4b-d30b0b796616481f8a286feda5f11179/pipeline.yaml"], "signal": "SIGTERM"}
+{"at": "2026-11-01T16:47:25.686656+00:00", "event": "driver_exit", "log": "before-driver.log", "returncode": 0}
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 398, in <module>
+    main()
+  File "/opt/app/src/monitoring/e4b_failover.py", line 394, in main
+    run(args.directory, rows=args.rows)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 306, in run
+    seed = wait_until('seed checkpoint committed:1000', lambda: drained(1000), process=first.process)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 135, in wait_until
+    value = check()
+  File "/opt/app/src/monitoring/e4b_failover.py", line 306, in <lambda>
+    seed = wait_until('seed checkpoint committed:1000', lambda: drained(1000), process=first.process)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 304, in drained
+    state = checkpoint.snapshot()
+  File "/opt/app/src/monitoring/e4b_failover.py", line 124, in snapshot
+    offsets = {} if batch is None else parse_offsets(raw, self.topic)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 59, in parse_offsets
+    raise ValueError('Expected one Spark v1 Kafka offset log')
+ValueError: Expected one Spark v1 Kafka offset log

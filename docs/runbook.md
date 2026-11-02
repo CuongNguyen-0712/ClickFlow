@@ -1030,3 +1030,87 @@ listener cần PySpark), và `docker compose --env-file .env.example config -q`
 được giữ lại. Log: `data/raw/quality-rules-ci-python311.log`.
 Đây là kết quả kiểm tra local theo workflow; chưa tạo run GitHub Actions từ
 push/PR. Review độc lập không có phát hiện cần sửa.
+## E4b Spark driver checkpoint failover
+
+Start the existing Kafka/MinIO/Spark stack (`make up-stream`), ensure the real
+`data/sample/events_sample_100k.csv` exists, and run from Git Bash/Linux:
+
+```bash
+bash benchmarks/e4_failover.sh
+# Equivalent Make target:
+make bench-e4b
+```
+
+PowerShell with this machine's Git Bash installation:
+
+```powershell
+& 'D:\Git\Git\bin\bash.exe' benchmarks/e4_failover.sh
+```
+
+The default cohort is 20,000 distinct real sample rows. Timestamps are translated
+across 2019-11-01/02, remain within the source month and span less than one hour.
+The retained source CSV describes exactly those shifted records; this is a
+controlled failover experiment, not an unchanged full-day dataset replay.
+
+Each invocation creates a new topic (six partitions, RF3, min ISR2), separate
+Delta tables, checkpoint and local result directory. No existing topic, table,
+checkpoint, E3 result or dataset is removed. A retained controller container
+shares the Spark master's network namespace so executors can reach the driver;
+its process namespace is separate. Docker and pip/network access are required.
+Do not run competing Spark applications during the experiment.
+
+The controller first waits for 1,000 rows to be checkpointed. A benchmark-only
+callback then runs the real production sink and pauses after its Delta commit,
+before returning to Spark. Another 5,000 rows exercise this fault window; the
+remaining records continue publishing at 250/s. The controller validates its
+owned SparkSubmit JVM's PID, process group, script and config, sends SIGKILL to
+that group while the producer is active, and records exit status -9. It neither
+kills the Spark master nor stops Kafka, workers or MinIO.
+
+Recovery starts the production streaming entrypoint with the identical YAML and
+checkpoint; the fault callback is absent. The harness executes the same submit
+entrypoint as `make stream`, directly inside the retained controller:
+
+```bash
+/opt/spark/bin/spark-submit --master spark://spark-master:7077 \
+  /opt/app/src/storage/stream_to_bronze.py \
+  --config /opt/app/benchmarks/results/e4b-<id>/pipeline.yaml
+```
+
+`make stream STREAM_CONFIG=/opt/app/configs/<config>.yaml` also supports a custom
+stream configuration on the standard Compose stack. That path must exist inside
+`spark-master`; the default stack does not mount `benchmarks/results`, whereas
+the isolated E4b controller does. The benchmark does not invoke GNU Make.
+
+The controller verifies the same query ID, a different run ID, unchanged
+checkpoint binding, the replayed batch commit and all acknowledged Kafka offsets.
+The valid/invalid union writes two mirrored Kafka source entries in its offset
+log: these must agree and are counted once, rather than summed twice.
+The recovered production driver then stops gracefully before a separate Spark
+verification application starts. Verification compares all C1 fields, event ID,
+produced_at, Kafka partition/offset and event_date, checks global uniqueness and
+compares all 15 fields of historical pre-kill C4 rows against the final table.
+Finally it runs the existing nine Processing queries via `reconcile.py` on both
+affected dates. Failure of any check produces a nonzero exit; zero source-level
+drop counters are accepted only after exact receipt/source/C4 equality succeeds.
+
+`foreachBatch` can execute a batch again after failure. The sink's insert-only
+MERGE makes those attempts idempotent. Retry-attempt metrics in
+`recovery-metrics.prom` are not additional distinct Kafka records and must not be
+subtracted again in the daily source balance. This experiment tests recovery of
+valid C4 records; it does not inject malformed C5 records or broker failures.
+
+Primary evidence in `benchmarks/results/e4b-<id>/`:
+
+- `case.json`, `pipeline.yaml`, `source.csv`, `cohort.json`, `deliveries.jsonl`:
+  workload identity, isolated resource paths and actual delivery acknowledgments.
+- `before-driver.log`, `after-driver.log`, `kill.json`, `gate.json`,
+  `seed-checkpoint.json`, `recovery.json`: actual crash and recovery evidence.
+- `verification.json`, `reconcile.csv`, `reconcile-2019-11-0*.json`,
+  `audit-manifest.json`, `verify-driver.log`: exact comparisons and daily SQL results.
+- `terminal.log`, `session.cast`, `failover.mp4`, `poster.png`,
+  `video-metadata.json`: actual timed stdout capture and accelerated terminal replay.
+
+Inspect the two CSV rows: each must have `match=True`. A successful terminal ends
+with `E4B_PASS`. The stopped controller, test topic and all MinIO objects are
+retained intentionally; removing them requires the user's deletion permission.

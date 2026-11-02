@@ -231,6 +231,21 @@ MERGE giữ uniqueness sau state expiry. Recipe và bằng chứng nằm trong
 | Grafana | http://localhost:3000 |
 | Collector API | http://localhost:8000/docs |
 
+**E4b Spark driver / checkpoint:** `bash benchmarks/e4_failover.sh` hoặc
+`make bench-e4b` chạy một case độc lập trên 20k dòng lấy từ mẫu thật 100k.
+Harness kill đúng process group của Spark driver khi producer vẫn phát,
+ngay sau Delta commit nhưng trước checkpoint commit batch; recovery chạy
+entrypoint `stream_to_bronze.py` với nguyên cấu hình/checkpoint. Dữ liệu được
+dịch thời gian qua hai ngày tháng 11 để đối soát từng ngày bằng `reconcile.py`.
+Log trước/sau, receipts Kafka, CSV đối soát, lịch sử checkpoint và video terminal
+thực (phát lại 8x, có bản `.cast` gốc) nằm trong `benchmarks/results/e4b-<id>/`.
+Xem [runbook E4b](docs/runbook.md#e4b-spark-driver-checkpoint-failover).
+
+E4b đã **PASS trên cohort 20k từ mẫu 100k**: kill driver thật (`SIGKILL`, exit -9),
+phục hồi cùng checkpoint, không mất/trùng; ngày 01/11 có **10.027 dòng**, ngày
+02/11 có **9.973 dòng**, cả hai `match=true`. Xem [báo cáo và minh chứng](benchmarks/results/e4b-1016f257a6024eb085ee425572dbdaea/README.md)
+và [video terminal 25 giây](benchmarks/results/e4b-1016f257a6024eb085ee425572dbdaea/failover.mp4).
+
 ## Cấu trúc repo
 
 ```

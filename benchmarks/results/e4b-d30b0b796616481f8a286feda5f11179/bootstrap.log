@@ -1,0 +1,102 @@
+Collecting confluent-kafka==2.6.0
+  Downloading confluent_kafka-2.6.0-cp310-cp310-manylinux_2_28_x86_64.whl (3.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 1.3 MB/s eta 0:00:00
+Collecting matplotlib==3.9.2
+  Downloading matplotlib-3.9.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (8.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 2.4 MB/s eta 0:00:00
+Collecting minio==7.2.10
+  Downloading minio-7.2.10-py3-none-any.whl (93 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 93.9/93.9 KB 782.5 kB/s eta 0:00:00
+Collecting imageio-ffmpeg==0.5.1
+  Downloading imageio_ffmpeg-0.5.1-py3-none-manylinux2010_x86_64.whl (26.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26.9/26.9 MB 7.4 MB/s eta 0:00:00
+Collecting kiwisolver>=1.3.1
+  Downloading kiwisolver-1.5.1-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 9.1 MB/s eta 0:00:00
+Collecting cycler>=0.10
+  Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Collecting pillow>=8
+  Downloading pillow-12.3.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.9/6.9 MB 10.6 MB/s eta 0:00:00
+Collecting python-dateutil>=2.7
+  Downloading python_dateutil-3.0.0-py2.py3-none-any.whl (94 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 94.7/94.7 KB 10.2 MB/s eta 0:00:00
+Collecting fonttools>=4.22.0
+  Downloading fonttools-4.65.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.3/5.3 MB 13.2 MB/s eta 0:00:00
+Collecting packaging>=20.0
+  Downloading packaging-26.3-py3-none-any.whl (129 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 KB 9.5 MB/s eta 0:00:00
+Collecting pyparsing>=2.3.1
+  Downloading pyparsing-3.3.3-py3-none-any.whl (126 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.4/126.4 KB 7.4 MB/s eta 0:00:00
+Collecting contourpy>=1.0.1
+  Downloading contourpy-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (325 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 325.0/325.0 KB 11.0 MB/s eta 0:00:00
+Collecting numpy>=1.23
+  Downloading numpy-2.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.8/16.8 MB 12.4 MB/s eta 0:00:00
+Collecting pycryptodome
+  Downloading pycryptodome-4.2.0-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 11.6 MB/s eta 0:00:00
+Collecting typing-extensions
+  Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 KB 5.6 MB/s eta 0:00:00
+Collecting argon2-cffi
+  Downloading argon2_cffi-25.1.0-py3-none-any.whl (14 kB)
+Collecting urllib3
+  Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.7/135.7 KB 4.7 MB/s eta 0:00:00
+Collecting certifi
+  Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.1/135.1 KB 15.2 MB/s eta 0:00:00
+Collecting setuptools
+  Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 KB 16.0 MB/s eta 0:00:00
+Collecting six>=1.6
+  Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Collecting tzdata
+  Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 348.2/348.2 KB 10.6 MB/s eta 0:00:00
+Collecting argon2-cffi-bindings
+  Downloading argon2_cffi_bindings-26.1.0-cp310-abi3-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (26 kB)
+Collecting cffi>=1.0.1
+  Downloading cffi-2.1.1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (218 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 218.7/218.7 KB 9.4 MB/s eta 0:00:00
+Collecting pycparser
+  Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 51.2/51.2 KB 4.6 MB/s eta 0:00:00
+Installing collected packages: confluent-kafka, urllib3, tzdata, typing-extensions, six, setuptools, pyparsing, pycryptodome, pycparser, pillow, packaging, numpy, kiwisolver, fonttools, cycler, certifi, python-dateutil, imageio-ffmpeg, contourpy, cffi, matplotlib, argon2-cffi-bindings, argon2-cffi, minio
+Successfully installed argon2-cffi-25.1.0 argon2-cffi-bindings-26.1.0 certifi-2026.10.23 cffi-2.1.1 confluent-kafka-2.6.0 contourpy-1.3.2 cycler-0.12.1 fonttools-4.65.0 imageio-ffmpeg-0.5.1 kiwisolver-1.5.1 matplotlib-3.9.2 minio-7.2.10 numpy-2.2.6 packaging-26.3 pillow-12.3.0 pycparser-3.11 pycryptodome-4.2.0 pyparsing-3.3.3 python-dateutil-3.0.0 setuptools-84.2.1 six-1.17.0 typing-extensions-4.16.0 tzdata-2026.6 urllib3-2.8.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+{"at": "2026-11-01T16:46:55.495678+00:00", "event": "e4b_case", "case_id": "e4b-d30b0b796616481f8a286feda5f11179", "workload": {"path": "/opt/app/data/sample/events_sample_100k.csv", "sha256": "69c353e85ddf091515a223cac0f172653700b7e2dce28c97b7cd8407fccdff8c", "rows": 20000, "first_event_time": "2019-11-01T15:35:08+00:00", "last_event_time": "2019-11-01T15:46:58+00:00", "event_span_seconds": 710.0}, "rows": 20000, "source_path": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/input/source.csv", "source_sha256": "d8ede99784455ada8b21767afa8e376607d599d2d4b431619af457097d0058d7", "bronze_path": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/bronze/events", "quarantine_path": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/quarantine/events", "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/checkpoint", "topic": "e4b-d30b0b796616481f8a286feda5f11179", "days": ["2019-11-01", "2019-11-02"], "fault_window": "Delta callback committed, Spark checkpoint batch not committed"}
+{"at": "2026-11-01T16:46:55.550930+00:00", "event": "start_driver", "command": ["/opt/spark/bin/spark-submit", "--master", "spark://spark-master:7077", "/opt/app/src/monitoring/e4b_driver.py", "--config", "/opt/app/benchmarks/results/e4b-d30b0b796616481f8a286feda5f11179/pipeline.yaml"], "log": "before-driver.log"}
+{"at": "2026-11-01T16:46:55.554071+00:00", "event": "waiting", "for_condition": "first query started"}
+{"at": "2026-11-01T16:47:10.665528+00:00", "event": "waiting", "for_condition": "first query started"}
+{"at": "2026-11-01T16:47:22.293356+00:00", "event": "first_query", "topic": "e4b-d30b0b796616481f8a286feda5f11179", "checkpoint": "s3a://lake/_checkpoints/e4b/e4b-d30b0b796616481f8a286feda5f11179/checkpoint", "query_id": "651235cf-898b-418d-9bcc-6da919ff6c11", "run_id": "9d422d9e-68a6-4613-a5e7-a979a94caf6a", "driver_pid": 97, "metrics_port": 39519, "source_event": "kafka_stream_started"}
+{"at": "2026-11-01T16:47:22.805459+00:00", "event": "producer_wave_acknowledged", "start": 0, "stop": 1000, "total_acknowledged": 1000}
+{"at": "2026-11-01T16:47:22.816177+00:00", "event": "waiting", "for_condition": "seed checkpoint committed:1000"}
+{"at": "2026-11-01T16:47:24.866262+00:00", "event": "signal_driver", "jvm_pid": 42, "pgid": 42, "group_members": [42, 97], "command": ["/opt/java/openjdk/bin/java", "-cp", "/opt/spark/conf/:/opt/spark/jars/*", "-Xmx1g", "-XX:+IgnoreUnrecognizedVMOptions", "--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED", "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED", "--add-opens=java.base/java.io=ALL-UNNAMED", "--add-opens=java.base/java.net=ALL-UNNAMED", "--add-opens=java.base/java.nio=ALL-UNNAMED", "--add-opens=java.base/java.util=ALL-UNNAMED", "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED", "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED", "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED", "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED", "--add-opens=java.base/sun.security.action=ALL-UNNAMED", "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED", "--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED", "-Djdk.reflect.useDirectMethodHandle=false", "org.apache.spark.deploy.SparkSubmit", "--master", "spark://spark-master:7077", "/opt/app/src/monitoring/e4b_driver.py", "--config", "/opt/app/benchmarks/results/e4b-d30b0b796616481f8a286feda5f11179/pipeline.yaml"], "signal": "SIGTERM"}
+{"at": "2026-11-01T16:47:25.686656+00:00", "event": "driver_exit", "log": "before-driver.log", "returncode": 0}
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 398, in <module>
+    main()
+  File "/opt/app/src/monitoring/e4b_failover.py", line 394, in main
+    run(args.directory, rows=args.rows)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 306, in run
+    seed = wait_until('seed checkpoint committed:1000', lambda: drained(1000), process=first.process)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 135, in wait_until
+    value = check()
+  File "/opt/app/src/monitoring/e4b_failover.py", line 306, in <lambda>
+    seed = wait_until('seed checkpoint committed:1000', lambda: drained(1000), process=first.process)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 304, in drained
+    state = checkpoint.snapshot()
+  File "/opt/app/src/monitoring/e4b_failover.py", line 124, in snapshot
+    offsets = {} if batch is None else parse_offsets(raw, self.topic)
+  File "/opt/app/src/monitoring/e4b_failover.py", line 59, in parse_offsets
+    raise ValueError('Expected one Spark v1 Kafka offset log')
+ValueError: Expected one Spark v1 Kafka offset log

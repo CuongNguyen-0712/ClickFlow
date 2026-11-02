@@ -2,3 +2,4 @@
 # Match the Spark cluster; enables the streaming listener callback tests.
 pyspark==3.5.3
 -r benchmarks/requirements.txt
+-r benchmarks/e4b-requirements.txt
