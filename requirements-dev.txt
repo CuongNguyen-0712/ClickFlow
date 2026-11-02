@@ -1,0 +1,3 @@
+-r requirements.txt
+# Match the Spark cluster; enables the streaming listener callback tests.
+pyspark==3.5.3

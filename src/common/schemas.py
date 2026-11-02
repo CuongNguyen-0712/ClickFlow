@@ -29,6 +29,23 @@ BRONZE_COLUMNS = SOURCE_COLUMNS + [  # C4: 14 cột (chưa tính cột phân vù
     ("ingested_at", "timestamp"),
 ]
 
+BRONZE_PARTITION_COLUMNS = [("event_date", "date")]
+BRONZE_TABLE_COLUMNS = BRONZE_COLUMNS + BRONZE_PARTITION_COLUMNS  # 15 cột thực tế
+
+QUARANTINE_COLUMNS = [  # C5: 5 cột, chưa tính ingest_date
+    ("payload", "string"),
+    ("error_reason", "string"),
+    ("kafka_partition", "int"),
+    ("kafka_offset", "bigint"),
+    ("ingested_at", "timestamp"),
+]
+QUARANTINE_PARTITION_COLUMNS = [("ingest_date", "date")]
+QUARANTINE_TABLE_COLUMNS = QUARANTINE_COLUMNS + QUARANTINE_PARTITION_COLUMNS  # 6 cột
+
+QUARANTINE_ERROR_REASONS = (
+    "parse_error", "bad_event_time", "bad_event_type", "missing_id", "negative_price"
+)
+
 EVENT_TYPES = ("view", "cart", "purchase")
 
 
