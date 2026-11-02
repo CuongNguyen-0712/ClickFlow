@@ -1,0 +1,42 @@
+{
+  "event": "latency_metrics_verified",
+  "path": "s3a://lake/_checkpoints/latency-metrics-104fd939ef4c4013850fc8a64ba8cd26",
+  "latency": {
+    "rows": 6,
+    "unique_event_ids": 6,
+    "measured_pairs": 4,
+    "produced_at_null_rows": 1,
+    "ingested_at_null_rows": 1,
+    "negative_latency_rows": 1,
+    "min_latency_ms": -1.0,
+    "max_latency_ms": 4.0,
+    "p50_latency_ms": 1.5,
+    "p95_latency_ms": 3.6999999999999993,
+    "delta_version": 1,
+    "latency_definition": "signed batch-start ingested_at minus produced_at; milliseconds"
+  },
+  "files": {
+    "active_files_after": 2,
+    "active_bytes_after": 2220,
+    "file_snapshot_version": 1,
+    "small_file_threshold_bytes": 16777216,
+    "files_created": 1,
+    "bytes_created": 1123,
+    "small_files_created": 1
+  },
+  "empty": {
+    "rows": 0,
+    "unique_event_ids": 0,
+    "measured_pairs": 0,
+    "produced_at_null_rows": 0,
+    "ingested_at_null_rows": 0,
+    "negative_latency_rows": 0,
+    "min_latency_ms": null,
+    "max_latency_ms": null,
+    "p50_latency_ms": null,
+    "p95_latency_ms": null,
+    "delta_version": 1,
+    "latency_definition": "signed batch-start ingested_at minus produced_at; milliseconds"
+  },
+  "artifacts_retained": true
+}

@@ -1,0 +1,1 @@
+DockerVM_Cpus=12 DockerVM_MemoryBytes=8115142656
