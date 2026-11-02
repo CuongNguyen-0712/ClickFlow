@@ -24,9 +24,11 @@ def table_contract(name):
     contract = yaml.safe_load(
         (ROOT / "contracts" / f"{name}_events.yaml").read_text(encoding="utf-8")
     )
+    declared = {c["name"]: c for c in contract["partition_columns"]}
     for partition in contract["partition_by"]:
         if partition not in {c["name"] for c in contract["columns"]}:
-            contract["columns"].append({"name": partition, "type": "date", "nullable": True})
+            column = declared[partition]
+            contract["columns"].append({key: column[key] for key in ("name", "type", "nullable")})
     return contract
 
 

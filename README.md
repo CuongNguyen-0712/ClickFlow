@@ -50,25 +50,42 @@ Một sự kiện đi qua pipeline theo thứ tự sau. Cột "Mã" chỉ chỗ 
 | # | Chặng | Việc xảy ra | Giao thức / định dạng | Mã |
 |---|---|---|---|---|
 | 0 | Kaggle → raw/csv | Tải tay `2019-Nov.csv` (ưu tiên 1), đẩy lên `lake/raw/csv/` bằng `make upload`. Làm một lần, xem mục Dữ liệu nguồn. | S3 API | `Makefile → upload` |
-| 1 | raw/csv → Simulator | Đọc `2019-Nov.csv` từ MinIO qua s3fs theo chunk, lọc theo ngày, giữ thứ tự `event_time`, phát với hệ số tăng tốc `SPEED` (×100 demo, ×1000 benchmark). Gắn `event_id` (hash dòng gốc), `source_file`, `produced_at`. Tuỳ chọn chèn bản ghi hỏng/trùng để kiểm chứng. | S3 API, pyarrow, chunk 100k dòng | `sources/read_csv.py`, `sources/simulator.py`, `sources/fault_injector.py` |
+| 1 | raw/csv → Simulator | Đọc `2019-Nov.csv` từ MinIO qua s3fs theo chunk, lọc theo ngày, giữ thứ tự `event_time`, phát với hệ số tăng tốc `SPEED` (×100 demo, ×1000 benchmark). Gắn `event_id` (hash dòng gốc), `source_file`, `produced_at`. Fault injector hiện tạo bản sao trùng chính xác để kiểm chứng; chèn bản ghi hỏng chưa triển khai. | S3 API, pyarrow, chunk 100k dòng | `sources/read_csv.py`, `sources/simulator.py`, `sources/fault_injector.py` |
 | 2a | Simulator → Kafka | Đường nạp khối lớn: producer gửi thẳng vào topic. `enable.idempotence=true`, `acks=all`, nén lz4, key = `user_id` để mọi sự kiện của một người dùng vào cùng partition. | Kafka protocol, JSON UTF-8 | `ingestion/producer.py` |
 | 2b | Simulator → Collector API → Kafka | Đường nạp mô phỏng web/app thật: `POST /events` lô ≤ 500 sự kiện, Pydantic kiểm tra schema C3, 202 nếu hợp lệ / 400 kèm lỗi, rồi đẩy vào cùng topic. | HTTP/JSON | `ingestion/collector_api/` |
 | 3 | Kafka `ecom.events.raw` | Bộ đệm bền: 6 partition, replication factor 3, `min.insync.replicas=2`, retention theo dung lượng. Tắt 1 broker vẫn ghi được. | — | `ingestion/create_topics.py`, `configs/kafka_topics.yaml` |
-| 4a | Kafka → Spark → bronze / quarantine | Structured Streaming trigger 10 s: parse JSON theo C3, ép kiểu, chạy luật 1–4 (sai → `quarantine/` kèm `error_reason`), luật 5 khử trùng `event_id` trong watermark 1 giờ, ghi Delta partition `event_date`. Checkpoint trên MinIO để chạy lại không mất/trùng. | Delta trên S3A | `storage/stream_to_bronze.py`, `storage/quality_rules.py` |
+| 4a | Kafka → Spark → bronze / quarantine | Một Structured Streaming query, trigger 10 s, kiểm tra C3 trước khi Spark cast. Dòng hợp lệ qua watermark 1 giờ và stateful dedup theo `event_id`; dòng lỗi luật 1–4 đi thẳng tới nhánh C5. Hai nhánh union rồi dùng một `foreachBatch` với insert-only MERGE: C4 theo `event_id` toàn bảng, C5 theo partition/offset của topic cố định. Checkpoint trên MinIO để resume state và offset. | Delta trên S3A | `storage/stream_to_bronze.py`, `storage/quality_rules.py`, `storage/stream_sink.py` |
 | 4b | Kafka → Kafka Connect → raw/ecom.events.raw | S3 Sink ghi message Kafka theo giờ nạp, không qua code, để nạp lại khi job Spark lỗi. Nằm cạnh `raw/csv/` nhưng là prefix riêng. | JSON gzip, S3 API | `configs/connect/s3-sink.json` |
 | 5 | Bảo trì bronze | `OPTIMIZE ... ZORDER BY (user_id, product_id)` hằng ngày cho partition đã đóng, rồi `VACUUM`. | Delta | `storage/maintenance.py` |
 | 6 | Kiểm chứng | `make verify` đối soát số dòng nguồn vs bronze vs quarantine theo ngày; `latency.py` tính p50/p95 từ `produced_at` đến `ingested_at`. | Spark SQL | `monitoring/reconcile.py`, `queries/verify.sql` |
 | 7 | Giám sát | Mọi thành phần mở `/metrics`; Prometheus scrape 5 s; Grafana "Ingestion health": sự kiện/s vào Kafka và bronze, consumer lag theo partition, độ trễ p50/p95, quarantine theo luật, trạng thái 3 broker. | HTTP scrape | `common/metrics.py`, `monitoring/grafana/` |
 
-Luật kiểm tra khi ghi bronze (vi phạm → `quarantine/`, mỗi luật có bộ đếm):
+Luật kiểm tra khi ghi bronze (luật 1–4 → `quarantine/`; luật 5 bỏ và đếm):
 
 1. JSON không parse được hoặc sai schema C3.
 2. `event_time` null hoặc ngoài khoảng thời gian của file nguồn.
 3. `event_type` ngoài `{view, cart, purchase}`.
 4. `product_id` hoặc `user_id` null; `price` âm.
-5. Trùng `event_id` trong watermark 1 giờ → bỏ, chỉ đếm (`dropDuplicatesWithinWatermark`).
+5. Dòng hợp lệ dùng `withWatermark("event_time", "1 hour").dropDuplicatesWithinWatermark(["event_id"])` để bỏ trùng trong state. Dòng còn lại qua MERGE toàn bảng C4 để giữ tính duy nhất kể cả khi state đã hết hạn; chỉ các dòng tới sink mới được kiểm tra xung đột theo 9 giá trị C1.
 
 `category_code`, `brand`, `user_session` null là hợp lệ và vẫn vào bronze.
+
+Metric `clickflow_stream_quality_rule_violations_total{rule="1"|"2"|"3"|"4"}`
+đếm dòng quarantine **mới commit** theo luật lỗi chính. Luật 4 gộp
+`missing_id` và `negative_price`; bản ghi vi phạm nhiều luật chỉ tính lý do
+ưu tiên theo C5. Cả bốn series có giá trị 0 ngay khi driver khởi động;
+retry cùng Kafka offset không tăng lại bộ đếm. Chi tiết tại
+[runbook luật kiểm tra](docs/runbook.md#luật-kiểm-tra-14-và-bộ-đếm).
+`clickflow_stream_duplicates_dropped_total` đếm trùng bị stateful dedup bỏ;
+`clickflow_stream_late_records_dropped_total` đếm riêng dòng hợp lệ quá watermark,
+kể cả ID mới. Hai loại này không vào C5. Dòng lỗi luật 1–4 bỏ qua toàn bộ state,
+nên timestamp null/tương lai không làm tăng watermark và vẫn tới quarantine.
+`clickflow_stream_duplicates_ignored_total` chỉ đếm trùng bị MERGE bền bỏ
+sau bước stateful.
+Các counter reset theo driver; đối chiếu manifest phải cộng các stage/driver.
+Hai MERGE là hai commit Delta riêng:
+reader có thể thấy bronze trước quarantine; retry cùng checkpoint hội tụ
+về kết quả đầy đủ, không tạo thêm dòng đã ghi.
 
 ## Thành phần
 
@@ -91,8 +108,8 @@ Vùng lưu trữ trong bucket `lake`:
 |---|---|---|---|---|
 | raw/csv | `s3a://lake/raw/csv/` | CSV gốc Kaggle, tải tay | — (1 file/tháng) | Người dùng (`make upload`) |
 | raw/ecom.events.raw | `s3a://lake/raw/ecom.events.raw/` | JSON gzip nguyên bản từ Kafka | `dt`, `hour` (giờ nạp) | Kafka Connect |
-| bronze | `s3a://lake/bronze/events/` | Delta, 14 cột đúng kiểu, không trùng `event_id` | `event_date` | Spark Streaming |
-| quarantine | `s3a://lake/quarantine/events/` | Delta, payload gốc + `error_reason` | `ingest_date` | Spark Streaming |
+| bronze | `s3a://lake/bronze/events/` | Delta, 14 cột dữ liệu + 1 partition = 15; khóa `event_id` | `event_date` | Spark Streaming |
+| quarantine | `s3a://lake/quarantine/events/` | Delta, 5 cột dữ liệu + 1 partition = 6; payload gốc + `error_reason` | `ingest_date` | Spark Streaming |
 | checkpoints | `s3a://lake/_checkpoints/` | Offset và trạng thái stream | — | Spark Streaming |
 
 ## Yêu cầu máy
@@ -101,6 +118,12 @@ Vùng lưu trữ trong bucket `lake`:
 - Docker + Docker Compose v2, GNU Make, Python 3.11
 - Windows: dùng Git Bash hoặc WSL; cài `make` qua `winget install GnuWin32.Make` hoặc `scoop install make`. Không có `make` thì chạy thẳng lệnh trong `Makefile`.
 - File `2019-Nov.csv` tải tay từ Kaggle, đặt vào `data/raw/` (gitignore)
+
+Môi trường phát triển/test dùng Python 3.11 và PySpark **3.5.3**, khớp phiên bản
+Spark container. Cài bằng `python -m pip install -r requirements-dev.txt`, rồi
+chạy `python -m pytest -q`. CI cũng cài file này để chạy đủ test listener.
+`requirements.txt` vẫn dành cho các service Python; PySpark trong cluster đã
+có sẵn ở image Spark.
 
 ## Chạy nhanh
 
@@ -112,32 +135,61 @@ Kafka hay Python trên host cho luồng này:
 cp .env.example .env          # chỉ khi chưa có .env
 make up-storage
 make init-lake
-make smoke-storage
-make test-storage
+docker compose exec -T spark-master /opt/spark/bin/spark-submit /opt/app/src/storage/smoke_lake.py --sample --keep-artifacts
 ```
 
 `smoke-storage` đọc CSV theo C1 từ MinIO rồi ghi/đọc Delta qua hai worker.
 Fixture có tên riêng, không tạo file giả `2019-Nov.csv`; bảng C4/C5 vẫn rỗng.
-Khi tải và upload dataset thật, chạy `make smoke-storage-real` để kiểm tra
-tối đa 100 dòng từ `raw/csv/2019-Nov.csv`.
+Khi tải và upload dataset thật, chạy cùng script với `--keep-artifacts`
+và bỏ `--sample` để kiểm tra tối đa 100 dòng từ `raw/csv/2019-Nov.csv`.
+
+**Mẫu 100k → bronze thử:** sau khi upload dataset thật, chạy `make sample`
+rồi `make stream-sample`. Spark tạo
+`data/sample/events_sample_100k.csv` với 100.000 sự kiện khác nhau trong ngày
+2019-11-01, rồi ghi C4 Delta tại `lake/bronze/sample_events/`, partition
+`event_date`. Chạy lại cùng mẫu giữ nguyên số dòng; dữ liệu khác ở cùng đích
+sẽ bị từ chối, không ghi đè. Xem [runbook](docs/runbook.md) để chạy PowerShell.
+Đây là batch mẫu hữu hạn, dùng `--source sample` để tách khỏi nguồn Kafka
+mặc định và không ghi vào bảng bronze chính.
 
 ```bash
-cp .env.example .env          # sửa mật khẩu
-pip install -r requirements.txt
-make up                       # kafka x3, kafka-ui, connect, minio, spark x3, collector, prometheus, grafana
-make topics                   # tạo topic theo configs/kafka_topics.yaml
-make upload                   # data/raw/2019-Nov.csv -> lake/raw/csv/ (hoặc kéo thả trên MinIO Console)
-make sample                   # cắt mẫu 100k dòng từ raw/csv vào data/sample/
-make stream                   # Spark Streaming Kafka → bronze/quarantine
-make replay DAY=2019-11-01 SPEED=100
-make sink                     # đăng ký Kafka Connect S3 Sink → raw/
-make verify                   # đối soát số dòng theo ngày
-make down
+make up-stream                # Kafka x3 + MinIO + Spark, không cần dataset
+docker compose exec -T kafka-1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-1:9092 --create --if-not-exists --topic ecom.events.raw --partitions 6 --replication-factor 3 --config min.insync.replicas=2
+make stream                   # mặc định source=kafka, chạy liên tục
+# Hoặc khi stream đã dừng: xử lý offsets hiện có rồi thoát
+make stream-drain
 ```
 
-`make up-core` bỏ qua Prometheus/Grafana/kafka-exporter cho máy yếu. `make test` chạy pytest. `make bench` chạy E1–E5, kết quả vào `benchmarks/results/`.
+Tạo `.env` từ `.env.example` nếu chưa có, rồi sửa mật khẩu trước khi khởi động.
+`make topics` vẫn là khung TV2; dùng Kafka CLI ở trên để tạo topic. Chỉ chạy
+một driver ghi cùng cặp bảng. Cấu hình mặc định: trigger 10 giây,
+`maxOffsetsPerTrigger=500000`, `startingOffsets=earliest` chỉ ở lần đầu,
+`failOnDataLoss=true`, checkpoint mới `s3a://lake/_checkpoints/kafka_to_delta_watermark_v1/`.
+Các lần sau resume cả state và offsets từ checkpoint này. Giữ nguyên checkpoint
+stateless cũ `kafka_to_delta/`; không dùng nó cho plan mới hoặc xóa để ép chạy.
+Marker `checkpoint_layout` bảo vệ operator, routing, keys, event-time, watermark
+và shuffle partitions; thay đổi state plan cần checkpoint mới hoặc migration.
+Xem [runbook](docs/runbook.md#kafka--c4c5-streaming)
+cho PowerShell, dừng/resume và kiểm thử từng driver.
 
-Trạng thái hiện tại: MinIO + Spark có lệnh khởi tạo lake theo C4/C5 và smoke test CSV C1 → Delta, không cần dataset thật. Các phần nguồn, ingestion và streaming khác ngoài `common/` và `collector_api/health` vẫn chủ yếu là khung theo task trên Jira.
+Kafka → C4/C5, quality routing, insert-only MERGE, checkpoint binding và
+Prometheus driver đã được triển khai. Endpoint `0.0.0.0:8002` bên trong
+`spark-master` được scrape bởi target có sẵn `spark-master:8002`; không cần
+publish cổng host. Counter sink đếm dòng thực chèn sau commit; progress Spark
+có thể đếm lại source do nhiều action trong `foreachBatch`. Counter reset khi
+driver khởi động lại. Simulator/producer/Collector, `make topics` và một số
+job đối soát/benchmark vẫn là khung cho các task liên quan.
+
+Mốc lịch sử ngày 01/11/2026 **trước stateful Rule 5**: **187 unit test đạt**;
+integration giữ lại case
+`data/raw/kafka-stream-test-767d9cd4c267`, xác nhận lỗi giữa hai commit,
+resume, replay/conflict, đủ 5 lý do lỗi và restart không tăng Delta version.
+Đây là kiểm thử chức năng có fixture, chưa phải benchmark toàn bộ dataset.
+Suite sau triển khai Rule 5 đã đạt **240 unit test**. Kafka/Spark/MinIO thật
+đã xác nhận **26 duplicate drops khớp manifest**, C4 có **6 ID duy nhất**;
+restart phục hồi state, đổi timestamp trong một giờ vẫn bị loại, và durable
+MERGE giữ uniqueness sau state expiry. Recipe và bằng chứng nằm trong
+[runbook](docs/runbook.md#luật-5-stateful-dedup-và-watermark).
 
 | UI | URL |
 |---|---|
@@ -153,7 +205,7 @@ Trạng thái hiện tại: MinIO + Spark có lệnh khởi tạo lake theo C4/C
 ```
 docker-compose.yml       kafka x3 (KRaft), kafka-ui, kafka-connect, minio + minio-init, spark-master, spark-worker x2,
                          collector-api; profile monitoring: prometheus, kafka-exporter, grafana
-Makefile                 up | up-core | down | topics | upload | sample | replay | stream | sink | verify | bench | test
+Makefile                 up | up-stream | up-core | down | topics | upload | sample | stream | stream-sample | stream-drain | test
 .github/workflows/ci.yml pytest + docker compose config trên mỗi PR
 .env.example             KAFKA_CLUSTER_ID, MINIO_ROOT_*, LAKE_BUCKET, GRAFANA_ADMIN_PASSWORD — copy thành .env
 .gitattributes           ép LF cho script mount vào container Linux
@@ -164,8 +216,8 @@ contracts/               data contract C1–C5: source_csv.yaml, collector_opena
 src/common/              config.py, schemas.py, spark_session.py, metrics.py
 src/sources/             read_csv.py, make_sample.py, simulator.py, fault_injector.py
 src/ingestion/           create_topics.py, producer.py, collector_api/
-src/storage/             init_lake.py, stream_to_bronze.py, quality_rules.py, maintenance.py
-src/monitoring/          reconcile.py, latency.py, grafana/ingestion_health.json
+src/storage/             init_lake.py, stream_to_bronze.py, stream_config.py, stream_sink.py, quality_rules.py, maintenance.py
+src/monitoring/          stream_listener.py, reconcile.py, latency.py, grafana/ingestion_health.json
 queries/                 verify.sql, sample_queries.sql
 benchmarks/              e1_producer.sh … e5_storage.sh, results/
 tests/                   test_schemas.py, test_quality_rules.py, test_collector_api.py
@@ -185,6 +237,18 @@ Năm hợp đồng trong `contracts/` là giao diện giữa các tầng; đổi
 | C4 | Bảng `bronze/events` | Spark → nhóm Processing | Đối soát số dòng theo ngày |
 | C5 | Bảng `quarantine/events` | Spark → nhóm dữ liệu | Mỗi bản ghi hỏng cố ý đều xuất hiện |
 
+C4/C5 bản **1.0.0 sẵn sàng review, đang chờ nhóm duyệt**. C4 có 14 cột dữ
+liệu (9 C1 + 5 metadata) và `event_date` là cột thứ 15; C5 có 5 cột dữ liệu
+và `ingest_date` là cột thứ 6. Xem [bản bàn giao và phiếu duyệt nhóm](docs/contracts-c4-c5-handoff.md)
+để xác nhận nullability, UTC, dedup toàn bảng, payload gốc và thứ tự lỗi.
+Sink Kafka giữ MERGE bền theo khóa C4/C5 sau stateful dedup của nhánh hợp lệ.
+Metadata ràng buộc nguồn/đích với topic/broker, hai đích, fingerprint C3 và
+phiên bản C4/C5; riêng checkpoint còn có `checkpoint_layout` cho state plan.
+Checkpoint stateless cũ hoặc layout thay đổi bị từ chối; binding nguồn/đích
+cũ tương thích vẫn được giữ. Checkpoint không rỗng nhưng chưa có binding bị từ chối
+trước khi init; đổi nguồn/đích phải chọn checkpoint và đích phù hợp hoặc lập
+kế hoạch migration, không xóa checkpoint để ép chạy lại.
+
 ## Quản lý công việc
 
 - Backlog và sprint: [Jira BIG](https://nguyenquoccuong07122004.atlassian.net/jira/software/projects/BIG/boards/3/backlog), 6 sprint theo tuần từ 29/10 đến 09/12/2026.
@@ -202,7 +266,7 @@ Năm hợp đồng trong `contracts/` là giao diện giữa các tầng; đổi
 
 ## Quy ước
 
-- `main` luôn chạy được `make up && make replay DAY=2019-11-01 && make verify`.
+- Luồng storage hiện tại: `make up-stream`, tạo topic bằng Kafka CLI rồi `make stream`; kiểm thử chức năng và các bước resume nằm trong runbook.
 - Làm trên nhánh `feat/<tầng>-<việc>-<BIG-key>`, merge qua Pull Request có 1 người review, CI xanh.
 - Không commit dữ liệu lớn, mật khẩu hay file `.env`.
 - Mọi thành phần in log có cấu trúc và xuất metric cho Prometheus.
