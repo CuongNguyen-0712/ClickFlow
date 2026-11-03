@@ -1,12 +1,67 @@
-# C5 — Bảng quarantine/events: Spark -> nhóm dữ liệu. Trạng thái: DRAFT.
-# Kiểm tra: mỗi bản ghi hỏng cố ý chèn (fault_injector) đều xuất hiện ở đây.
+# C5 — Bảng quarantine/events: Storage -> nhóm dữ liệu. Bản 1.0.0 chờ nhóm duyệt.
+contract_id: C5
+version: 1.0.0
+status: review_ready
+review_date: '2026-11-01'
+approval:
+  status: pending
+  required_roles: [Sources, Ingestion, Storage, Infra, Processing]
+  approvals: []
 format: delta
 path: s3a://lake/quarantine/events/
+producer: Storage
+consumer: DataQuality
+timezone: UTC
+data_column_count: 5
+physical_column_count: 6
 partition_by: [ingest_date]
+partition_columns:
+  - name: ingest_date
+    type: date
+    nullable: true                  # giữ schema Delta hiện có; invariant yêu cầu giá trị không null
+    derived_from: to_date(ingested_at)
+    timezone: UTC
 columns:
   - {name: payload,         type: string,    nullable: true,  note: "message gốc từ Kafka"}
   - {name: error_reason,    type: string,    nullable: false, allowed: [parse_error, bad_event_time, bad_event_type, missing_id, negative_price]}
   - {name: kafka_partition, type: int,       nullable: false}
   - {name: kafka_offset,    type: bigint,    nullable: false}
   - {name: ingested_at,     type: timestamp, nullable: false}
-# Luật 5 (trùng event_id trong watermark 1h) chỉ đếm, không ghi vào quarantine.
+payload_semantics:
+  representation: original_utf8_value
+  reserialize_json: false
+  null_only_when_source_value_is_null: true
+  note: "Giữ nguyên chuỗi Kafka value UTF-8, kể cả JSON hỏng, khoảng trắng, thứ tự key; tombstone có payload=null."
+error_selection: first_matching_rule
+error_rules:                        # thứ tự ưu tiên; mỗi message hỏng chỉ ghi một error_reason
+  - rule: 1
+    reason: parse_error
+    condition: "JSON hỏng/không phải object, sai kiểu hoặc thiếu trường C3 ngoài các kiểm tra giá trị dành riêng cho luật 2–4."
+  - rule: 2
+    reason: bad_event_time
+    condition: "event_time thiếu/null, chuỗi thời gian không parse được, hoặc ngoài tháng của source_file C3; biên [đầu tháng, đầu tháng sau), UTC."
+  - rule: 3
+    reason: bad_event_type
+    condition: "event_type thiếu/null hoặc ngoài {view, cart, purchase}."
+  - rule: 4
+    reason: missing_id
+    condition: "product_id hoặc user_id thiếu/null. Sai kiểu số là parse_error ở luật 1."
+  - rule: 4
+    reason: negative_price
+    condition: "price < 0. price thiếu/null/sai kiểu là parse_error ở luật 1."
+rule_1_exceptions:
+  - "event_time thiếu/null hoặc chuỗi timestamp không hợp lệ do luật 2 xử lý."
+  - "event_type thiếu/null hoặc giá trị string ngoài enum do luật 3 xử lý."
+  - "product_id/user_id thiếu/null và price âm do luật 4 xử lý."
+source_topic_config: kafka.topic
+replay_identity: [kafka_partition, kafka_offset]
+invariants:
+  - "Mỗi Kafka message vi phạm luật 1–4 được ghi đúng một dòng với lý do ưu tiên cao nhất."
+  - "Retry cùng partition/offset trong cùng source topic không tạo thêm dòng; hai offset khác nhau vẫn là hai message."
+  - "ingested_at là thời điểm Storage xử lý lỗi theo UTC; ingest_date = to_date(ingested_at), không null."
+  - "ingest_date theo ngày nhận dữ liệu lỗi, không lấy từ event_time có thể hỏng."
+duplicates:
+  rule: 5
+  applies_to: otherwise_valid_events
+  write_to_quarantine: false
+  action: ignore_and_count
