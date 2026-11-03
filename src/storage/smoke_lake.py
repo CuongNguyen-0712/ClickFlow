@@ -5,25 +5,13 @@ from collections import Counter
 from datetime import datetime
 from uuid import uuid4
 
-import yaml
-
 from src.common.config import ROOT
-from src.common.schemas import SOURCE_COLUMNS, ddl
+from src.common.spark_csv import read_source_csv
 from src.common.spark_session import get_spark
 from src.storage.init_lake import initialize_lake, lake_paths
 
 
-def read_source_csv(spark, uri):
-    contract = yaml.safe_load((ROOT / "contracts/source_csv.yaml").read_text(encoding="utf-8"))
-    return (spark.read.schema(ddl(SOURCE_COLUMNS))
-            .option("header", True).option("enforceSchema", False)
-            .option("mode", "FAILFAST")
-            .option("timestampFormat", contract["event_time_format"])
-            .option("enableDateTimeParsingFallback", False)
-            .csv(uri))
-
-
-def run_smoke(spark, *, sample=False, source=None, limit=100):
+def run_smoke(spark, *, sample=False, source=None, limit=100, keep_artifacts=False):
     if limit < 1:
         raise ValueError("limit must be positive")
     paths = initialize_lake(spark)
@@ -62,14 +50,15 @@ def run_smoke(spark, *, sample=False, source=None, limit=100):
             raise AssertionError("Delta round-trip changed the CSV schema or values")
         result = {"event": "storage_smoke_passed", "synthetic": sample,
                   "rows": len(rows), "source": source, "delta_path": destination,
-                  "master": spark.sparkContext.master}
+                  "master": spark.sparkContext.master,
+                  "artifacts_retained": keep_artifacts}
         print(json.dumps(result))
         return result
     finally:
         if frame is not None:
             frame.unpersist()
         # Only delete objects allocated by this invocation, never source datasets.
-        for uri in (destination, temporary_input):
+        for uri in (() if keep_artifacts else (destination, temporary_input)):
             if uri:
                 path = Path(uri)
                 path.getFileSystem(conf).delete(path, True)
@@ -81,13 +70,16 @@ def main():
     inputs.add_argument("--sample", action="store_true", help="Use the committed synthetic fixture")
     inputs.add_argument("--source", help="CSV URI; default: configured raw/csv/2019-Nov.csv")
     parser.add_argument("--limit", type=int, default=100, help="Maximum real dataset rows to test")
+    parser.add_argument("--keep-artifacts", action="store_true",
+                        help="Keep test objects on MinIO instead of deleting them")
     args = parser.parse_args()
     if args.limit < 1:
         parser.error("--limit must be positive")
     spark = get_spark("storage-smoke")
     spark.sparkContext.setLogLevel("WARN")
     try:
-        run_smoke(spark, sample=args.sample, source=args.source, limit=args.limit)
+        run_smoke(spark, sample=args.sample, source=args.source, limit=args.limit,
+                  keep_artifacts=args.keep_artifacts)
     finally:
         spark.stop()
 
