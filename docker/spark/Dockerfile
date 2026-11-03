@@ -1,5 +1,5 @@
 # Ghim phiên bản: Spark 3.5.3 (Scala 2.12) + Delta 3.2.1 + hadoop-aws 3.3.4 + spark-sql-kafka 3.5.3
-FROM apache/spark:3.5.3-scala2.12-java17-python3-ubuntu
+FROM apache/spark:3.5.3-scala2.12-java17-python3-ubuntu@sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74
 
 ARG MVN=https://repo1.maven.org/maven2
 ADD --chmod=644 ${MVN}/io/delta/delta-spark_2.12/3.2.1/delta-spark_2.12-3.2.1.jar /opt/spark/jars/

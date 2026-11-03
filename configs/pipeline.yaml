@@ -41,8 +41,11 @@ lake:
   checkpoints: s3a://lake/_checkpoints/
 
 stream:
-  source: kafka        # kafka | sample — tuần 1–2 TV3 đọc data/sample/ trước khi có Kafka
+  source: sample       # finite sample batch; Kafka streaming sẽ triển khai ở task tiếp theo
   sample_path: /opt/app/data/sample/events_sample_100k.csv
+  sample_rows: 100000
+  sample_day: '2019-11-01'
+  sample_bronze_path: s3a://lake/bronze/sample_events/
   trigger_seconds: 10
   watermark: 1 hour
   max_offsets_per_trigger: 500000
