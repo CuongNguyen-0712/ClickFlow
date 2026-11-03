@@ -30,7 +30,7 @@ Dataset Kaggle [eCommerce behavior data from multi category store](https://www.k
 | 2 — nếu còn thời gian | `2019-Oct.csv` | ~5,7 GB | ~42 triệu | Mở rộng Full lên 2 tháng |
 | 3 — tuỳ chọn | 12/2019–4/2020 (REES46) | lớn | ~175 triệu | Chỉ khi còn đĩa và thời gian |
 
-Số dòng chính xác lấy từ notebook EDA (BIG-15).
+Số dòng chính xác lấy từ notebook EDA (`notebooks/01_eda.ipynb`).
 
 **Cách lấy dữ liệu** (làm một lần, mỗi máy cần dữ liệu):
 
@@ -72,14 +72,14 @@ Luật kiểm tra khi ghi bronze (vi phạm → `quarantine/`, mỗi luật có 
 
 Sáu thí nghiệm tạo số liệu cho chương 6–7; script trong `benchmarks/`, mỗi cấu hình chạy ≥ 3 lần, kết quả ghi `benchmarks/results/`.
 
-| # | Thí nghiệm | Biến thay đổi | Đo gì | Phụ trách | Jira |
-|---|---|---|---|---|---|
-| E1 | Thông lượng producer | nén none/lz4/zstd; acks 1/all; `linger.ms`, `batch.size`; producer trực tiếp vs Collector API | sự kiện/s, MB/s, tỷ lệ nén | TV1 (TV2 đo sơ bộ) | BIG-21, BIG-27 |
-| E2 | Mở rộng partition / worker | 1/3/6/12 partition; 1 vs 2 worker Spark | dòng/s ghi bronze, consumer lag | TV2 | BIG-31 |
-| E3 | Độ trễ end-to-end | trigger 5/10/30 s; tốc độ ×100/×1000 | p50/p95 `produced_at`→`ingested_at`, số file | TV3 | BIG-40 |
-| E4 | Chịu lỗi | (a) tắt 1 broker; (b) kill job Spark rồi chạy lại từ checkpoint | số dòng bronze vs đã gửi: không mất, không trùng | TV2 (a), TV3 (b) | BIG-30, BIG-41 |
-| E5 | Định dạng và phân vùng | CSV vs JSON gzip vs Delta; có/không partition; trước/sau OPTIMIZE+ZORDER | dung lượng, số file, thời gian 3 truy vấn, partition pruning | TV3 | BIG-42 |
-| E6 | Chất lượng + nạp Full | chèn 0,1% hỏng + 0,1% trùng; nạp cả tháng 11/2019 | quarantine theo luật, trùng bị loại, tổng thời gian nạp | TV4 | BIG-49, BIG-50 |
+| # | Thí nghiệm | Biến thay đổi | Đo gì |
+|---|---|---|---|
+| E1 | Thông lượng producer | nén none/lz4/zstd; acks 1/all; `linger.ms`, `batch.size`; producer trực tiếp vs Collector API | sự kiện/s, MB/s, tỷ lệ nén |
+| E2 | Mở rộng partition / worker | 1/3/6/12 partition; 1 vs 2 worker Spark | dòng/s ghi bronze, consumer lag |
+| E3 | Độ trễ end-to-end | trigger 5/10/30 s; tốc độ ×100/×1000 | p50/p95 `produced_at`→`ingested_at`, số file |
+| E4 | Chịu lỗi | (a) tắt 1 broker; (b) kill job Spark rồi chạy lại từ checkpoint | số dòng bronze vs đã gửi: không mất, không trùng |
+| E5 | Định dạng và phân vùng | CSV vs JSON gzip vs Delta; có/không partition; trước/sau OPTIMIZE+ZORDER | dung lượng, số file, thời gian 3 truy vấn, partition pruning |
+| E6 | Chất lượng + nạp Full | chèn 0,1% hỏng + 0,1% trùng; nạp cả tháng 11/2019 | quarantine theo luật, trùng bị loại, tổng thời gian nạp |
 
 ## Thành phần
 
@@ -115,26 +115,58 @@ Vùng lưu trữ trong bucket `lake`:
 
 ## Chạy nhanh
 
-Không có `make` (Windows): thay `make X` bằng `python run.py X`; tham số `DAY`, `SPEED` đặt qua biến môi trường (`$env:DAY="2019-11-02"; python run.py replay`).
+Mọi lệnh chạy bằng `python run.py <lệnh>` (Windows PowerShell/cmd được, không cần make); có GNU Make thì `make <lệnh>` tương đương. Tham số `DAY`, `SPEED` đặt qua biến môi trường (`$env:DAY="2019-11-02"; python run.py replay`). Các lệnh Spark chạy bằng `spark-submit` trong container `spark-master`, host không cần Java/Spark.
+
+**1. Storage (MinIO + Spark), chưa cần dataset hay Kafka:**
 
 ```bash
-cp .env.example .env          # sửa mật khẩu
+cp .env.example .env              # chỉ khi chưa có .env; sửa mật khẩu
 pip install -r requirements.txt
-make up                       # kafka x3, kafka-ui, connect, minio, spark x3, collector, prometheus, grafana
-make topics                   # tạo topic theo configs/kafka_topics.yaml
-make download                 # Kaggle -> data/raw/2019-Nov.csv (dataset public, không cần token)
-make upload                   # data/raw/*.csv -> lake/raw/csv/ (hoặc kéo thả trên MinIO Console)
-make sample                   # cắt mẫu 100k dòng từ raw/csv vào data/sample/
-make stream                   # Spark Streaming Kafka → bronze/quarantine
-make replay DAY=2019-11-01 SPEED=100
-make sink                     # đăng ký Kafka Connect S3 Sink → raw/
-make verify                   # đối soát số dòng theo ngày
-make down
+python run.py up-storage          # minio, minio-init, spark-master, spark-worker x2 (đợi healthy)
+python run.py init-lake           # tạo prefix + bảng Delta rỗng C4/C5; chạy lại an toàn
+python run.py smoke-storage       # CSV tổng hợp 3 dòng -> MinIO -> Spark -> Delta -> đọc lại
+python run.py test-storage        # integration checks storage (4 test)
 ```
 
-`make up-core` bỏ qua Prometheus/Grafana/kafka-exporter cho máy yếu. `make test` chạy pytest. `make bench` chạy E1–E5, kết quả vào `benchmarks/results/`.
+**2. Dữ liệu thật → mẫu 100k → bronze thử:**
 
-Trạng thái 31/10/2026 (Sprint 1): compose, configs, contracts C1–C5 bản nháp, CI, `report/outline.md` đã có; MinIO chạy healthy và `make upload` đã thử. Các file trong `src/` ngoài `common/` và `collector_api/health` còn là khung có docstring mô tả việc cần làm; Kafka, Spark, Connect chưa `up` thử; chưa có CSV thật trên MinIO.
+```bash
+python run.py download            # Kaggle -> data/raw/2019-Nov.csv (public, không cần token)
+python run.py upload              # data/raw/*.csv -> lake/raw/csv/
+python run.py smoke-storage-real  # đọc tối đa 100 dòng từ raw/csv/2019-Nov.csv
+python run.py sample              # Spark cắt data/sample/events_sample_100k.csv (ngày 2019-11-01)
+python run.py stream-sample       # 100k sự kiện -> Delta lake/bronze/sample_events/, partition event_date
+python run.py test-sample-bronze  # kiểm tra kiểu, partition, chạy lại không ghi đè (4 test)
+```
+
+`stream-sample` (và `stream` khi `stream.source: sample`) là batch hữu hạn; chạy lại cùng mẫu giữ nguyên số dòng, dữ liệu khác ở cùng đích bị từ chối. Bảng thử nằm riêng ở `bronze/sample_events/`, không ghi vào `bronze/events`. Chi tiết và lệnh PowerShell thuần: [docs/runbook.md](docs/runbook.md).
+
+**3. Toàn pipeline (Kafka → bronze/quarantine):**
+
+```bash
+python run.py up                  # thêm kafka x3, kafka-ui, connect, collector, prometheus, grafana
+python run.py topics              # tạo topic theo configs/kafka_topics.yaml
+python run.py stream              # Spark Streaming theo stream.source (đổi sang kafka khi sẵn sàng)
+python run.py replay              # simulator phát DAY ở tốc độ SPEED
+python run.py sink                # đăng ký Kafka Connect S3 Sink -> lake/raw/ecom.events.raw/
+python run.py verify              # đối soát số dòng nguồn vs bronze theo ngày
+python run.py down
+```
+
+`up-core` bỏ qua Prometheus/Grafana/kafka-exporter cho máy yếu. `test` chạy pytest trên host. `bench` chạy E1–E5, kết quả vào `benchmarks/results/`.
+
+### Trạng thái (03/11/2026)
+
+| Luồng | Lệnh | Trạng thái |
+|---|---|---|
+| Hạ tầng storage | `up-storage`, `init-lake` | ✅ chạy được; bảng C4/C5 khởi tạo đúng contract |
+| Smoke MinIO ↔ Spark ↔ Delta | `smoke-storage`, `smoke-storage-real`, `test-storage` | ✅ pass (3 dòng tổng hợp; 100 dòng thật; 4/4 test) |
+| Dữ liệu nguồn | `download`, `upload` | ✅ `2019-Nov.csv` 9,0 GB lên `lake/raw/csv/` |
+| Mẫu 100k → bronze thử | `sample`, `stream-sample`, `test-sample-bronze` | ✅ 100.000 dòng, 15 cột, partition `event_date`; 4/4 test |
+| Test contract trên host | `test` | ✅ 13 test pass; CI GitHub xanh |
+| Kafka: topic, producer, simulator | `topics`, `replay` | ⏳ chưa có (script còn là khung) |
+| Spark Streaming Kafka → bronze/quarantine, luật 1–5 | `stream` (`stream.source: kafka`) | ⏳ chưa có; hiện `stream` chạy batch mẫu |
+| Collector API, Kafka Connect, đối soát, giám sát | `sink`, `verify`, Grafana | ⏳ chưa có (Collector API mới có `/health`) |
 
 | UI | URL |
 |---|---|
@@ -150,7 +182,9 @@ Trạng thái 31/10/2026 (Sprint 1): compose, configs, contracts C1–C5 bản n
 ```
 docker-compose.yml       kafka x3 (KRaft), kafka-ui, kafka-connect, minio + minio-init, spark-master, spark-worker x2,
                          collector-api; profile monitoring: prometheus, kafka-exporter, grafana
-run.py                   up | up-core | down | topics | download | upload | sample | replay | stream | sink | verify | bench | test
+run.py                   lệnh dự án: up | up-core | up-storage | down | init-lake | smoke-storage | smoke-storage-real |
+                         test-storage | topics | download | upload | sample | replay | stream | stream-sample |
+                         test-sample-bronze | sink | verify | bench | test
 Makefile                 wrapper: make <target> = python run.py <target>; DAY, SPEED export sang run.py
 pytest.ini               pythonpath=. , testpaths=tests
 .github/workflows/ci.yml pytest + docker compose config trên mỗi PR
@@ -160,16 +194,19 @@ docker/                  Dockerfile cho spark (Delta + S3A + Kafka), connect (S3
 configs/                 pipeline.yaml, kafka_topics.yaml, connect/s3-sink.json, spark-defaults.conf, prometheus.yml, grafana/
 contracts/               data contract C1–C5: source_csv.yaml, collector_openapi.yaml, event.schema.json,
                          bronze_events.yaml, quarantine_events.yaml
-src/common/              config.py, schemas.py, spark_session.py, metrics.py
-src/sources/             download.py, read_csv.py, make_sample.py, simulator.py, fault_injector.py
+src/common/              config.py, schemas.py, spark_session.py, spark_csv.py (đọc C1, chọn mẫu), metrics.py
+src/sources/             download.py, make_sample.py, read_csv.py, simulator.py, fault_injector.py
 src/ingestion/           create_topics.py, producer.py, collector_api/
-src/storage/             init_lake.py, stream_to_bronze.py, quality_rules.py, maintenance.py
+src/storage/             init_lake.py, smoke_lake.py, stream_to_bronze.py, quality_rules.py, maintenance.py
 src/monitoring/          reconcile.py, latency.py, grafana/ingestion_health.json
 queries/                 verify.sql, sample_queries.sql
 benchmarks/              e1_producer.sh … e5_storage.sh, results/
-tests/                   test_schemas.py, test_quality_rules.py, test_collector_api.py
-data/raw/ (gitignore)    CSV do make download tải về, nguồn cho make upload      data/sample/   events_sample_100k.csv (commit kèm)
-notebooks/               01_eda.ipynb      docs/          runbook.md, contribution.md, ai_usage.md
+tests/                   test_schemas.py, test_lake_config.py, test_quality_rules.py, test_collector_api.py (host, pytest)
+tests/integration/       storage_checks.py, sample_bronze_checks.py (chạy bằng spark-submit trong container)
+data/raw/ (gitignore)    CSV do download tải về, nguồn cho upload
+data/sample/             events_sample_100k.csv, storage_smoke.csv (fixture 3 dòng)
+notebooks/               01_eda.ipynb
+docs/                    runbook.md, contracts-c4-c5-handoff.md, contribution.md, ai_usage.md
 report/                  outline.md (dàn ý + người viết), chNN_*.md (mỗi chương một file), figures/
 ```
 
@@ -190,39 +227,11 @@ liệu (9 C1 + 5 metadata) và `event_date` là cột thứ 15; C5 có 5 cột d
 và `ingest_date` là cột thứ 6. Xem [bản bàn giao và phiếu duyệt nhóm](docs/contracts-c4-c5-handoff.md)
 để xác nhận nullability, UTC, dedup toàn bảng, payload gốc và thứ tự lỗi.
 Watermark 1 giờ chưa thay cho bảo đảm unique key toàn bảng; sink Kafka ở
-task tiếp theo phải có chống replay bền và đối soát.
-
-## Quản lý công việc
-
-- Backlog và sprint: [Jira BIG](https://nguyenquoccuong07122004.atlassian.net/jira/software/projects/BIG/boards/3/backlog), 6 sprint theo tuần (thứ Năm → thứ Tư), nộp bài **09/12/2026**.
-
-  | Sprint | Tuần | Mục tiêu |
-  |---|---|---|
-  | 1 | 29/10–04/11 | Hạ tầng dựng được trên 4 máy, CSV lên MinIO, EDA, chốt contract C1–C5 |
-  | 2 | 05/11–11/11 | Simulator v1, producer idempotent, Spark Streaming → bronze/quarantine, Prometheus, `reconcile.py` |
-  | 3 | 12/11–18/11 | 1 ngày dữ liệu chạy trọn CSV → Kafka → bronze, `make verify` khớp, demo nội bộ |
-  | 4 | 19/11–25/11 | Mức Demo (1 tuần), Collector API, Kafka Connect, Grafana, E1/E2/E4, khung báo cáo; **đóng băng tính năng** |
-  | 5 | 26/11–02/12 | Nạp Full tháng 11, E3/E5/E6, viết chương 1–7 |
-  | 6 | 03/12–09/12 | Chương 8–9, video demo, ghép báo cáo PDF, nộp |
-
-  Nếu trễ, cắt theo thứ tự: mở rộng sang 2019-Oct → Collector API → Kafka Connect (thay bằng Spark ghi raw). Hai phần sau có label `cuttable`.
-
-- Epic theo tầng: Sources, Ingestion, Storage, Infra, Report. Label `week-N` là tuần, `experiment` là thí nghiệm E1–E6, `contract` là chốt C1–C5, `tvN` là người phụ trách:
-
-  | Label | Thành viên | Phụ trách |
-  |---|---|---|
-  | `tv1` | Thơ Trần | Sources: dữ liệu, EDA, simulator, fault injector, chương 3, video |
-  | `tv2` | Tiến An | Ingestion: Kafka, producer, Collector API, Kafka Connect, chương 2/4 (Kafka) |
-  | `tv3` | Thanh Trúc | Storage: Spark Streaming, Delta, quality rules, chương 2/4 (Data Lake) |
-  | `tv4` | Nguyễn Quốc Cường (nhóm trưởng) | Hạ tầng, giám sát, benchmark, nạp Full, chương 1/5/6/7, ghép báo cáo |
-
-- Dàn ý báo cáo và người viết từng chương: `report/outline.md`.
-- Tên nhánh và commit mang key issue để Jira liên kết, ví dụ `feat/sources-simulator-BIG-18`.
+bước streaming Kafka phải có chống replay bền và đối soát.
 
 ## Quy ước
 
-- `main` luôn chạy được `make up && make replay DAY=2019-11-01 && make verify`.
-- Làm trên nhánh `feat/<tầng>-<việc>-<BIG-key>`, merge qua Pull Request có 1 người review, CI xanh.
+- `main` là bản ổn định, `develop` là nhánh tích hợp; làm trên nhánh feature, merge vào `develop` qua Pull Request có 1 người review, CI xanh.
 - Không commit dữ liệu lớn, mật khẩu hay file `.env`.
 - Mọi thành phần in log có cấu trúc và xuất metric cho Prometheus.
 - Ghim phiên bản trong `docker/`: Spark 3.5.3, Delta 3.2.1, Kafka 3.8.1, Connect 7.7.1, MinIO (Chainguard, ghim digest), Python 3.11. Không đổi giữa chừng.
